@@ -17,7 +17,7 @@ If you decide not to use the website then you would need to manually insert the 
 
 **What are the default admin credentials?**
 
-You can login with the username `admin` and the password `Admin123!`.
+You can login with the username `admin` and the password `Admin123!`
 
 ## Disclaimer
 
