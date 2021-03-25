@@ -19,6 +19,12 @@ If you decide not to use the website then you would need to manually insert the 
 
 You can login with the username `admin` and the password `Admin123!`
 
+## Customization
+
+There are some things you must change in the code in order for it to work. Some of them include:
+
+- Changing the database connection string located in [iCTF Shared Resources/SharedConfiguration.cs](iCTF%20Shared%20Resources/SharedConfiguration.cs)
+
 ## Disclaimer
 
 ImaginaryCTF comes with absolutely no warranties.
