@@ -1,0 +1,74 @@
+﻿@page "{id:int}"
+@model iCTF_Website.Pages.UserModel
+
+@{
+    ViewData["Title"] = Model.Name;
+}
+
+<div class="container mb-3">
+    <h2 class="m-3">@Model.Name - @Model.Player.Score points
+        @if (Model.Player.Score > 0) {
+            @:(@Model.PlayerStats.Position / @Model.PlayerStats.PlayersCount)
+         }</h2>
+    <hr />
+    <div class="row">
+        <div class="col-md-6">
+            <h4>Solved Challenges</h4>
+            @if (Model.PlayerStats.SolvedChallenges.Count > 0)
+            {
+                <div class="table-responsive">
+                    <table class="table table-striped table-light table-bordered">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th>Challenge</th>
+                                <th>Points</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var chall in Model.PlayerStats.SolvedChallenges)
+                            {
+                                <tr>
+                                    <td>@chall.Title</td>
+                                    <td>@chall.Points</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <p>Looks like this user didn't solve any challenge yet :'(</p>
+            }
+        </div>
+        <div class="col-md-6">
+            <h4>Unsolved Challenges</h4>
+            @if (Model.PlayerStats.UnsolvedChallenges.Count > 0)
+            {
+                <div class="table-responsive">
+                    <table class="table table-striped table-light table-bordered">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th>Challenge</th>
+                                <th>Points</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var chall in Model.PlayerStats.UnsolvedChallenges)
+                            {
+                                <tr>
+                                    <td>@chall.Title</td>
+                                    <td>@chall.Points</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <p>Looks like this user solved all the currently released challenges :)</p>
+            }
+        </div>
+    </div>
+</div>

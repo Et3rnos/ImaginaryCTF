@@ -1,0 +1,39 @@
+﻿@page
+@model iCTF_Website.Areas.Account.Pages.DiscordAccountModel
+
+@{
+    ViewData["Title"] = "Discord Account";
+}
+
+<div class="container">
+    <h1 class="text-center m-3">Account</h1>
+    <div class="row mb-3">
+        <partial name="_MenuPartial" />
+        <div class="col-md-9 text-start">
+            <h4>Discord Account</h4>
+            <hr />
+            @if (!string.IsNullOrEmpty(Model.Success))
+            {
+                <div>
+                    <div class="alert alert-success">
+                        @Model.Success
+                    </div>
+                </div>
+            }
+            @if (!string.IsNullOrEmpty(Model.Error))
+            {
+                <div>
+                    <div class="alert alert-danger">
+                        @Model.Error
+                    </div>
+                </div>
+            }
+            <p>If you already have a discord progress then only the account with the bigger score will be maintained.</p>
+            @if (Model.DiscordId != 0)
+            {
+                <p>Your account is currently linked to the discord account with ID: @Model.DiscordId</p>
+            }
+            <a href="https://discord.com/api/oauth2/authorize?client_id=client_id&redirect_uri=redirect_url&response_type=code&scope=identify&state=@Model.State" class="btn btn-primary mt-2">Link/Relink Discord Account</a>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,119 @@
+﻿@page
+@model iCTF_Website.Areas.Admin.Pages.NonReleasedChallengesModel
+
+@{
+    ViewData["Title"] = "Non Released Challenges";
+}
+
+<div class="container">
+    <h1 class="text-center m-3">Admin Panel</h1>
+    <div class="row mb-3">
+        <partial name="_MenuPartial" />
+        <div class="col-md-9 text-start">
+            <h4>Non Approved Challenges</h4>
+            <hr />
+            @if (Model.NonApprovedChallenges.Count > 0)
+            {
+            <div class="accordion mb-3" id="accordion">
+                @foreach (Challenge challenge in Model.NonApprovedChallenges)
+                {
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="heading@(challenge.Id)">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse@(challenge.Id)" aria-expanded="false" aria-controls="collapse@(challenge.Id)">
+                                @challenge.Title (@(challenge.Points)pts)
+                            </button>
+                        </h2>
+                        <div id="collapse@(challenge.Id)" class="accordion-collapse collapse" aria-labelledby="heading@(challenge.Id)" data-bs-parent="#accordion">
+                            <div class="accordion-body">
+                                <b>Description</b><br />
+                                <p>@challenge.Description</p>
+                                <b>Attachments</b><br />
+                                <p>@challenge.Attachments</p>
+                                <b>Category</b><br />
+                                <p>@challenge.Category</p>
+                                <b>Author</b><br />
+                                <p>@challenge.Author</p>
+                                <b>Flag</b><br />
+                                <p>@challenge.Flag</p>
+                                <b>Writeup</b><br />
+                                <p>@challenge.Writeup</p>
+                                <form class="d-inline-block" method="post">
+                                    <input type="hidden" name="action" value="approve" />
+                                    <input type="hidden" name="id" value="@challenge.Id" />
+                                    <button class="btn btn-success" type="submit">Approve</button>
+                                </form>
+                                <form class="d-inline-block" method="post">
+                                    <input type="hidden" name="action" value="delete" />
+                                    <input type="hidden" name="id" value="@challenge.Id" />
+                                    <button class="btn btn-danger" type="submit">Delete</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+            }
+            else
+            {
+                <p>There are no challenges waiting for approval.</p>
+            }
+            <h4>Approved Challenges</h4>
+            <hr />
+            @if (Model.ApprovedChallenges.Count > 0)
+            {
+            <div class="accordion" id="accordion">
+                @foreach (Challenge challenge in Model.ApprovedChallenges)
+                {
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="heading@(challenge.Id)">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse@(challenge.Id)" aria-expanded="false" aria-controls="collapse@(challenge.Id)">
+                                @challenge.Title (@(challenge.Points)pts)
+                            </button>
+                        </h2>
+                        <div id="collapse@(challenge.Id)" class="accordion-collapse collapse" aria-labelledby="heading@(challenge.Id)" data-bs-parent="#accordion">
+                            <div class="accordion-body">
+                                <b>Description</b><br />
+                                <p>@challenge.Description</p>
+                                <b>Attachments</b><br />
+                                <p>@challenge.Attachments</p>
+                                <b>Category</b><br />
+                                <p>@challenge.Category</p>
+                                <b>Author</b><br />
+                                <p>@challenge.Author</p>
+                                <b>Flag</b><br />
+                                <p>@challenge.Flag</p>
+                                <b>Writeup</b><br />
+                                <p>@challenge.Writeup</p>
+                                <form class="d-inline-block" method="post">
+                                    <input type="hidden" name="action" value="unapprove" />
+                                    <input type="hidden" name="id" value="@challenge.Id" />
+                                    <button class="btn btn-secondary" type="submit">Unapprove</button>
+                                </form>
+                                <form class="d-inline-block" method="post">
+                                    <input type="hidden" name="action" value="delete" />
+                                    <input type="hidden" name="id" value="@challenge.Id" />
+                                    <button class="btn btn-danger" type="submit">Delete</button>
+                                </form>
+                                <form class="d-inline-block" method="post">
+                                    <input type="hidden" name="action" value="up" />
+                                    <input type="hidden" name="id" value="@challenge.Id" />
+                                    <button class="btn btn-primary" type="submit"><i class="fas fa-arrow-up"></i></button>
+                                </form>
+                                <form class="d-inline-block" method="post">
+                                    <input type="hidden" name="action" value="down" />
+                                    <input type="hidden" name="id" value="@challenge.Id" />
+                                    <button class="btn btn-primary" type="submit"><i class="fas fa-arrow-down"></i></button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+            }
+            else
+            {
+                <p>There are no approved challenges.</p>
+            }
+        </div>
+    </div>
+</div>

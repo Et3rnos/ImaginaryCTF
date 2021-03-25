@@ -1,0 +1,9 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+@await Html.PartialAsync("IndexPartials/_BannerPartial.cshtml")
+@await Html.PartialAsync("IndexPartials/_ChallengesPartial.cshtml", Model)
+@await Html.PartialAsync("IndexPartials/_CommunityPartial.cshtml", Model)

@@ -1,0 +1,18 @@
+﻿@page
+@model iCTF_Website.Areas.Account.Pages.IndexModel
+
+@{
+    ViewData["Title"] = "Overview";
+}
+
+<div class="container">
+    <h1 class="text-center m-3">Account</h1>
+    <div class="row mb-3">
+        <partial name="_MenuPartial" />
+        <div class="col-md-9 text-start">
+            <h4>Overview</h4>
+            <hr />
+            <a href="/User/@Model.UserId" class="btn btn-primary mt-2">Go to your public profile page</a>
+        </div>
+    </div>
+</div>

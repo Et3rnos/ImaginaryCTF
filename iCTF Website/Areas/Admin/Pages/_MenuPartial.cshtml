@@ -1,0 +1,9 @@
+﻿<div class="col-md-3 mb-3">
+    <ul class="nav nav-pills flex-column">
+        <li class="nav-item"><a class="nav-link @(ViewData["Title"].ToString() == "Admin Panel" ? "active" : "")" asp-page="./Index">Overview</a></li>
+        <li class="nav-item"><a class="nav-link @(ViewData["Title"].ToString() == "Challenge Submission" ? "active" : "")" asp-page="./ChallengeSubmission">Challenge Submission</a></li>
+        <li class="nav-item"><a class="nav-link @(ViewData["Title"].ToString() == "Non Released Challenges" ? "active" : "")" asp-page="./NonReleasedChallenges">Non Released Challenges</a></li>
+        <li class="nav-item"><a class="nav-link @(ViewData["Title"].ToString() == "Released Challenges" ? "active" : "")" asp-page="./ReleasedChallenges">Released Challenges</a></li>
+        <li class="nav-item"><a class="nav-link @(ViewData["Title"].ToString() == "Danger Zone" ? "active" : "")" asp-page="./DangerZone">Danger Zone</a></li>
+    </ul>
+</div>

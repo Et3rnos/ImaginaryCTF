@@ -1,0 +1,82 @@
+﻿@page
+@model iCTF_Website.Pages.ChallengesModel
+
+@{
+    ViewData["Title"] = "Challenges";
+}
+
+<div class="container">
+    <h1 class="text-center m-3">Challenges</h1>
+    <div class="row">
+        <div class="col-md-6 offset-md-3">
+            <form method="post">
+                <div class="input-group mb-3">
+                    <input name="flag" type="text" class="form-control" placeholder="ictf{s0m3_1337_f14g}">
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-success" type="submit">Submit Flag</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        @if (!string.IsNullOrEmpty(Model.Success))
+        {
+        <div>
+            <div class="alert alert-success">
+                @Model.Success
+            </div>
+        </div>
+        }
+        @if (!string.IsNullOrEmpty(Model.Error))
+        {
+        <div>
+            <div class="alert alert-danger">
+                @Model.Error
+            </div>
+        </div>
+        }
+        @if (Model.Challenges.Count == 0 && Model.SolvedChallenges.Count == 0)
+        {
+        <p>Looks like no challenge was released during this round yet :'(</p>
+        }
+        @foreach (Challenge challenge in Model.Challenges)
+        {
+        <div class="col-md-6 mb-3">
+            <div class="card challenge">
+                <div class="card-header challenge-header">
+                    @challenge.Title (@(challenge.Points)pts)
+                </div>
+                <div class="card-body">
+                    <b>Description</b><br />
+                    <p>@challenge.Description</p>
+                    <b>Attachments</b><br />
+                    <p>@challenge.Attachments</p>
+                    <b>Category</b><br />
+                    <p>@challenge.Category</p>
+                    <b>Author</b><br />
+                    <p>@challenge.Author</p>
+                </div>
+            </div>
+        </div>
+        }
+        @foreach (Challenge challenge in Model.SolvedChallenges)
+        {
+        <div class="col-md-6 mb-3">
+            <div class="card challenge-solved">
+                <div class="card-header challenge-solved-header">
+                    @challenge.Title (@(challenge.Points)pts) <i class="fas fa-check"></i>
+                </div>
+                <div class="card-body">
+                    <b>Description</b><br />
+                    <p>@challenge.Description</p>
+                    <b>Attachments</b><br />
+                    <p>@challenge.Attachments</p>
+                    <b>Category</b><br />
+                    <p>@challenge.Category</p>
+                    <b>Author</b><br />
+                    <p>@challenge.Author</p>
+                </div>
+            </div>
+        </div>
+        }
+    </div>
+</div>

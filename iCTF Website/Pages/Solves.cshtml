@@ -1,0 +1,20 @@
+﻿@page
+@model iCTF_Website.Pages.SolvesModel
+
+@{
+    ViewData["Title"] = "Solves";
+}
+
+<div class="container mb-3">
+    <h1 class="text-center m-3">Solves</h1>
+    <ul class="list-group">
+        @if (Model.Solves.Count == 0)
+        {
+            <p>Looks like no challenge was solved yet :'(</p>
+        }
+        @foreach (Solve solve in Model.Solves)
+        {
+            <li class="list-group-item">@solve.SolvedAt - <b>@solve.Username</b> solved <b>@solve.ChallengeTitle</b></li>
+        }
+    </ul>
+</div>

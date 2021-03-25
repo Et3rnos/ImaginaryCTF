@@ -1,0 +1,42 @@
+﻿@page
+@model iCTF_Website.Areas.Admin.Pages.DangerZoneModel
+
+@{
+    ViewData["Title"] = "Danger Zone";
+}
+
+<div class="container">
+    <h1 class="text-center m-3">Admin Panel</h1>
+    <div class="row mb-3">
+        <partial name="_MenuPartial" />
+        <div class="col-md-9 text-start">
+            <h4>Danger Zone</h4>
+            <hr />
+            <button class="btn btn-danger mt-2" data-bs-toggle="modal" data-bs-target="#endroundconfirmation">End Current Round</button>
+            <div id="endroundconfirmation" class="modal fade" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">End Current Round</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p>
+                                Are you sure you want to end current round?
+                                <br />
+                                This action will archive all released challenges and delete all users' scores and solves.
+                            </p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <form method="POST">
+                                <input type="hidden" name="action" value="endround" />
+                                <button type="submit" class="btn btn-danger">End Current Round</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

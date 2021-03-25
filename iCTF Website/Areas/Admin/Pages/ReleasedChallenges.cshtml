@@ -1,0 +1,52 @@
+﻿@page
+@model iCTF_Website.Areas.Admin.Pages.ReleasedChallengesModel
+
+@{
+    ViewData["Title"] = "Released Challenges";
+}
+
+<div class="container">
+    <h1 class="text-center m-3">Admin Panel</h1>
+    <div class="row mb-3">
+        <partial name="_MenuPartial" />
+        <div class="col-md-9 text-start">
+            <h4>Challenges</h4>
+            <hr />
+            @if (Model.Challenges.Count > 0)
+            {
+                <div class="accordion" id="accordion">
+                    @foreach (Challenge challenge in Model.Challenges)
+                    {
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="heading@(challenge.Id)">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse@(challenge.Id)" aria-expanded="false" aria-controls="collapse@(challenge.Id)">
+                                    @challenge.Title (@(challenge.Points)pts)
+                                </button>
+                            </h2>
+                            <div id="collapse@(challenge.Id)" class="accordion-collapse collapse" aria-labelledby="heading@(challenge.Id)" data-bs-parent="#accordion">
+                                <div class="accordion-body">
+                                    <b>Description</b><br />
+                                    <p>@challenge.Description</p>
+                                    <b>Attachments</b><br />
+                                    <p>@challenge.Attachments</p>
+                                    <b>Category</b><br />
+                                    <p>@challenge.Category</p>
+                                    <b>Author</b><br />
+                                    <p>@challenge.Author</p>
+                                    <b>Flag</b><br />
+                                    <p>@challenge.Flag</p>
+                                    <b>Writeup</b><br />
+                                    <p>@challenge.Writeup</p>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <p>There are no released challenges yet.</p>
+            }
+        </div>
+    </div>
+</div>
