@@ -25,6 +25,9 @@ There are some things you must change in the code in order for it to work. Some 
 
 - Changing the database connection string located in [iCTF Shared Resources/SharedConfiguration.cs](iCTF%20Shared%20Resources/SharedConfiguration.cs)
 - Changing the discord bot token located in [iCTF Discord Bot/Program.cs](iCTF%20Discord%20Bot/Program.cs)
+- Changing the discord client secret, id and redirect url in [iCTF Website/Areas/Account/Pages/DiscordAccount.cshtml.cs](iCTF%20Website/Areas/Account/Pages/DiscordAccount.cshtml.cs)
+- Submitting ictf{y0u_w0nt_f1nd_4ny_s3ns1t1v3_1nf0_1n_7h3_h1st0ry}
+- Changing the discord client id and redirect url in [iCTF Website/Areas/Account/Pages/DiscordAccount.cshtml](iCTF%20Website/Areas/Account/Pages/DiscordAccount.cshtml)
 
 ## Disclaimer
 
