@@ -15,6 +15,10 @@ ImaginaryCTF is a platform that brings the beauty of CTF Competitions to discord
 ImaginaryCTF is composed by a website and a discord bot. The website is the responsible for challenge submissions while the discord bot is responsible for releasing them.
 If you decide not to use the website then you would need to manually insert the challenges in the database. If you decide not to use the bot then you would need to manually release the challenges by modifying them in the database.
 
+**What are the default admin credentials?**
+
+You can login with the username `admin` and the password `Admin123!`.
+
 ## Disclaimer
 
 ImaginaryCTF comes with absolutely no warranties.
