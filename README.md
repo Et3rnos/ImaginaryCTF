@@ -28,6 +28,13 @@ There are some things you must change in the code in order for it to work. Some 
 - Changing the discord client secret, id and redirect url in [iCTF Website/Areas/Account/Pages/DiscordAccount.cshtml.cs](iCTF%20Website/Areas/Account/Pages/DiscordAccount.cshtml.cs)
 - Changing the discord client id and redirect url in [iCTF Website/Areas/Account/Pages/DiscordAccount.cshtml](iCTF%20Website/Areas/Account/Pages/DiscordAccount.cshtml)
 
+If you do not know or do not want to do that, please consider supporting me, as supporters can ask me to do that and more advanced changes to the platform. Those changes include but are not restricted to:
+
+- Support for SQLite instead of MySQL 
+- Discarding the Discord Bot and make it a only-Website platform
+- Discarding the Website and make it a only-Discord platform
+- Much more, please contact me to discuss your needs
+
 ## Disclaimer
 
 ImaginaryCTF comes with absolutely no warranties.
