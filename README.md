@@ -33,7 +33,7 @@ If you do not know or do not want to do that, please consider supporting me, as 
 - Support for SQLite instead of MySQL 
 - Discarding the Discord Bot and make it a only-Website platform
 - Discarding the Website and make it a only-Discord platform
-- Much more, please contact me to discuss your needs
+- Much more, feel free to contact me to discuss your needs
 
 ## Disclaimer
 
