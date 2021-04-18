@@ -33,7 +33,6 @@ namespace iCTF_Discord_Bot
 
         [Command("flag")]
         [RequireContext(ContextType.DM)]
-        [Summary("Submits a flag")]
         public async Task Flag(string flag)
         {
             Challenge challenge = await SharedFlagManager.GetChallByFlag(_context, flag);
@@ -99,7 +98,8 @@ namespace iCTF_Discord_Bot
 
         [Command("verify")]
         [RequireContext(ContextType.Guild)]
-        [Summary("Verifies a flag without submitting it.")]
+        [RequireUserPermission(GuildPermission.ManageGuild, Group = "Permission")]
+        [RequireOwner(Group = "Permission")]
         public async Task Verify(string flag)
         {
             Challenge chall = await SharedFlagManager.GetChallByFlag(_context, flag);

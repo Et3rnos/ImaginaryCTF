@@ -2,7 +2,7 @@
 
 ImaginaryCTF is a platform that brings the beauty of CTF Competitions to discord, releasing a challenge every day.
 
-**Current Version:** 0.0.8
+**Current Version:** 0.0.9
 
 **Website Live Demo:** [https://imaginary.ml](https://imaginary.ml)
 
@@ -21,14 +21,13 @@ You can login with the username `admin` and the password `Admin123!`
 
 ## Customization
 
-There are some things you must change in the code in order for it to work. Some of them include:
+General configuration is located at the following paths:
 
-- Changing the database connection string located in [iCTF Shared Resources/SharedConfiguration.cs](iCTF%20Shared%20Resources/SharedConfiguration.cs)
-- Changing the discord bot token located in [iCTF Discord Bot/Program.cs](iCTF%20Discord%20Bot/Program.cs)
-- Changing the discord client secret, id and redirect url in [iCTF Website/Areas/Account/Pages/DiscordAccount.cshtml.cs](iCTF%20Website/Areas/Account/Pages/DiscordAccount.cshtml.cs)
-- Changing the discord client id and redirect url in [iCTF Website/Areas/Account/Pages/DiscordAccount.cshtml](iCTF%20Website/Areas/Account/Pages/DiscordAccount.cshtml)
+- [iCTF Shared Resources/appsettings.json](iCTF%20Shared%20Resources/appsettings.json)
+- [iCTF Discord Bot/appsettings.json](iCTF%20Discord%20Bot/appsettings.json)
+- [iCTF Website/appsettings.json](iCTF%20Website/appsettings.json)
 
-If you do not know or do not want to do that, please consider supporting me, as supporters can ask me to do that and more advanced changes to the platform. Those changes include but are not restricted to:
+If you do not know how to change the platform to fit your needs or do not want to do that, please consider supporting me, as supporters can ask me to do that and more advanced changes to the platform. Those changes include but are not restricted to:
 
 - Support for SQLite instead of MySQL 
 - Discarding the Discord Bot and make it a only-Website platform

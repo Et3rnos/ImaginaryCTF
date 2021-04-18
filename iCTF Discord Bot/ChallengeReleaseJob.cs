@@ -41,25 +41,36 @@ namespace iCTF_Discord_Bot
                 return;
             }
 
-            if (config.TodaysChannelId != 0 && config.TodaysRoleId != 0)
-            {
-                if (lastChall != null)
-                {
-                    var role = client.GetGuild(config.GuildId).GetRole(config.TodaysRoleId);
-                    var userIds = await dbContext.Solves.AsAsyncEnumerable().Where(x => x.ChallengeId == lastChall.Id).Select(x => x.UserId).ToListAsync();
-                    var discordIds = await dbContext.Users.AsAsyncEnumerable().Where(x => userIds.Contains(x.Id) && x.DiscordId != 0).Select(x => x.DiscordId).ToListAsync();
-                    foreach (var discordId in discordIds)
-                    {
-                        await client.GetGuild(config.GuildId).GetUser(discordId).RemoveRoleAsync(role);
-                    }
+            if (config.TodaysChannelId != 0 && config.TodaysRoleId != 0) {
+                if (lastChall != null) {
+                    var oldRole = client.GetGuild(config.GuildId).GetRole(config.TodaysRoleId);
+                    var newRole = await client.GetGuild(config.GuildId).CreateRoleAsync(oldRole.Name, oldRole.Permissions, oldRole.Color, oldRole.IsHoisted, oldRole.IsMentionable);
+                    await client.GetGuild(config.GuildId).GetTextChannel(config.TodaysChannelId).AddPermissionOverwriteAsync(newRole, new OverwritePermissions(viewChannel: PermValue.Allow));
+                    await oldRole.DeleteAsync();
+                    config.TodaysRoleId = newRole.Id;
+                    await dbContext.SaveChangesAsync();
                 }
                 var todaysChannel = client.GetGuild(config.GuildId).GetTextChannel(config.TodaysChannelId);
-                var messages = await todaysChannel.GetMessagesAsync(Int32.MaxValue).FlattenAsync();
-                await todaysChannel.DeleteMessagesAsync(messages);
+                var messages = await todaysChannel.GetMessagesAsync(int.MaxValue).FlattenAsync();
+                messages = messages.Where(x => (DateTimeOffset.UtcNow - x.Timestamp).TotalDays <= 14);
+                if (messages.Any()) {
+                    await todaysChannel.DeleteMessagesAsync(messages);
+                }
+                if (!string.IsNullOrEmpty(chall.Writeup)) {
+                    var writeupEmbed = new CustomEmbedBuilder();
+                    writeupEmbed.WithTitle("Intended Solution");
+                    writeupEmbed.WithDescription(chall.Writeup);
+                    var message = await todaysChannel.SendMessageAsync(embed: writeupEmbed.Build());
+                    await message.PinAsync();
+                }
             }
 
             Embed embed = ChallengesManager.GetChallengeEmbed(chall);
-            await channel.SendMessageAsync(embed: embed);
+            if (config.ChallengePingRoleId != 0) {
+                await channel.SendMessageAsync($"<@&{config.ChallengePingRoleId}>", embed: embed);
+            } else {
+                await channel.SendMessageAsync(embed: embed);
+            }
         }
     }
 }

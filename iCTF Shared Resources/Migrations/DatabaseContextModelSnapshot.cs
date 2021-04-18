@@ -46,7 +46,7 @@ namespace iCTF_Shared_Resources.Migrations
                         new
                         {
                             Id = "365af12d-bbee-42de-a35b-63a5a6fdb69e",
-                            ConcurrencyStamp = "bca7a057-9cec-4e1b-aec0-7f8afe2524ea",
+                            ConcurrencyStamp = "8797b05b-35a2-4a40-99d0-b5a532d00de7",
                             Name = "Administrator",
                             NormalizedName = "ADMINISTRATOR"
                         });
@@ -274,6 +274,9 @@ namespace iCTF_Shared_Resources.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
+                    b.Property<ulong>("ChallengePingRoleId")
+                        .HasColumnType("bigint unsigned");
+
                     b.Property<ulong>("ChallengeReleaseChannelId")
                         .HasColumnType("bigint unsigned");
 
@@ -310,6 +313,23 @@ namespace iCTF_Shared_Resources.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Configuration");
+                });
+
+            modelBuilder.Entity("iCTF_Shared_Resources.Models.Redirect", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("RandomId")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<string>("RedirectUrl")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Redirects");
                 });
 
             modelBuilder.Entity("iCTF_Shared_Resources.Models.Solve", b =>

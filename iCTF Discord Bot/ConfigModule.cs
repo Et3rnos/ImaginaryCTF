@@ -57,6 +57,62 @@ namespace iCTF_Discord_Bot
             }
         }
 
+        [Command("config")]
+        [RequireContext(ContextType.Guild)]
+        [RequireUserPermission(GuildPermission.ManageGuild, Group = "Permission")]
+        [RequireOwner(Group = "Permission")]
+        public async Task Config(IChannel channel = null) {
+            if (!(await CanSetConfig())) {
+                return;
+            }
+            Config config = await _context.Configuration.FirstOrDefaultAsync();
+            var embed = new CustomEmbedBuilder();
+            embed.WithTitle("Configuration");
+
+            if (config.ChallengeReleaseChannelId == 0)
+                embed.Description += $"**Challenge Release Channel:** None\n";
+            else
+                embed.Description += $"**Challenge Release Channel:** <#{config.ChallengeReleaseChannelId}>\n";
+
+            if (config.ChallengeSolvesChannelId == 0)
+                embed.Description += $"**Challenge Solves Channel:** None\n";
+            else
+                embed.Description += $"**Challenge Solves Channel:** <#{config.ChallengeSolvesChannelId}>\n";
+
+            if (config.LeaderboardChannelId == 0)
+                embed.Description += $"**Leaderboard Channel:** None\n";
+            else
+                embed.Description += $"**Leaderboard Channel:** <#{config.LeaderboardChannelId}>\n";
+
+            if (config.TodaysChannelId == 0)
+                embed.Description += $"**Today's Challenge Channel:** None\n";
+            else
+                embed.Description += $"**Today's Challenge Channel:** <#{config.TodaysChannelId}>\n";
+
+            if (config.LogsChannelId == 0)
+                embed.Description += $"**Logs Channel:** None\n";
+            else
+                embed.Description += $"**Logs Channel:** <#{config.LogsChannelId}>\n";
+
+            if (config.FirstPlaceRoleId == 0 || config.SecondPlaceRoleId == 0 || config.ThirdPlaceRoleId == 0)
+                embed.Description += $"**Top Roles:** None\n";
+            else
+                embed.Description += $"**Top Roles:** <@&{config.FirstPlaceRoleId}> <@&{config.SecondPlaceRoleId}> <@&{config.ThirdPlaceRoleId}>\n";
+
+            if (config.TodaysRoleId == 0)
+                embed.Description += $"**Today's Challenge Role:** None\n";
+            else
+                embed.Description += $"**Today's Challenge Role:** <@&{config.TodaysRoleId}>\n";
+
+            if (config.ChallengePingRoleId == 0)
+                embed.Description += $"**Challenge Ping Role:** None\n";
+            else
+                embed.Description += $"**Challenge Ping Role:** <@&{config.ChallengePingRoleId}>\n";
+
+            embed.Description += $"**Release Time:** {config.ReleaseTime / 60}H{config.ReleaseTime % 60} UTC";
+            await ReplyAsync(embed: embed.Build());
+        }
+
         [Command("setchallreleasechannel")]
         [RequireContext(ContextType.Guild)]
         [RequireUserPermission(GuildPermission.ManageGuild, Group = "Permission")]
@@ -208,6 +264,22 @@ namespace iCTF_Discord_Bot
             await _context.SaveChangesAsync();
 
             await ReplyAsync($"Today's role set to: {role.Mention}");
+        }
+
+        [Command("setchallengepingrole")]
+        [RequireContext(ContextType.Guild)]
+        [RequireUserPermission(GuildPermission.ManageGuild, Group = "Permission")]
+        [RequireOwner(Group = "Permission")]
+        public async Task SetChallengePingRole(IRole role) {
+            if (!(await CanSetConfig())) {
+                return;
+            }
+
+            Config config = await _context.Configuration.FirstOrDefaultAsync();
+            config.ChallengePingRoleId = role.Id;
+            await _context.SaveChangesAsync();
+
+            await ReplyAsync($"Challenge ping role set to: {role.Mention}");
         }
 
         [Command("setreleasetime")]

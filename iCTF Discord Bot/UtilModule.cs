@@ -32,11 +32,10 @@ namespace iCTF_Discord_Bot
         public async Task About()
         {
             CustomEmbedBuilder eb = new CustomEmbedBuilder();
-            eb.WithThumbnailUrl("https://cdn.discordapp.com/avatars/669798825765896212/1e0a0375779d6a6117c035e7cc7f0665.png?size=128");
+            eb.WithThumbnailUrl("https://cdn.discordapp.com/avatars/669798825765896212/572b97a2e8c1dc33265ac51679303c41.png?size=256");
             eb.WithTitle("About");
             eb.AddField("Author", "This bot was created by Et3rnos#6556");
             eb.AddField("Support", "If you want to support me you can visit my Patreon:\n<https://www.patreon.com/et3rnos>");
-            eb.AddField("Other apps by me", "<https://fdownl.ga> (File Sharing Platform)");
             await ReplyAsync(embed: eb.Build());
         }
 
@@ -70,6 +69,7 @@ namespace iCTF_Discord_Bot
             };
 
             embedBuilder.AddField("`.link`", "Links this bot to this server.", true);
+            embedBuilder.AddField("`.config`", "View the current configuration values.", true);
             embedBuilder.AddField("`.setchallreleasechannel [channel]`", "Sets the released challenges channel.", true);
             embedBuilder.AddField("`.setchallsolveschannel [channel]`", "Sets the solves announcement channel.", true);
             embedBuilder.AddField("`.setleaderboardchannel [channel]`", "Sets the leaderboard channel.", true);
@@ -77,6 +77,7 @@ namespace iCTF_Discord_Bot
             embedBuilder.AddField("`.setlogschannel [channel]`", "Sets the logs channel.", true);
             embedBuilder.AddField("`.settoproles <1st-role> <2nd-role> <3rd-role>`", "Sets the top roles.", true);
             embedBuilder.AddField("`.settodaysrole <role>`", "Sets the today's role.", true);
+            embedBuilder.AddField("`.setchallengepingrole <role>`", "Sets the challenge ping role.", true);
             embedBuilder.AddField("`.setreleasetime <hour> <minutes>`", "Sets the release time (UTC).", true);
             embedBuilder.AddField("`.verify <flag>`", "Verifies a flag without submitting it.", true);
 

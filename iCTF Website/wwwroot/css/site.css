@@ -1,7 +1,3 @@
-.author-name {
-    border-bottom: 1px solid;
-}
-
 .cool-link {
     border-bottom: 1px solid;
 }
@@ -20,10 +16,6 @@
 
 .logo-img {
     border-radius: 10px;
-}
-
-#tidio-chat-iframe {
-    inset: auto 0px 40px auto !important;
 }
 
 .rounded-button {

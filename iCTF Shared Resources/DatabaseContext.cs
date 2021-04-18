@@ -18,6 +18,7 @@ namespace iCTF_Shared_Resources
         #pragma warning restore CS0114
 
         public DbSet<Solve> Solves { get; set; }
+        public DbSet<Redirect> Redirects { get; set; }
 
         public DatabaseContext(DbContextOptions<DatabaseContext> options)
             : base(options)

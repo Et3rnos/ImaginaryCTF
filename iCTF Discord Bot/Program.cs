@@ -3,8 +3,10 @@ using Discord.Commands;
 using Discord.WebSocket;
 using iCTF_Shared_Resources;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.IO;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,7 +15,7 @@ namespace iCTF_Discord_Bot
 {
     class Program
     {
-        private const string _token = "BOT_TOKEN";
+        private IConfigurationRoot configuration;
         private readonly DiscordSocketClient _client;
         private readonly CommandService _commands;
         private readonly IServiceProvider _services;
@@ -32,12 +34,21 @@ namespace iCTF_Discord_Bot
 
         private IServiceProvider ConfigureServices()
         {
+            configuration = new ConfigurationBuilder()
+            .SetBasePath(Directory.GetParent(AppContext.BaseDirectory).FullName)
+            .AddJsonFile("appsettings.json", false)
+            .Build();
+
             var map = new ServiceCollection()
                 .AddSingleton(_client)
                 .AddSingleton(_commands)
-                .AddDbContext<DatabaseContext>(options => 
-                    options.UseMySql(SharedConfiguration.connectionString,
-                    new MySqlServerVersion(new Version(5, 7))));
+                .AddSingleton(configuration)
+                .AddDbContext<DatabaseContext>(options => {
+                    options.UseMySql(configuration.GetValue<string>("ConnectionString"),
+                    new MySqlServerVersion(new Version(5, 7)));
+                    options.EnableSensitiveDataLogging();
+                    }
+                );
 
             return map.BuildServiceProvider();
         }
@@ -52,10 +63,10 @@ namespace iCTF_Discord_Bot
         {
             await InitCommands();
 
-            await _client.LoginAsync(TokenType.Bot, _token);
+            await _client.LoginAsync(TokenType.Bot, configuration.GetValue<string>("Token"));
             await _client.StartAsync();
 
-            await _client.SetGameAsync("CTF challenges | .help", type: ActivityType.Playing);
+            await _client.SetGameAsync(".help", type: ActivityType.Playing);
 
             Scheduler.Setup(_services, _client);
 

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
@@ -14,7 +15,9 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 
 namespace iCTF_Website.Pages
 {
@@ -25,17 +28,20 @@ namespace iCTF_Website.Pages
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ILogger<RegisterModel> _logger;
+        private readonly IConfiguration _configuration;
 
         public RegisterModel(
             DatabaseContext context,
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
-            ILogger<RegisterModel> logger)
+            ILogger<RegisterModel> logger,
+            IConfiguration configuration)
         {
             _context = context;
             _userManager = userManager;
             _signInManager = signInManager;
             _logger = logger;
+            _configuration = configuration;
         }
 
         [BindProperty]
@@ -70,7 +76,15 @@ namespace iCTF_Website.Pages
 
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
+            string reCaptchaResponse = Request.Form["g-recaptcha-response"];
             returnUrl ??= Url.Content("~/");
+
+            if(!await IsRecaptchaValid(reCaptchaResponse))
+            {
+                ModelState.AddModelError(string.Empty, "Invalid Recaptcha");
+                return Page();
+            }
+
             if (ModelState.IsValid)
             {
                 var user = new ApplicationUser { UserName = Input.Username};
@@ -98,6 +112,25 @@ namespace iCTF_Website.Pages
 
             // If we got this far, something failed, redisplay form
             return Page();
+        }
+
+        private async Task<bool> IsRecaptchaValid(string reCaptchaResponse)
+        {
+            if (string.IsNullOrEmpty(reCaptchaResponse)) { return false; }
+
+            var client = new HttpClient();
+            var secretKey = _configuration.GetValue<string>("RecaptchaV3SecretKey");
+            var values = new Dictionary<string, string>
+            {
+                { "secret", secretKey },
+                { "response", reCaptchaResponse }
+            };
+            var data = new FormUrlEncodedContent(values);
+
+            var response = await client.PostAsync("https://www.google.com/recaptcha/api/siteverify", data);
+            var responseString = await response.Content.ReadAsStringAsync();
+            dynamic json = JsonConvert.DeserializeObject(responseString);
+            return (bool)json.success;
         }
     }
 }

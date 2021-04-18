@@ -15,6 +15,7 @@ using System.Net.Http;
 using Newtonsoft.Json;
 using System.Net.Http.Headers;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace iCTF_Website.Areas.Account.Pages
 {
@@ -23,17 +24,18 @@ namespace iCTF_Website.Areas.Account.Pages
     {
         private readonly DatabaseContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IConfiguration _configuration;
 
-        public string State;
-
+        public string State { get; set; }
         public string Error { get; set; }
         public string Success { get; set; }
         public ulong DiscordId { get; set; }
 
-        public DiscordAccountModel(DatabaseContext context, UserManager<ApplicationUser> userManager)
+        public DiscordAccountModel(DatabaseContext context, UserManager<ApplicationUser> userManager, IConfiguration configuration)
         {
             _context = context;
             _userManager = userManager;
+            _configuration = configuration;
         }
 
         public async Task OnGetAsync(string code, string state)
@@ -57,9 +59,9 @@ namespace iCTF_Website.Areas.Account.Pages
                 return;
             }
 
-            string client_id = "client_id";
-            string client_secret = "client_secret";
-            string redirect_url = "redirect_url";
+            string client_id = _configuration.GetValue<string>("DiscordClientId");
+            string client_secret = _configuration.GetValue<string>("DiscordClientSecret");
+            string redirect_url = _configuration.GetValue<string>("DiscordRedirectUrl");
 
             var client = new HttpClient();
             var values = new Dictionary<string, string>
@@ -102,20 +104,16 @@ namespace iCTF_Website.Areas.Account.Pages
 
             if (dPlayer != null && dPlayer.Id != wPlayer.Id)
             {
-                var solves = await _context.Solves.Where(x => x.UserId == dPlayer.Id || x.UserId == wPlayer.Id).ToListAsync();
-                var challIds = new HashSet<int>();
-                foreach (var solve in solves)
-                {
-                    solve.UserId = wPlayer.Id;
-                    challIds.Add(solve.ChallengeId);
+                if (dPlayer.Score > wPlayer.Score) {
+                    var wSolves = await _context.Solves.Where(x => x.UserId == wPlayer.Id).ToListAsync();
+                    _context.Solves.RemoveRange(wSolves);
+                    var dSolves = await _context.Solves.Where(x => x.UserId == dPlayer.Id).ToListAsync();
+                    foreach (var dSolve in dSolves) {
+                        dSolve.UserId = wPlayer.Id;
+                    }
+                    wPlayer.Score = dPlayer.Score;
+                    wPlayer.LastUpdated = dPlayer.LastUpdated;
                 }
-                var solvedChallenges = await _context.Challenges.Where(x => challIds.Contains(x.Id)).ToListAsync();
-                uint score = 0;
-                foreach (var solvedChallenge in solvedChallenges)
-                {
-                    score += solvedChallenge.Points;
-                }
-                 wPlayer.Score = score;
                 _context.Users.Remove(dPlayer);
             }
 

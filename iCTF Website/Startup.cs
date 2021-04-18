@@ -29,9 +29,11 @@ namespace iCTF_Website
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<DatabaseContext>(options =>
-                    options.UseMySql(SharedConfiguration.connectionString,
-                    new MySqlServerVersion(new Version(5, 7))));
+            services.AddDbContext<DatabaseContext>(options => {
+                options.UseMySql(Configuration.GetValue<string>("ConnectionString"),
+                new MySqlServerVersion(new Version(5, 7)));
+                options.EnableSensitiveDataLogging();
+            });
             services.AddDatabaseDeveloperPageExceptionFilter();
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<DatabaseContext>();

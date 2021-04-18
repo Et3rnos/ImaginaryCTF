@@ -28,4 +28,10 @@
     <ProjectReference Include="..\iCTF Shared Resources\iCTF Shared Resources.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

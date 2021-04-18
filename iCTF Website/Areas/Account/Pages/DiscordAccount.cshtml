@@ -1,6 +1,9 @@
 ﻿@page
 @model iCTF_Website.Areas.Account.Pages.DiscordAccountModel
 
+@using Microsoft.Extensions.Configuration
+@inject IConfiguration configuration
+
 @{
     ViewData["Title"] = "Discord Account";
 }
@@ -33,7 +36,7 @@
             {
                 <p>Your account is currently linked to the discord account with ID: @Model.DiscordId</p>
             }
-            <a href="https://discord.com/api/oauth2/authorize?client_id=client_id&redirect_uri=redirect_url&response_type=code&scope=identify&state=@Model.State" class="btn btn-primary mt-2">Link/Relink Discord Account</a>
+            <a href="https://discord.com/api/oauth2/authorize?client_id=@(configuration.GetValue<string>("DiscordClientId"))&redirect_uri=@(configuration.GetValue<string>("DiscordRedirectUrl"))&response_type=code&scope=identify&state=@Model.State" class="btn btn-primary mt-2">Link/Relink Discord Account</a>
         </div>
     </div>
 </div>

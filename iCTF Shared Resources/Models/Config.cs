@@ -19,6 +19,7 @@ namespace iCTF_Shared_Resources.Models
         public ulong SecondPlaceRoleId { get; set; }
         public ulong ThirdPlaceRoleId { get; set; }
         public ulong TodaysRoleId { get; set; }
+        public ulong ChallengePingRoleId { get; set; }
         public uint ReleaseTime { get; set; }
     }
 }
