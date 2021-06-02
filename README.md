@@ -4,7 +4,7 @@ ImaginaryCTF is a platform that brings the beauty of CTF Competitions to discord
 
 **Current Version:** 0.0.9
 
-**Website Live Demo:** [https://imaginary.ml](https://imaginary.ml)
+**Website Live Demo:** [https://imaginary.org](https://imaginary.org)
 
 **Discord Bot Live Demo:** [https://discord.gg/vReKWNxPuE](https://discord.gg/vReKWNxPuE)
 
