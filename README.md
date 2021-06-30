@@ -84,4 +84,4 @@ The easier way to contact me is through Discord. My username is Et3rnos#6556.
 
 You can support me either via Patreon (subscription-based): [https://www.patreon.com/et3rnos](https://www.patreon.com/et3rnos)
 
-Or via BuyMeACoffe (one-time donation): [https://www.buymeacoffee.com/et3rnos](https://www.buymeacoffee.com/et3rnos)
+Or via BuyMeACoffee (one-time donation): [https://www.buymeacoffee.com/et3rnos](https://www.buymeacoffee.com/et3rnos)
