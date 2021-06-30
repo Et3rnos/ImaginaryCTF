@@ -15,11 +15,14 @@ namespace iCTF_Shared_Resources.Models
         public string Category { get; set; }
         public string Author { get; set; }
         public string Flag { get; set; }
-        public uint Points { get; set; }
-        public string Solves { get; set; }
+        public int Points { get; set; }
         public int State { get; set; }
         public string Writeup { get; set; }
-        public uint Priority { get; set; }
+        public int Priority { get; set; }
         public DateTime ReleaseDate { get; set; }
+        public List<User> UserSolves { get; set; } = new List<User>();
+        public List<Team> TeamSolves { get; set; } = new List<Team>();
+        [Timestamp]
+        public byte[] RowVersion { get; set; }
     }
 }

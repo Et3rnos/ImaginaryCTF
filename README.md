@@ -2,9 +2,9 @@
 
 ImaginaryCTF is a platform that brings the beauty of CTF Competitions to discord, releasing a challenge every day.
 
-**Current Version:** 0.0.9
+**Current Version:** 0.1.0-rc1
 
-**Website Live Demo:** [https://imaginary.ml](https://imaginary.ml)
+**Website Live Demo:** [https://imaginaryctf.org](https://imaginaryctf.org)
 
 **Discord Bot Live Demo:** [https://discord.gg/vReKWNxPuE](https://discord.gg/vReKWNxPuE)
 
@@ -18,6 +18,13 @@ If you decide not to use the website then you would need to manually insert the 
 **What are the default admin credentials?**
 
 You can login with the username `admin` and the password `Admin123!`
+
+## Requirements
+
+If you are planning to use the full version of this app you will need access to:
+
+- A MySQL server
+- A SMTP server (either gmail, outlook or a custom one, it's up to you)
 
 ## Customization
 
@@ -33,6 +40,37 @@ If you do not know how to change the platform to fit your needs or do not want t
 - Discarding the Discord Bot and make it a only-Website platform
 - Discarding the Website and make it a only-Discord platform
 - Much more, feel free to contact me to discuss your needs
+
+## Installation
+
+#### Install .NET Core SDK 5.0
+
+Please visit [https://docs.microsoft.com/en-us/dotnet/core/install/linux-ubuntu](https://docs.microsoft.com/en-us/dotnet/core/install/linux-ubuntu) for instructions on how to install .NET Core SDK 5.0 in your Ubuntu distribution.
+
+#### Clone ImaginaryCTF
+
+```
+git clone https://github.com/Et3rnos/ImaginaryCTF
+```
+
+#### Customize it
+
+Please view [Customization Section](#Customization)
+
+#### Publish it
+
+```
+dotnet publish -c release
+```
+
+NOTE: published apps are usually under `[project_folder]/bin/Release/net5.0/publish/` directories.
+
+#### Execute both apps
+
+```
+dotnet "path_to_the_published_discord_bot.dll" &
+dotnet "path_to_the_published_website.dll" &
+```
 
 ## Disclaimer
 

@@ -1,3 +1,29 @@
+.gray-text {
+    color: #444;
+}
+
+.gray-text:hover {
+    color: #212529;
+}
+
+pre {
+    text-align: start;
+}
+
+.view-challenge-btn {
+    color: #09e;
+    border: 2px solid #09e;
+    border-radius: 5px;
+    font-weight: bolder;
+}
+
+.view-challenge-solved-btn {
+    color: #566;
+    border: 2px solid #566b;
+    border-radius: 5px;
+    font-weight: bolder;
+}
+
 .cool-link {
     border-bottom: 1px solid;
 }
@@ -43,12 +69,6 @@
 .challenge {
     border-color: #09e9;
     border-width: 2px;
-}
-
-ul {
-    list-style-type: none;
-    padding-left: 0;
-    margin: 5px;
 }
 
 .nav-item-purple {
@@ -195,15 +215,16 @@ h1, h2, h3, h4, h5, h6 {
   max-width: 200px;
 }
 
-.sidenav{
-  height: 100%;
-  position: fixed;
-  z-index: 1;
-  width: 0;
-  max-width: 100%;
-  top: 66px;
-  right: 0;
-  transition: 0.5s;
+.sidenav {
+    overflow-x: auto;
+    height: calc(100% - 66px);
+    position: fixed;
+    z-index: 1;
+    width: 0;
+    max-width: 100%;
+    top: 66px;
+    right: 0;
+    transition: 0.5s;
 }
 
 body{

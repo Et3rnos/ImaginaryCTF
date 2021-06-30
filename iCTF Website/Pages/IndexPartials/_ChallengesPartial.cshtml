@@ -1,4 +1,5 @@
 ﻿@model IndexModel
+@using Westwind.AspNetCore.Markdown;
 
 @{
     Challenge challenge = Model.Chall;
@@ -11,25 +12,23 @@
                 <h1>Daily CTF Challenges</h1>
                 <hr />
                 <p>CTF challenges are released everyday which you can solve to get a spot in our leaderboard and compete with other players.</p>
-                @if (Model.Config != null)
-                {
+                @if (Model.Config != null) {
                     <h5>Next Challenge In</h5>
                     <h5 class="mb-4" id="countdown" target="@Model.Config.ReleaseTime">00:00:00</h5>
                 }
                 <a class="btn btn-lg btn-outline btn-outline-dark rounded-button mb-4" asp-page="Challenges">Go To Challenges</a>
             </div>
             <div class="col-md-6 px-4">
-                @if (challenge != null)
-                {
+                @if (challenge != null) {
                     <div class="card challenge">
                         <div class="card-header challenge-header">
                             @challenge.Title (@(challenge.Points)pts)
                         </div>
                         <div class="card-body challenge-body">
                             <b>Description</b><br />
-                            <p>@challenge.Description</p>
+                            <p>@Markdown.ParseHtmlString(challenge.Description)</p>
                             <b>Attachments</b><br />
-                            <p>@challenge.Attachments</p>
+                            <p>@Markdown.ParseHtmlString(challenge.Attachments)</p>
                             <b>Category</b><br />
                             <p>@challenge.Category</p>
                             <b>Author</b><br />

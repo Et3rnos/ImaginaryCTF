@@ -14,22 +14,49 @@ namespace iCTF_Website.Pages
 {
     public class LeaderboardModel : PageModel
     {
-        public List<User> Users { get; set; }
-        public List<ApplicationUser> AppUsers { get; set; }
+        public List<LeaderboardItem> Items { get; set; } = new List<LeaderboardItem>();
 
-        private readonly UserManager<ApplicationUser> _userManager;
         private readonly DatabaseContext _context;
 
-        public LeaderboardModel(DatabaseContext context, UserManager<ApplicationUser> userManager)
+        public class LeaderboardItem {
+            public int Id { get; set; }
+            public string Name { get; set; }
+            public int Score { get; set; }
+            public DateTime LastUpdated { get; set; }
+            public bool IsTeam { get; set; }
+        }
+
+        public LeaderboardModel(DatabaseContext context)
         {
             _context = context;
-            _userManager = userManager;
         }
 
         public async Task OnGetAsync()
         {
-            Users = await SharedLeaderboardManager.GetTopPlayers(_context, 100);
-            AppUsers = await _userManager.Users.ToListAsync();
+            var users = await SharedLeaderboardManager.GetTopPlayers(_context, int.MaxValue);
+            var teams = await SharedLeaderboardManager.GetTopTeams(_context, int.MaxValue);
+
+            foreach (var user in users) {
+                Items.Add(new LeaderboardItem {
+                    Id = user.Id,
+                    Name = user.WebsiteUser?.UserName ?? user.DiscordUsername,
+                    Score = user.Score,
+                    LastUpdated = user.LastUpdated,
+                    IsTeam = false
+                });
+            }
+
+            foreach (var team in teams) {
+                Items.Add(new LeaderboardItem {
+                    Id = team.Id,
+                    Name = team.Name,
+                    Score = team.Score,
+                    LastUpdated = team.LastUpdated,
+                    IsTeam = true
+                });
+            }
+
+            Items = Items.OrderByDescending(x => x.Score).ThenBy(x => x.LastUpdated).ToList();
         }
     }
 }

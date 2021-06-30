@@ -32,12 +32,9 @@ namespace iCTF_Discord_Bot
                 return;
             }
 
-            List<SocketRole> rolesToRemove = new List<SocketRole>();
-            rolesToRemove.Add(firstRole);
-            rolesToRemove.Add(secondRole);
-            rolesToRemove.Add(thirdRole);
+            var rolesToRemove = new List<SocketRole> { firstRole, secondRole, thirdRole };
 
-            List<User> users = await SharedLeaderboardManager.GetTopPlayers(context, 5);
+            var users = await SharedLeaderboardManager.GetTopPlayers(context, 5);
 
             for (int i = 0; i < users.Count; i++)
             {

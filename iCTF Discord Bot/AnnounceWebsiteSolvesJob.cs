@@ -17,9 +17,9 @@ namespace iCTF_Discord_Bot
     {
         public async Task Execute(IJobExecutionContext context)
         {
-            SchedulerContext schedulerContext = context.Scheduler.Context;
-            DiscordSocketClient client = (DiscordSocketClient)schedulerContext.Get("client");
-            IServiceScopeFactory scopeFactory = (IServiceScopeFactory)schedulerContext.Get("scopeFactory");
+            var schedulerContext = context.Scheduler.Context;
+            var client = (DiscordSocketClient)schedulerContext.Get("client");
+            var scopeFactory = (IServiceScopeFactory)schedulerContext.Get("scopeFactory");
 
             using var scope = scopeFactory.CreateScope();
             var dbContext = scope.ServiceProvider.GetService<DatabaseContext>();

@@ -29,24 +29,25 @@ namespace iCTF_Website.Areas.Admin.Pages
 
         public async Task OnPostAsync(string action)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                switch (action)
-                {
-                    case "endround":
-                        _context.Solves.RemoveRange(await _context.Solves.ToListAsync());
-                        foreach (var user in await _context.Users.ToListAsync())
-                        {
-                            user.Score = 0;
-                        }
-                        foreach (var chall in await _context.Challenges.Where(x => x.State == 2).ToListAsync())
-                        {
-                            chall.State = 3;
-                        }
-                        await _context.SaveChangesAsync();
-                        break;
-                }
+                return;
             }
+            
+            _context.Solves.RemoveRange(await _context.Solves.ToListAsync());
+            foreach (var user in await _context.Users.ToListAsync()) {
+                user.Score = 0;
+                user.SolvedChallenges = new List<Challenge>();
+            }
+            foreach (var team in await _context.Teams.ToListAsync()) {
+                team.Score = 0;
+                team.SolvedChallenges = new List<Challenge>();
+            }
+            foreach (var chall in await _context.Challenges.Where(x => x.State == 2).ToListAsync())
+            {
+                chall.State = 3;
+            }
+            await _context.SaveChangesAsync();
         }
     }
 }

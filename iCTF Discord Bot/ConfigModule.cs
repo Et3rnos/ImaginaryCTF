@@ -36,36 +36,28 @@ namespace iCTF_Discord_Bot
         [RequireOwner(Group = "Permission")]
         public async Task Link()
         {
-            switch (await LinkedGuildManager.GetLinkState(_context, Context.Guild.Id))
-            {
-                case LinkedGuildManager.LinkState.NotLinked:
-                    Config config = new Config
-                    {
-                        GuildId = Context.Guild.Id
-                    };
-                    await _context.Configuration.AddAsync(config);
-                    await _context.SaveChangesAsync();
-
-                    await ReplyAsync("This bot is now linked to this server.");
-                    break;
-                case LinkedGuildManager.LinkState.LinkedToThisGuild:
-                    await ReplyAsync("This bot is already linked to this server.");
-                    break;
-                case LinkedGuildManager.LinkState.LinkedToOtherGuild:
-                    await ReplyAsync("This bot is already linked to another server.");
-                    break;
+            var config = await _context.Configuration.FirstOrDefaultAsync();
+            if (config == null) {
+                config = new Config {
+                    GuildId = Context.Guild.Id
+                };
+                await _context.Configuration.AddAsync(config);
+            } else {
+                config.GuildId = Context.Guild.Id;
             }
+            await _context.SaveChangesAsync();
+            await ReplyAsync("This bot is now linked to this server.");
         }
 
         [Command("config")]
         [RequireContext(ContextType.Guild)]
-        [RequireUserPermission(GuildPermission.ManageGuild, Group = "Permission")]
-        [RequireOwner(Group = "Permission")]
-        public async Task Config(IChannel channel = null) {
-            if (!(await CanSetConfig())) {
-                return;
+        public async Task Config() {
+            var config = await _context.Configuration.FirstOrDefaultAsync();
+            if (config == null) {
+                await Link();
+                config = await _context.Configuration.FirstOrDefaultAsync();
             }
-            Config config = await _context.Configuration.FirstOrDefaultAsync();
+
             var embed = new CustomEmbedBuilder();
             embed.WithTitle("Configuration");
 
@@ -117,19 +109,17 @@ namespace iCTF_Discord_Bot
         [RequireContext(ContextType.Guild)]
         [RequireUserPermission(GuildPermission.ManageGuild, Group = "Permission")]
         [RequireOwner(Group = "Permission")]
-        public async Task SetChallReleaseChannel(IChannel channel = null)
-        {
-            if (!(await CanSetConfig()))
-            {
-                return;
+        public async Task SetChallReleaseChannel(IChannel channel = null) {
+            var config = await _context.Configuration.FirstOrDefaultAsync();
+            if (config == null) {
+                await Link();
+                config = await _context.Configuration.FirstOrDefaultAsync();
             }
 
-            if (channel == null)
-            {
+            if (channel == null) {
                 channel = Context.Channel;
             }
 
-            Config config = await _context.Configuration.FirstOrDefaultAsync();
             config.ChallengeReleaseChannelId = channel.Id;
             await _context.SaveChangesAsync();
 
@@ -142,17 +132,16 @@ namespace iCTF_Discord_Bot
         [RequireOwner(Group = "Permission")]
         public async Task SetChallSolvesChannel(IChannel channel = null)
         {
-            if (!(await CanSetConfig()))
-            {
-                return;
+            var config = await _context.Configuration.FirstOrDefaultAsync();
+            if (config == null) {
+                await Link();
+                config = await _context.Configuration.FirstOrDefaultAsync();
             }
 
-            if (channel == null)
-            {
+            if (channel == null) {
                 channel = Context.Channel;
             }
 
-            Config config = await _context.Configuration.FirstOrDefaultAsync();
             config.ChallengeSolvesChannelId = channel.Id;
             await _context.SaveChangesAsync();
 
@@ -165,17 +154,16 @@ namespace iCTF_Discord_Bot
         [RequireOwner(Group = "Permission")]
         public async Task SetLeaderboardChannel(IChannel channel = null)
         {
-            if (!(await CanSetConfig()))
-            {
-                return;
+            var config = await _context.Configuration.FirstOrDefaultAsync();
+            if (config == null) {
+                await Link();
+                config = await _context.Configuration.FirstOrDefaultAsync();
             }
 
-            if (channel == null)
-            {
+            if (channel == null) {
                 channel = Context.Channel;
             }
 
-            Config config = await _context.Configuration.FirstOrDefaultAsync();
             config.LeaderboardChannelId = channel.Id;
             await _context.SaveChangesAsync();
 
@@ -188,17 +176,16 @@ namespace iCTF_Discord_Bot
         [RequireOwner(Group = "Permission")]
         public async Task SetTodaysChannel(IChannel channel = null)
         {
-            if (!(await CanSetConfig()))
-            {
-                return;
+            var config = await _context.Configuration.FirstOrDefaultAsync();
+            if (config == null) {
+                await Link();
+                config = await _context.Configuration.FirstOrDefaultAsync();
             }
 
-            if (channel == null)
-            {
+            if (channel == null) {
                 channel = Context.Channel;
             }
 
-            Config config = await _context.Configuration.FirstOrDefaultAsync();
             config.TodaysChannelId = channel.Id;
             await _context.SaveChangesAsync();
 
@@ -211,17 +198,16 @@ namespace iCTF_Discord_Bot
         [RequireOwner(Group = "Permission")]
         public async Task SetLogsChannel(IChannel channel = null)
         {
-            if (!(await CanSetConfig()))
-            {
-                return;
+            var config = await _context.Configuration.FirstOrDefaultAsync();
+            if (config == null) {
+                await Link();
+                config = await _context.Configuration.FirstOrDefaultAsync();
             }
 
-            if (channel == null)
-            {
+            if (channel == null) {
                 channel = Context.Channel;
             }
 
-            Config config = await _context.Configuration.FirstOrDefaultAsync();
             config.LogsChannelId = channel.Id;
             await _context.SaveChangesAsync();
 
@@ -234,12 +220,12 @@ namespace iCTF_Discord_Bot
         [RequireOwner(Group = "Permission")]
         public async Task SetTopRoles(IRole first, IRole second, IRole third)
         {
-            if (!(await CanSetConfig()))
-            {
-                return;
+            var config = await _context.Configuration.FirstOrDefaultAsync();
+            if (config == null) {
+                await Link();
+                config = await _context.Configuration.FirstOrDefaultAsync();
             }
 
-            Config config = await _context.Configuration.FirstOrDefaultAsync();
             config.FirstPlaceRoleId = first.Id;
             config.SecondPlaceRoleId = second.Id;
             config.ThirdPlaceRoleId = third.Id;
@@ -254,12 +240,12 @@ namespace iCTF_Discord_Bot
         [RequireOwner(Group = "Permission")]
         public async Task SetTodaysRole(IRole role)
         {
-            if (!(await CanSetConfig()))
-            {
-                return;
+            var config = await _context.Configuration.FirstOrDefaultAsync();
+            if (config == null) {
+                await Link();
+                config = await _context.Configuration.FirstOrDefaultAsync();
             }
 
-            Config config = await _context.Configuration.FirstOrDefaultAsync();
             config.TodaysRoleId = role.Id;
             await _context.SaveChangesAsync();
 
@@ -271,11 +257,12 @@ namespace iCTF_Discord_Bot
         [RequireUserPermission(GuildPermission.ManageGuild, Group = "Permission")]
         [RequireOwner(Group = "Permission")]
         public async Task SetChallengePingRole(IRole role) {
-            if (!(await CanSetConfig())) {
-                return;
+            var config = await _context.Configuration.FirstOrDefaultAsync();
+            if (config == null) {
+                await Link();
+                config = await _context.Configuration.FirstOrDefaultAsync();
             }
 
-            Config config = await _context.Configuration.FirstOrDefaultAsync();
             config.ChallengePingRoleId = role.Id;
             await _context.SaveChangesAsync();
 
@@ -286,36 +273,21 @@ namespace iCTF_Discord_Bot
         [RequireContext(ContextType.Guild)]
         [RequireUserPermission(GuildPermission.ManageGuild, Group = "Permission")]
         [RequireOwner(Group = "Permission")]
-        public async Task SetReleaseTime(uint hours, uint minutes)
+        public async Task SetReleaseTime(int hours, int minutes)
         {
-            if (!(await CanSetConfig()))
-            {
-                return;
+            var config = await _context.Configuration.FirstOrDefaultAsync();
+            if (config == null) {
+                await Link();
+                config = await _context.Configuration.FirstOrDefaultAsync();
             }
 
-            uint time = hours * 60 + minutes;
+            int time = hours * 60 + minutes;
 
-            Config config = await _context.Configuration.FirstOrDefaultAsync();
             config.ReleaseTime = time;
             await _context.SaveChangesAsync();
 
             Scheduler.UpdateChallengeReleaseJob(config);
-            await ReplyAsync($"Release time set to: **{hours}H{minutes} UTC**");
-        }
-
-        private async Task<bool> CanSetConfig()
-        {
-            switch (await LinkedGuildManager.GetLinkState(_context, Context.Guild.Id))
-            {
-                case LinkedGuildManager.LinkState.NotLinked:
-                    await ReplyAsync("This bot is not linked to a server. Please run `.link` first.");
-                    return false;
-                case LinkedGuildManager.LinkState.LinkedToOtherGuild:
-                    await ReplyAsync("This bot is linked to another server. You cannot use this command.");
-                    return false;
-                default:
-                    return true;
-            }
+            await ReplyAsync($"Release time set to: **{(hours < 10 ? "0" + hours : hours)}H{(minutes < 10 ? "0" + minutes : minutes)} UTC**");
         }
     }
 }

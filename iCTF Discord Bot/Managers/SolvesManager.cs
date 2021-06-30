@@ -9,6 +9,7 @@ using Discord.WebSocket;
 using iCTF_Discord_Bot.Managers;
 using iCTF_Shared_Resources;
 using iCTF_Shared_Resources.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace iCTF_Discord_Bot
 {
@@ -17,38 +18,34 @@ namespace iCTF_Discord_Bot
 
         public static async Task AnnounceSolve(DiscordSocketClient client, DatabaseContext context, Challenge challenge, User user)
         {
-            Config config = await context.Configuration.FirstOrDefaultAsync();
-            if (config == null || config.GuildId == 0 || config.ChallengeSolvesChannelId == 0)
-            {
+            var config = await context.Configuration.AsQueryable().FirstOrDefaultAsync();
+            if (config == null || config.GuildId == 0 || config.ChallengeSolvesChannelId == 0) {
                 return;
             }
-            SocketTextChannel channel =  client.GetGuild(config.GuildId).GetTextChannel(config.ChallengeSolvesChannelId);
+            var channel =  client.GetGuild(config.GuildId).GetTextChannel(config.ChallengeSolvesChannelId);
             await channel.SendMessageAsync($"<@{user.DiscordId}> solved **{challenge.Title}** challenge!");
         }
 
         public static async Task AnnounceWebsiteSolves(DiscordSocketClient client, DatabaseContext context)
         {
-            var solves = await context.Solves.AsAsyncEnumerable().Where(x => x.Announced == false).ToListAsync();
-            if (solves.Count == 0)
-            {
+            var solves = await context.Solves.Include(x => x.User.WebsiteUser).Include(x => x.Challenge).Include(x => x.Team).Where(x => x.Announced == false).ToListAsync();
+            if (solves.Count == 0) {
                 return;
             }
-            Config config = await context.Configuration.FirstOrDefaultAsync();
-            if (config == null && config.GuildId != 0 && config.ChallengeSolvesChannelId != 0)
-            {
+            var config = await context.Configuration.AsQueryable().FirstOrDefaultAsync();
+            if (config == null || config.GuildId == 0 || config.ChallengeSolvesChannelId == 0) {
                 return;
             }
-            SocketTextChannel channel = client.GetGuild(config.GuildId).GetTextChannel(config.ChallengeSolvesChannelId);
+            var channel = client.GetGuild(config.GuildId).GetTextChannel(config.ChallengeSolvesChannelId);
 
             foreach (var solve in solves)
             {
-                var user = await context.Users.AsAsyncEnumerable().Where(x => x.Id == solve.UserId).FirstOrDefaultAsync();
-                if (config.TodaysRoleId != 0 && user.DiscordId != 0)
+                if (config.TodaysRoleId != 0 && solve.User.DiscordId != 0)
                 {
                     var lastChall = await context.Challenges.AsAsyncEnumerable().Where(x => x.State == 2).OrderByDescending(x => x.ReleaseDate).FirstOrDefaultAsync();
-                    if (lastChall.Id == solve.ChallengeId)
+                    if (lastChall == solve.Challenge)
                     {
-                        var guildUser = client.GetGuild(config.GuildId).GetUser(user.DiscordId);
+                        var guildUser = client.GetGuild(config.GuildId).GetUser(solve.User.DiscordId);
                         if (guildUser != null)
                         {
                             var role = client.GetGuild(config.GuildId).GetRole(config.TodaysRoleId);
@@ -56,7 +53,7 @@ namespace iCTF_Discord_Bot
                         }
                     }
                 }
-                await channel.SendMessageAsync($"**{solve.Username}** solved **{solve.ChallengeTitle}** challenge!");
+                await channel.SendMessageAsync($"**{solve.User.WebsiteUser.UserName.Replace("@", "@\u200B")}** solved **{solve.Challenge.Title}** challenge!");
                 solve.Announced = true;
             }
             await context.SaveChangesAsync();

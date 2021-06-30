@@ -18,40 +18,34 @@ namespace iCTF_Discord_Bot
 
         public static async Task UpdateLeaderboard(DiscordSocketClient client, DatabaseContext context)
         {
-            Config config = await context.Configuration.FirstOrDefaultAsync();
-            if (config == null || config.GuildId == 0 || config.LeaderboardChannelId == 0)
-            {
+            var config = await context.Configuration.FirstOrDefaultAsync();
+            if (config == null || config.GuildId == 0 || config.LeaderboardChannelId == 0) {
                 return;
             }
-            SocketTextChannel channel =  client.GetGuild(config.GuildId).GetTextChannel(config.LeaderboardChannelId);
+            var channel =  client.GetGuild(config.GuildId).GetTextChannel(config.LeaderboardChannelId);
 
-            List<User> users = await SharedLeaderboardManager.GetTopPlayers(context, 20);
+            var users = await SharedLeaderboardManager.GetTopUsersAndTeams(context, 20);
 
-            EmbedBuilder embedBuilder = new EmbedBuilder();
-            embedBuilder.WithColor(Color.Blue);
+            var embedBuilder = new CustomEmbedBuilder();
             embedBuilder.WithTitle("Leaderboard");
-            embedBuilder.WithDescription("For the full leaderboard please visit <https://imaginary.ml/leaderboard>");
+            embedBuilder.WithDescription("For the full leaderboard please visit <https://imaginaryctf.org/leaderboard>");
 
-            for (int i = 0; i < users.Count; i++)
-            {
-                if (string.IsNullOrEmpty(users[i].WebsiteUsername))
+            for (int i = 0; i < users.Count; i++) {
+                if (users[i].IsTeam)
                 {
-                    embedBuilder.AddField($"{i + 1}. {users[i].DiscordUsername}", $"{users[i].Score} points");
+                    embedBuilder.Description += $"\n**{i + 1}. {users[i].TeamName}** (team) - {users[i].Score} points";
                 }
                 else
                 {
-                    embedBuilder.AddField($"{i + 1}. {users[i].WebsiteUsername}", $"{users[i].Score} points");
+                    embedBuilder.Description += $"\n**{i + 1}. {users[i].WebsiteUser?.UserName ?? users[i].DiscordUsername}** - {users[i].Score} points";
                 }
             }
 
-            IMessage message = (await channel.GetMessagesAsync(1).FlattenAsync()).FirstOrDefault();
+            var message = (await channel.GetMessagesAsync(1).FlattenAsync()).FirstOrDefault();
 
-            if (message != null && message.Author.Id == client.CurrentUser.Id)
-            {
+            if (message != null && message.Author.Id == client.CurrentUser.Id) {
                 await ((IUserMessage)message).ModifyAsync(x => x.Embed = embedBuilder.Build());
-            }
-            else
-            {
+            } else {
                 await channel.SendMessageAsync(embed: embedBuilder.Build());
             }
         }

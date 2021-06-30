@@ -96,7 +96,7 @@ namespace iCTF_Website.Areas.Account.Pages
 
             var dPlayer = await _context.Users.Where(x => x.DiscordId == discordId).FirstOrDefaultAsync();
 
-            if (dPlayer != null && !string.IsNullOrEmpty(dPlayer.WebsiteUsername))
+            if (dPlayer != null && dPlayer.WebsiteUser != null)
             {
                 Error = "There's already a user linked to this discord account";
                 return;

@@ -48,7 +48,7 @@ namespace iCTF_Website.Areas.Admin.Pages
             public string Author { get; set; }
 
             [Required]
-            public uint Points { get; set; }
+            public int Points { get; set; }
         }
 
         public void OnGet()
@@ -59,7 +59,7 @@ namespace iCTF_Website.Areas.Admin.Pages
         {
             if (ModelState.IsValid)
             {
-                uint max;
+                int max;
                 try
                 {
                     max = await _context.Challenges.MaxAsync(x => x.Priority);
@@ -70,14 +70,14 @@ namespace iCTF_Website.Areas.Admin.Pages
                 }
                 Challenge challenge = new Challenge()
                 {
-                    Title = Input.Title,
-                    Category = Input.Category,
-                    Description = Input.Description,
-                    Attachments = Input.Attachments,
-                    Flag = Input.Flag,
-                    Author = Input.Author,
+                    Title = Input.Title.Trim(),
+                    Category = Input.Category.Trim(),
+                    Description = Input.Description.Trim(),
+                    Attachments = Input.Attachments.Trim(),
+                    Flag = Input.Flag.Trim(),
+                    Author = Input.Author.Trim(),
                     Points = Input.Points,
-                    Writeup = Input.Writeup,
+                    Writeup = Input.Writeup.Trim(),
                     State = 0,
                     Priority = max + 1
                 };

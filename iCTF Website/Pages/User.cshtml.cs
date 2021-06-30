@@ -17,6 +17,7 @@ namespace iCTF_Website.Pages
     {
         public string Name { get; set; }
         public ApplicationUser AppUser { get; set; }
+        public List<string> Roles { get; set; } = new List<string>();
         public User Player { get; set; }
         public Stats PlayerStats { get; set; }
 
@@ -29,17 +30,23 @@ namespace iCTF_Website.Pages
             _userManager = userManager;
         }
 
-        public async Task OnGetAsync(int id)
+        public async Task<IActionResult> OnGetAsync(int id)
         {
-            Player = await _context.Users.Where(x => x.Id == id).FirstOrDefaultAsync();
-            AppUser = await _userManager.Users.Where(x => x.UserId == id).FirstOrDefaultAsync();
-            PlayerStats = await GetStats(_context, Player);
+            Player = await _context.Users.Include(x => x.WebsiteUser).Include(x => x.SolvedChallenges).Include(x => x.Team).FirstOrDefaultAsync(x => x.Id == id);
+            if (Player == null) { 
+                return NotFound();
+            }
 
-            Name = Player.DiscordUsername;
+            AppUser = Player.WebsiteUser;
             if (AppUser != null)
             {
-                Name = AppUser.UserName;
+                Roles = (await _userManager.GetRolesAsync(AppUser)).ToList();
             }
+            PlayerStats = await GetStats(_context, Player);
+
+            Name = AppUser?.UserName ?? Player.DiscordUsername;
+
+            return Page();
         }
     }
 }

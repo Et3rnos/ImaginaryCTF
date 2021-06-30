@@ -24,20 +24,18 @@ namespace iCTF_Discord_Bot
             using var scope = scopeFactory.CreateScope();
             var dbContext = scope.ServiceProvider.GetService<DatabaseContext>();
 
-            Config config = dbContext.Configuration.FirstOrDefault();
-            if (config == null || config.ChallengeReleaseChannelId == 0)
-            {
+            var config = dbContext.Configuration.FirstOrDefault();
+            if (config == null || config.ChallengeReleaseChannelId == 0) {
                 return;
             }
 
-            SocketTextChannel channel = client.GetGuild(config.GuildId).GetTextChannel(config.ChallengeReleaseChannelId);
+            var channel = client.GetGuild(config.GuildId).GetTextChannel(config.ChallengeReleaseChannelId);
 
             var lastChall = await dbContext.Challenges.AsAsyncEnumerable().Where(x => x.State == 2).OrderByDescending(x => x.ReleaseDate).FirstOrDefaultAsync();
 
-            Challenge chall = ChallengesManager.GetChallengeToBeReleased(dbContext, release: true).GetAwaiter().GetResult();
+            var chall = ChallengesManager.GetChallengeToBeReleased(dbContext, release: true).GetAwaiter().GetResult();
             
-            if (chall == null)
-            {
+            if (chall == null) {
                 return;
             }
 
@@ -65,7 +63,7 @@ namespace iCTF_Discord_Bot
                 }
             }
 
-            Embed embed = ChallengesManager.GetChallengeEmbed(chall);
+            var embed = ChallengesManager.GetChallengeEmbed(chall);
             if (config.ChallengePingRoleId != 0) {
                 await channel.SendMessageAsync($"<@&{config.ChallengePingRoleId}>", embed: embed);
             } else {

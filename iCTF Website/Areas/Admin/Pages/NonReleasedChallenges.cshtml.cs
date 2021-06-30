@@ -67,7 +67,7 @@ namespace iCTF_Website.Areas.Admin.Pages
                                 {
                                     break;
                                 }
-                                uint tmp = upChall.Priority;
+                                int tmp = upChall.Priority;
                                 upChall.Priority = chall.Priority;
                                 chall.Priority = tmp;
                             }
@@ -80,7 +80,7 @@ namespace iCTF_Website.Areas.Admin.Pages
                                 {
                                     break;
                                 }
-                                uint tmp = downChall.Priority;
+                                int tmp = downChall.Priority;
                                 downChall.Priority = chall.Priority;
                                 chall.Priority = tmp;
                             }

@@ -12,32 +12,112 @@ namespace iCTF_Shared_Resources.Managers
     {
         public class Stats
         {
-            public List<Challenge> SolvedChallenges { get; set; }
-            public List<Challenge> UnsolvedChallenges { get; set; }
+            public List<Challenge> SolvedChallenges { get; set; } = new List<Challenge> ();
+            public List<Challenge> UnsolvedChallenges { get; set; } = new List<Challenge> ();
             public int Position { get; set; }
             public int PlayersCount { get; set; }
         }
 
         public static async Task<Stats> GetStats(DatabaseContext context, User user)
         {
-            int playersCount = await context.Users.Where(x => x.Score > 0).CountAsync();
-            int position = await SharedLeaderboardManager.GetPlayerPosition(context, user);
+            int teamsCount = await context.Teams.Where(x => x.Score > 0).CountAsync();
+            int playersCount = await context.Users.Where(x => x.Score > 0 && x.Team == null).CountAsync();
+            int position = await SharedLeaderboardManager.GetPosition(context, user);
 
-            List<Challenge> challenges = await context.Challenges.Where(x => x.State == 2).ToListAsync();
-            List<Solve> solves = await context.Solves.Where(x => x.UserId == user.Id).ToListAsync();
+            var challenges = await context.Challenges.Where(x => x.State == 2).ToListAsync();
+            await context.Entry(user).Collection(x => x.SolvedChallenges).LoadAsync();
 
-            List<int> solvedChallengesIds = solves.Select(x => x.ChallengeId).ToList();
+            var solvedChallenges = user.SolvedChallenges;
 
-            List<Challenge> solvedChallenges = challenges.Where(x => solvedChallengesIds.Contains(x.Id)).ToList();
-            List<Challenge> unsolvedChallenges = challenges.Where(x => !solvedChallengesIds.Contains(x.Id)).ToList();
+            var unsolvedChallenges = challenges.Except(solvedChallenges).ToList();
 
-            Stats stats = new Stats()
-            {
+            Stats stats = new Stats {
                 Position = position,
-                PlayersCount = playersCount,
+                PlayersCount = playersCount + teamsCount,
                 SolvedChallenges = solvedChallenges,
                 UnsolvedChallenges = unsolvedChallenges
             };
+
+            return stats;
+        }
+
+        public static async Task<Stats> GetTeamStats(DatabaseContext context, Team team) {
+            int teamsCount = await context.Teams.Where(x => x.Score > 0).CountAsync();
+            int playersCount = await context.Users.Where(x => x.Score > 0 && x.Team == null).CountAsync();
+            int position = await SharedLeaderboardManager.GetPosition(context, team);
+
+            var challenges = await context.Challenges.Where(x => x.State == 2).ToListAsync();
+            await context.Entry(team).Collection(x => x.SolvedChallenges).LoadAsync();
+
+            var solvedChallenges = team.SolvedChallenges;
+
+            var unsolvedChallenges = challenges.Except(solvedChallenges).ToList();
+
+            Stats stats = new Stats {
+                Position = position,
+                PlayersCount = teamsCount + playersCount,
+                SolvedChallenges = solvedChallenges,
+                UnsolvedChallenges = unsolvedChallenges
+            };
+
+            return stats;
+        }
+
+        public class FullStats {
+            public List<ChallengeInfo> SolvedChallenges { get; set; } = new List<ChallengeInfo>();
+            public List<ChallengeInfo> UnsolvedChallenges { get; set; } = new List<ChallengeInfo>();
+            public int Position { get; set; }
+            public int PlayersCount { get; set; }
+        }
+
+        public static async Task<FullStats> GetFullStats(DatabaseContext context, User user) {
+            int teamsCount = await context.Teams.Where(x => x.Score > 0).CountAsync();
+            int playersCount = await context.Users.Where(x => x.Score > 0 && x.Team == null).CountAsync();
+            int position = await SharedLeaderboardManager.GetPosition(context, user);
+
+            var challengesInfo = await context.Challenges.Where(x => x.State == 2).OrderByDescending(x => x.ReleaseDate).Select(x => new ChallengeInfo { Challenge = x, UserSolvesCount = x.UserSolves.Count, TeamSolvesCount = x.TeamSolves.Count }).ToListAsync();
+            await context.Entry(user).Collection(x => x.SolvedChallenges).LoadAsync();
+
+            var solvedChallenges = user.SolvedChallenges;
+
+            var stats = new FullStats {
+                Position = position,
+                PlayersCount = playersCount + teamsCount
+            };
+
+            foreach (var challengeInfo in challengesInfo) {
+                if (solvedChallenges.Contains(challengeInfo.Challenge)) {
+                    stats.SolvedChallenges.Add(challengeInfo);
+                } else {
+                    stats.UnsolvedChallenges.Add(challengeInfo);
+                }
+            }
+
+            return stats;
+        }
+
+        public static async Task<FullStats> GetFullTeamStats(DatabaseContext context, Team team) {
+            int teamsCount = await context.Teams.Where(x => x.Score > 0).CountAsync();
+            int playersCount = await context.Users.Where(x => x.Score > 0 && x.Team == null).CountAsync();
+            int position = await SharedLeaderboardManager.GetPosition(context, team);
+
+            var challengesInfo = await context.Challenges.Where(x => x.State == 2).OrderByDescending(x => x.ReleaseDate).Select(x => new ChallengeInfo { Challenge = x, UserSolvesCount = x.UserSolves.Count, TeamSolvesCount = x.TeamSolves.Count }).ToListAsync();
+            await context.Entry(team).Collection(x => x.SolvedChallenges).LoadAsync();
+
+            var solvedChallenges = team.SolvedChallenges;
+
+            var stats = new FullStats {
+                Position = position,
+                PlayersCount = teamsCount + playersCount
+            };
+
+            foreach(var challengeInfo in challengesInfo) {
+                if (solvedChallenges.Contains(challengeInfo.Challenge)) {
+                    stats.SolvedChallenges.Add(challengeInfo);
+                } else {
+                    stats.UnsolvedChallenges.Add(challengeInfo);
+                }
+            }
 
             return stats;
         }

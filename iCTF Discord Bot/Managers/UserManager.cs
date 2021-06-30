@@ -1,6 +1,7 @@
 ﻿using Discord.WebSocket;
 using iCTF_Shared_Resources;
 using iCTF_Shared_Resources.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +14,7 @@ namespace iCTF_Discord_Bot.Managers
     {
         public static async Task<User> GetOrCreateUser(DatabaseContext context, ulong discordId, string username)
         {
-            User user = await context.Users.ToAsyncEnumerable().Where(x => x.DiscordId == discordId).FirstOrDefaultAsync();
+            var user = await context.Users.Include(x => x.SolvedChallenges).Include(x => x.WebsiteUser).Include(x => x.Team).ThenInclude(x => x.SolvedChallenges).Where(x => x.DiscordId == discordId).FirstOrDefaultAsync();
             if (user == null)
             {
                 user = new User
@@ -32,11 +33,7 @@ namespace iCTF_Discord_Bot.Managers
         public static string GetUsernameFromId(DiscordSocketClient client, ulong id)
         {
             var user = client.GetUser(id);
-            if (user == null)
-            {
-                return "invalid-user";
-            }
-            return user.Username;
+            return user != null ? user.Username : "invalid-user";
         }
     }
 }

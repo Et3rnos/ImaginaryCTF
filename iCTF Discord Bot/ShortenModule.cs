@@ -37,8 +37,7 @@ namespace iCTF_Discord_Bot
         {
             var attachment = Context.Message.Attachments.FirstOrDefault();
 
-            if (attachment == null)
-            {
+            if (attachment == null) {
                 await ReplyAsync("I could not find an attachment within your message.");
                 return;
             }
@@ -46,15 +45,14 @@ namespace iCTF_Discord_Bot
             string randomId = GenerateRandomIdentifier() + "-" + attachment.Filename;
             string redirectUrl = attachment.Url;
 
-            var redirect = new Redirect
-            {
+            var redirect = new Redirect {
                 RandomId = randomId,
                 RedirectUrl = redirectUrl
             };
             await _context.Redirects.AddAsync(redirect);
             await _context.SaveChangesAsync();
 
-            await ReplyAsync($"Your file is now accessible at:\n<https://imaginary.ml/r/{randomId}>");
+            await ReplyAsync($"Your file is now accessible at:\n<https://imaginaryctf.org/r/{randomId}>");
         }
 
         private string GenerateRandomIdentifier()

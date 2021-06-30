@@ -1,5 +1,6 @@
 ﻿@page
 @model iCTF_Website.Pages.ChallengesModel
+@using Westwind.AspNetCore.Markdown;
 
 @{
     ViewData["Title"] = "Challenges";
@@ -18,65 +19,108 @@
                 </div>
             </form>
         </div>
-        @if (!string.IsNullOrEmpty(Model.Success))
-        {
-        <div>
-            <div class="alert alert-success">
-                @Model.Success
-            </div>
-        </div>
-        }
-        @if (!string.IsNullOrEmpty(Model.Error))
-        {
-        <div>
-            <div class="alert alert-danger">
-                @Model.Error
-            </div>
-        </div>
-        }
-        @if (Model.Challenges.Count == 0 && Model.SolvedChallenges.Count == 0)
-        {
-        <p>Looks like no challenge was released during this round yet :'(</p>
-        }
-        @foreach (Challenge challenge in Model.Challenges)
-        {
-        <div class="col-md-6 mb-3">
-            <div class="card challenge">
-                <div class="card-header challenge-header">
-                    @challenge.Title (@(challenge.Points)pts)
-                </div>
-                <div class="card-body">
-                    <b>Description</b><br />
-                    <p>@challenge.Description</p>
-                    <b>Attachments</b><br />
-                    <p>@challenge.Attachments</p>
-                    <b>Category</b><br />
-                    <p>@challenge.Category</p>
-                    <b>Author</b><br />
-                    <p>@challenge.Author</p>
+        @if (!string.IsNullOrEmpty(Model.Success)) {
+            <div>
+                <div class="alert alert-success">
+                    @Model.Success
                 </div>
             </div>
-        </div>
         }
-        @foreach (Challenge challenge in Model.SolvedChallenges)
-        {
-        <div class="col-md-6 mb-3">
-            <div class="card challenge-solved">
-                <div class="card-header challenge-solved-header">
-                    @challenge.Title (@(challenge.Points)pts) <i class="fas fa-check"></i>
-                </div>
-                <div class="card-body">
-                    <b>Description</b><br />
-                    <p>@challenge.Description</p>
-                    <b>Attachments</b><br />
-                    <p>@challenge.Attachments</p>
-                    <b>Category</b><br />
-                    <p>@challenge.Category</p>
-                    <b>Author</b><br />
-                    <p>@challenge.Author</p>
+        @if (!string.IsNullOrEmpty(Model.Error)) {
+            <div>
+                <div class="alert alert-danger">
+                    @Model.Error
                 </div>
             </div>
-        </div>
+        }
+        @if (Model.Challenges.Count == 0 && Model.SolvedChallenges.Count == 0) {
+            <p>Looks like no challenge was released during this round yet :'(</p>
+        }
+        @foreach (ChallengeInfo challengeInfo in Model.Challenges) {
+            var challenge = challengeInfo.Challenge;
+            <div class="col-md-6 col-lg-4 mb-3">
+                <div class="card challenge">
+                    <div class="card-header challenge-header fw-bold">
+                        @challenge.Title (@(challenge.Points)pts) - @challenge.Category
+                    </div>
+                    <div class="card-body">
+                        <div class="card-body">
+                            <a class="text-decoration-none view-challenge-btn py-3 px-5" data-bs-toggle="modal" data-bs-target="#challenge-modal-@(challenge.Id)" href="#">
+                                VIEW CHALLENGE
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal fade" id="challenge-modal-@(challenge.Id)">
+                <div class="modal-dialog modal-dialog-centered modal-lg">
+                    <div class="modal-content text-dark">
+                        <div class="modal-header">
+                            <h5 class="modal-title text-center w-100">@challenge.Title</h5>
+                        </div>
+                        <div class="modal-body">
+                            <b>Description</b>
+                            <p>@Markdown.ParseHtmlString(challenge.Description)</p>
+                            <b>Attachments</b>
+                            <p>@Markdown.ParseHtmlString(challenge.Attachments)</p>
+                            <b>Author</b>
+                            <p>@challenge.Author</p>
+                            <b>Points</b>
+                            <p>@challenge.Points</p>
+                            <b>Solves</b>
+                            <p>@(challengeInfo.UserSolvesCount + challengeInfo.TeamSolvesCount)</p>
+                        </div>
+                        <div class="modal-footer">
+                            <div class="text-center w-100">
+                                <button type="button" class="btn btn-secondary w-50" data-bs-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        @foreach (ChallengeInfo challengeInfo in Model.SolvedChallenges) {
+            var challenge = challengeInfo.Challenge;
+            <div class="col-md-6 col-lg-4 mb-3">
+                <div class="card challenge-solved">
+                    <div class="card-header challenge-solved-header fw-bold">
+                        @challenge.Title (@(challenge.Points)pts) - @challenge.Category <i class="fas fa-check"></i>
+                    </div>
+                    <div class="card-body">
+                        <div class="card-body">
+                            <a class="text-decoration-none view-challenge-solved-btn py-3 px-5" data-bs-toggle="modal" data-bs-target="#challenge-modal-@(challenge.Id)" href="#">
+                                VIEW CHALLENGE
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal fade" id="challenge-modal-@(challenge.Id)">
+                <div class="modal-dialog modal-dialog-centered modal-lg">
+                    <div class="modal-content text-dark">
+                        <div class="modal-header">
+                            <h5 class="modal-title text-center w-100">@challenge.Title</h5>
+                        </div>
+                        <div class="modal-body">
+                            <b>Description</b>
+                            <p>@Markdown.ParseHtmlString(challenge.Description)</p>
+                            <b>Attachments</b>
+                            <p>@Markdown.ParseHtmlString(challenge.Attachments)</p>
+                            <b>Author</b>
+                            <p>@challenge.Author</p>
+                            <b>Points</b>
+                            <p>@challenge.Points</p>
+                            <b>Solves</b>
+                            <p>@(challengeInfo.UserSolvesCount + challengeInfo.TeamSolvesCount)</p>
+                        </div>
+                        <div class="modal-footer">
+                            <div class="text-center w-100">
+                                <button type="button" class="btn btn-secondary w-50" data-bs-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         }
     </div>
 </div>

@@ -26,7 +26,7 @@ namespace iCTF_Discord_Bot
         private Program()
         {
             _client = new DiscordSocketClient();
-            _commands = new CommandService();
+            _commands = new CommandService(new CommandServiceConfig { CaseSensitiveCommands = false });
             _client.Log += Log;
             _commands.Log += Log;
             _services = ConfigureServices();
@@ -46,7 +46,6 @@ namespace iCTF_Discord_Bot
                 .AddDbContext<DatabaseContext>(options => {
                     options.UseMySql(configuration.GetValue<string>("ConnectionString"),
                     new MySqlServerVersion(new Version(5, 7)));
-                    options.EnableSensitiveDataLogging();
                     }
                 );
 
@@ -82,8 +81,7 @@ namespace iCTF_Discord_Bot
 
         private async Task HandleCommandAsync(SocketMessage messageParam)
         {
-            var message = messageParam as SocketUserMessage;
-            if (message == null) return;
+            if (messageParam is not SocketUserMessage message) return;
 
             int argPos = 0;
 

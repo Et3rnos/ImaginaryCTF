@@ -10,10 +10,13 @@ namespace iCTF_Shared_Resources.Managers
 {
     public class SharedFlagManager
     {
-        public static async Task<Challenge> GetChallByFlag(DatabaseContext context, string flag)
+        public static async Task<Challenge> GetChallByFlag(DatabaseContext context, string flag, bool includeArchived = false)
         {
-            Challenge chall = await context.Challenges.Where(x => x.Flag == flag && x.State == 2).FirstOrDefaultAsync();
-            return chall;
+            if (includeArchived) {
+                return await context.Challenges.FirstOrDefaultAsync(x => x.Flag == flag && (x.State == 2 || x.State == 3));
+            } else {
+                return await context.Challenges.FirstOrDefaultAsync(x => x.Flag == flag && x.State == 2);
+            }
         }
     }
 }

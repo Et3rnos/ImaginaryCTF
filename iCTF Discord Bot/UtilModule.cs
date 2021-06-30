@@ -57,12 +57,10 @@ namespace iCTF_Discord_Bot
             await ReplyAsync(embed: embedBuilder.Build());
         }
 
-        [Command("help")]
-        public async Task Help(string category)
+        [Command("help admin")]
+        public async Task HelpAdmin()
         {
-            if (category != "admin") { return; }
-
-            CustomEmbedBuilder embedBuilder = new CustomEmbedBuilder()
+            var embedBuilder = new CustomEmbedBuilder
             {
                 Title = "Available Admin Commands",
                 Color = Color.Blue
@@ -87,9 +85,7 @@ namespace iCTF_Discord_Bot
         [Command("ping")]
         public async Task Ping()
         {
-            int latency = _client.Latency;
-
-            await ReplyAsync($"The latency is currently {latency}ms.");
+            await ReplyAsync($"The latency is currently {_client.Latency}ms.");
         }
     }
 }

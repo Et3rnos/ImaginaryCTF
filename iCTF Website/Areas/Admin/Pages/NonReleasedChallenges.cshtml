@@ -33,6 +33,8 @@
                                 <p>@challenge.Category</p>
                                 <b>Author</b><br />
                                 <p>@challenge.Author</p>
+                                <b>Points</b><br />
+                                <p>@challenge.Points</p>
                                 <b>Flag</b><br />
                                 <p>@challenge.Flag</p>
                                 <b>Writeup</b><br />
@@ -40,12 +42,13 @@
                                 <form class="d-inline-block" method="post">
                                     <input type="hidden" name="action" value="approve" />
                                     <input type="hidden" name="id" value="@challenge.Id" />
-                                    <button class="btn btn-success" type="submit">Approve</button>
+                                    <button class="btn btn-success" type="submit"><i class="fas fa-thumbs-up"></i></button>
                                 </form>
+                                <a href="/Admin/EditChallenge/@challenge.Id" class="d-inline-block btn btn-secondary" type="submit"><i class="fas fa-pencil-alt"></i></a>
                                 <form class="d-inline-block" method="post">
                                     <input type="hidden" name="action" value="delete" />
                                     <input type="hidden" name="id" value="@challenge.Id" />
-                                    <button class="btn btn-danger" type="submit">Delete</button>
+                                    <button class="btn btn-danger" type="submit"><i class="fas fa-trash-alt"></i></button>
                                 </form>
                             </div>
                         </div>
@@ -80,6 +83,8 @@
                                 <p>@challenge.Category</p>
                                 <b>Author</b><br />
                                 <p>@challenge.Author</p>
+                                <b>Points</b><br />
+                                <p>@challenge.Points</p>
                                 <b>Flag</b><br />
                                 <p>@challenge.Flag</p>
                                 <b>Writeup</b><br />
@@ -87,12 +92,7 @@
                                 <form class="d-inline-block" method="post">
                                     <input type="hidden" name="action" value="unapprove" />
                                     <input type="hidden" name="id" value="@challenge.Id" />
-                                    <button class="btn btn-secondary" type="submit">Unapprove</button>
-                                </form>
-                                <form class="d-inline-block" method="post">
-                                    <input type="hidden" name="action" value="delete" />
-                                    <input type="hidden" name="id" value="@challenge.Id" />
-                                    <button class="btn btn-danger" type="submit">Delete</button>
+                                    <button class="btn btn-secondary" type="submit"><i class="fas fa-thumbs-down"></i></button>
                                 </form>
                                 <form class="d-inline-block" method="post">
                                     <input type="hidden" name="action" value="up" />
@@ -103,6 +103,12 @@
                                     <input type="hidden" name="action" value="down" />
                                     <input type="hidden" name="id" value="@challenge.Id" />
                                     <button class="btn btn-primary" type="submit"><i class="fas fa-arrow-down"></i></button>
+                                </form>
+                                <a href="/Admin/EditChallenge/@challenge.Id" class="d-inline-block btn btn-secondary" type="submit"><i class="fas fa-pencil-alt"></i></a>
+                                <form class="d-inline-block" method="post">
+                                    <input type="hidden" name="action" value="delete" />
+                                    <input type="hidden" name="id" value="@challenge.Id" />
+                                    <button class="btn btn-danger" type="submit"><i class="fas fa-trash-alt"></i></button>
                                 </form>
                             </div>
                         </div>

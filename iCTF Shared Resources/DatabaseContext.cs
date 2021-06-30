@@ -8,8 +8,6 @@ namespace iCTF_Shared_Resources
 {
     public class DatabaseContext : IdentityDbContext<ApplicationUser>
     {
-        private const string adminRoleId = "365af12d-bbee-42de-a35b-63a5a6fdb69e";
-
         public DbSet<Config> Configuration { get; set; }
         public DbSet<Challenge> Challenges { get; set; }
 
@@ -17,6 +15,7 @@ namespace iCTF_Shared_Resources
         public DbSet<User> Users { get; set; }
         #pragma warning restore CS0114
 
+        public DbSet<Team> Teams { get; set; }
         public DbSet<Solve> Solves { get; set; }
         public DbSet<Redirect> Redirects { get; set; }
 
@@ -28,8 +27,6 @@ namespace iCTF_Shared_Resources
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-
-            modelBuilder.Entity<IdentityRole>().HasData(new IdentityRole { Id = adminRoleId, Name = "Administrator", NormalizedName = "Administrator".ToUpper() });
         }
     }
 }

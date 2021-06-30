@@ -17,6 +17,36 @@ namespace iCTF_Shared_Resources.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 64)
                 .HasAnnotation("ProductVersion", "5.0.1");
 
+            modelBuilder.Entity("ChallengeTeam", b =>
+                {
+                    b.Property<int>("SolvedChallengesId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TeamSolvesId")
+                        .HasColumnType("int");
+
+                    b.HasKey("SolvedChallengesId", "TeamSolvesId");
+
+                    b.HasIndex("TeamSolvesId");
+
+                    b.ToTable("ChallengeTeam");
+                });
+
+            modelBuilder.Entity("ChallengeUser", b =>
+                {
+                    b.Property<int>("SolvedChallengesId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserSolvesId")
+                        .HasColumnType("int");
+
+                    b.HasKey("SolvedChallengesId", "UserSolvesId");
+
+                    b.HasIndex("UserSolvesId");
+
+                    b.ToTable("ChallengeUser");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
@@ -46,7 +76,7 @@ namespace iCTF_Shared_Resources.Migrations
                         new
                         {
                             Id = "365af12d-bbee-42de-a35b-63a5a6fdb69e",
-                            ConcurrencyStamp = "8797b05b-35a2-4a40-99d0-b5a532d00de7",
+                            ConcurrencyStamp = "38c9d491-8853-4e9a-beec-983b5a7ed6e7",
                             Name = "Administrator",
                             NormalizedName = "ADMINISTRATOR"
                         });
@@ -162,6 +192,9 @@ namespace iCTF_Shared_Resources.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
 
+                    b.Property<string>("ApiKey")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
@@ -218,6 +251,9 @@ namespace iCTF_Shared_Resources.Migrations
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex");
 
+                    b.HasIndex("UserId")
+                        .IsUnique();
+
                     b.ToTable("AspNetUsers");
                 });
 
@@ -242,17 +278,19 @@ namespace iCTF_Shared_Resources.Migrations
                     b.Property<string>("Flag")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
 
-                    b.Property<uint>("Points")
-                        .HasColumnType("int unsigned");
+                    b.Property<int>("Points")
+                        .HasColumnType("int");
 
-                    b.Property<uint>("Priority")
-                        .HasColumnType("int unsigned");
+                    b.Property<int>("Priority")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("ReleaseDate")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<string>("Solves")
-                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+                    b.Property<DateTime?>("RowVersion")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("timestamp(6)");
 
                     b.Property<int>("State")
                         .HasColumnType("int");
@@ -295,8 +333,13 @@ namespace iCTF_Shared_Resources.Migrations
                     b.Property<ulong>("LogsChannelId")
                         .HasColumnType("bigint unsigned");
 
-                    b.Property<uint>("ReleaseTime")
-                        .HasColumnType("int unsigned");
+                    b.Property<int>("ReleaseTime")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("RowVersion")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("timestamp(6)");
 
                     b.Property<ulong>("SecondPlaceRoleId")
                         .HasColumnType("bigint unsigned");
@@ -344,21 +387,52 @@ namespace iCTF_Shared_Resources.Migrations
                     b.Property<int>("ChallengeId")
                         .HasColumnType("int");
 
-                    b.Property<string>("ChallengeTitle")
-                        .HasColumnType("longtext CHARACTER SET utf8mb4");
-
                     b.Property<DateTime>("SolvedAt")
                         .HasColumnType("datetime(6)");
+
+                    b.Property<int?>("TeamId")
+                        .HasColumnType("int");
 
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
-                    b.Property<string>("Username")
+                    b.HasKey("Id");
+
+                    b.HasIndex("ChallengeId");
+
+                    b.HasIndex("TeamId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Solves");
+                });
+
+            modelBuilder.Entity("iCTF_Shared_Resources.Models.Team", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("Code")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<DateTime>("LastUpdated")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<DateTime?>("RowVersion")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("timestamp(6)");
+
+                    b.Property<int>("Score")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Solves");
+                    b.ToTable("Teams");
                 });
 
             modelBuilder.Entity("iCTF_Shared_Resources.Models.User", b =>
@@ -376,15 +450,52 @@ namespace iCTF_Shared_Resources.Migrations
                     b.Property<DateTime>("LastUpdated")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<uint>("Score")
-                        .HasColumnType("int unsigned");
+                    b.Property<DateTime?>("RowVersion")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("timestamp(6)");
 
-                    b.Property<string>("WebsiteUsername")
-                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+                    b.Property<int>("Score")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("TeamId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("TeamId");
+
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("ChallengeTeam", b =>
+                {
+                    b.HasOne("iCTF_Shared_Resources.Models.Challenge", null)
+                        .WithMany()
+                        .HasForeignKey("SolvedChallengesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("iCTF_Shared_Resources.Models.Team", null)
+                        .WithMany()
+                        .HasForeignKey("TeamSolvesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("ChallengeUser", b =>
+                {
+                    b.HasOne("iCTF_Shared_Resources.Models.Challenge", null)
+                        .WithMany()
+                        .HasForeignKey("SolvedChallengesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("iCTF_Shared_Resources.Models.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserSolvesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -436,6 +547,61 @@ namespace iCTF_Shared_Resources.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("iCTF_Shared_Resources.Models.ApplicationUser", b =>
+                {
+                    b.HasOne("iCTF_Shared_Resources.Models.User", "User")
+                        .WithOne("WebsiteUser")
+                        .HasForeignKey("iCTF_Shared_Resources.Models.ApplicationUser", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("iCTF_Shared_Resources.Models.Solve", b =>
+                {
+                    b.HasOne("iCTF_Shared_Resources.Models.Challenge", "Challenge")
+                        .WithMany()
+                        .HasForeignKey("ChallengeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("iCTF_Shared_Resources.Models.Team", "Team")
+                        .WithMany()
+                        .HasForeignKey("TeamId");
+
+                    b.HasOne("iCTF_Shared_Resources.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Challenge");
+
+                    b.Navigation("Team");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("iCTF_Shared_Resources.Models.User", b =>
+                {
+                    b.HasOne("iCTF_Shared_Resources.Models.Team", "Team")
+                        .WithMany("Members")
+                        .HasForeignKey("TeamId");
+
+                    b.Navigation("Team");
+                });
+
+            modelBuilder.Entity("iCTF_Shared_Resources.Models.Team", b =>
+                {
+                    b.Navigation("Members");
+                });
+
+            modelBuilder.Entity("iCTF_Shared_Resources.Models.User", b =>
+                {
+                    b.Navigation("WebsiteUser");
                 });
 #pragma warning restore 612, 618
         }

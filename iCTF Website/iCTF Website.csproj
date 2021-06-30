@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="MailKit" Version="2.13.0" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="5.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="5.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="5.0.1" />
@@ -16,6 +17,7 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="5.0.1" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="5.0.2" />
     <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="5.0.0-alpha.2" />
+    <PackageReference Include="Westwind.AspNetCore.Markdown" Version="3.6.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -24,12 +26,6 @@
 
   <ItemGroup>
     <Content Include="wwwroot\*" CopyToPublishDirectory="Always" />
-  </ItemGroup>
-  
-  <ItemGroup>
-    <None Update="appsettings.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 
 </Project>

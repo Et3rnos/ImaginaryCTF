@@ -1,0 +1,61 @@
+﻿@page
+@model iCTF_Website.Pages.ArchivedChallengesModel
+@using Westwind.AspNetCore.Markdown;
+
+@{
+    ViewData["Title"] = "Archived Challenges";
+}
+
+<div class="container mb-3">
+    <h1 class="text-center m-3">Archived Challenges</h1>
+    @if (Model.Challenges.Count > 0) {
+        <div class="row">
+            @foreach (Challenge challenge in Model.Challenges) {
+                <div class="col-md-6 col-lg-4 mb-3">
+                    <div class="card challenge">
+                        <div class="card-header challenge-header fw-bold">
+                            @challenge.Title (@(challenge.Points)pts) - @challenge.Category
+                        </div>
+                        <div class="card-body">
+                            <div class="card-body">
+                                <a class="text-decoration-none view-challenge-btn py-3 px-5" data-bs-toggle="modal" data-bs-target="#challenge-modal-@(challenge.Id)" href="#">
+                                    VIEW CHALLENGE
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal fade" id="challenge-modal-@(challenge.Id)">
+                    <div class="modal-dialog modal-dialog-centered modal-lg">
+                        <div class="modal-content text-dark">
+                            <div class="modal-header">
+                                <h5 class="modal-title text-center w-100">@challenge.Title</h5>
+                            </div>
+                            <div class="modal-body">
+                                <b>Description</b>
+                                <p>@Markdown.ParseHtmlString(challenge.Description)</p>
+                                <b>Attachments</b>
+                                <p>@Markdown.ParseHtmlString(challenge.Attachments)</p>
+                                <b>Author</b>
+                                <p>@challenge.Author</p>
+                                <b>Points</b>
+                                <p>@challenge.Points</p>
+                                <b>Writeup</b>
+                                <p>@Markdown.ParseHtmlString(challenge.Writeup)</p>
+                                <b>Flag</b>
+                                <p>@challenge.Flag</p>
+                            </div>
+                            <div class="modal-footer">
+                                <div class="text-center w-100">
+                                    <button type="button" class="btn btn-secondary w-50" data-bs-dismiss="modal">Close</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    } else {
+        <p>There are no archived challenges yet.</p>
+    }
+</div>

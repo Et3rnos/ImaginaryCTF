@@ -1,5 +1,6 @@
 using iCTF_Shared_Resources;
 using iCTF_Shared_Resources.Models;
+using iCTF_Website.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -32,11 +33,14 @@ namespace iCTF_Website
             services.AddDbContext<DatabaseContext>(options => {
                 options.UseMySql(Configuration.GetValue<string>("ConnectionString"),
                 new MySqlServerVersion(new Version(5, 7)));
-                options.EnableSensitiveDataLogging();
             });
             services.AddDatabaseDeveloperPageExceptionFilter();
-            services.AddIdentity<ApplicationUser, IdentityRole>()
-                .AddEntityFrameworkStores<DatabaseContext>();
+            services.AddIdentity<ApplicationUser, IdentityRole>(options => {
+                options.SignIn.RequireConfirmedAccount = true;
+                }
+            )
+                .AddEntityFrameworkStores<DatabaseContext>()
+                .AddDefaultTokenProviders();
             services.ConfigureApplicationCookie(options =>
             {
                 options.AccessDeniedPath = new PathString("/AccessDenied");
@@ -47,13 +51,17 @@ namespace iCTF_Website
             {
                 options.Cookie.Name = "XSRF-TOKEN";
             });
+
+            services.AddTransient<IEmailService, EmailService>();
+
             services.AddRazorPages();
+            services.AddControllers();
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, DatabaseContext context, UserManager<ApplicationUser> userManager)
         {
             DatabaseInitializer.SeedUsers(context, userManager);
+            //insecure_password_change_asap:AQAAAAEAACcQAAAAEO799gEVUKL13sgJGu3SXOr7OV9GQjF0jxI6I6fVda2qXF6Q0VQZ/668wOmNmSn7ig==
 
             if (env.IsDevelopment())
             {
@@ -62,10 +70,11 @@ namespace iCTF_Website
             }
             else
             {
-                app.UseExceptionHandler("/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+                app.UseExceptionHandler("/Error/500");
                 app.UseHsts();
             }
+
+            app.UseStatusCodePagesWithReExecute("/Error/{0}");
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
@@ -78,6 +87,7 @@ namespace iCTF_Website
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapRazorPages();
+                endpoints.MapControllers();
             });
         }
     }

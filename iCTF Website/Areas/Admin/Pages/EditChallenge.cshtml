@@ -1,0 +1,71 @@
+﻿@page "{id:int}"
+@model iCTF_Website.Areas.Admin.Pages.EditChallengeModel
+
+@{
+    ViewData["Title"] = "Edit Challenge";
+}
+
+<div class="container">
+    <h1 class="text-center m-3">Admin Panel</h1>
+    <div class="row mb-3">
+        <div class="text-start">
+            <h4>Edit Challenge</h4>
+            <hr />
+            <form method="POST">
+                <div class="row">
+                    <div class="col-lg-6 col-md-7">
+                        <div class="form-group">
+                            <label asp-for="Input.Title"></label>
+                            <input asp-for="Input.Title" class="form-control" value="@Model.Chall.Title"/>
+                            <span asp-validation-for="Input.Title" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-5">
+                        <div class="form-group">
+                            <label asp-for="Input.Category"></label>
+                            <input asp-for="Input.Category" class="form-control" value="@Model.Chall.Category"/>
+                            <span asp-validation-for="Input.Category" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Input.Description"></label>
+                    <textarea rows="3" name="@Html.NameFor(m => m.Input.Description)" class="form-control">@Model.Chall.Description</textarea>
+                    <span asp-validation-for="Input.Description" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Input.Attachments"></label>
+                    <textarea rows="2" name="@Html.NameFor(m => m.Input.Attachments)" class="form-control">@Model.Chall.Attachments</textarea>
+                    <span asp-validation-for="Input.Attachments" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Input.Writeup"></label>
+                    <textarea rows="3" name="@Html.NameFor(m => m.Input.Writeup)" class="form-control">@Model.Chall.Writeup</textarea>
+                    <span asp-validation-for="Input.Writeup" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Input.Flag"></label>
+                    <input asp-for="Input.Flag" class="form-control" value="@Model.Chall.Flag"/>
+                    <span asp-validation-for="Input.Flag" class="text-danger"></span>
+                </div>
+                <div class="row">
+                    <div class="col-lg-6 col-md-7">
+                        <div class="form-group">
+                            <label asp-for="Input.Author"></label>
+                            <input asp-for="Input.Author" class="form-control" value="@Model.Chall.Author"/>
+                            <span asp-validation-for="Input.Author" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-5">
+                        <div class="form-group">
+                            <label asp-for="Input.Points"></label>
+                            <input asp-for="Input.Points" class="form-control" value="@Model.Chall.Points"/>
+                            <span asp-validation-for="Input.Points" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-success mt-2 w-100">Save Changes</button>
+            </form>
+        </div>
+    </div>
+</div>

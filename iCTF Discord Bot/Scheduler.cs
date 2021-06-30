@@ -30,24 +30,20 @@ namespace iCTF_Discord_Bot
 
         public static void UpdateChallengeReleaseJob(Config config = null)
         {
-            if (config == null)
-            {
-                using (var scope = _scopeFactory.CreateScope())
-                {
-                    var context = scope.ServiceProvider.GetService<DatabaseContext>();
-                    config = context.Configuration.FirstOrDefault();
-                }
+            if (config == null) {
+                using var scope = _scopeFactory.CreateScope();
+                var context = scope.ServiceProvider.GetService<DatabaseContext>();
+                config = context.Configuration.FirstOrDefault();
             }
-            if (config == null) 
-            {
+            if (config == null) {
                 return;
             }
 
-            DateTime startTime = DateTime.Today.AddMinutes(config.ReleaseTime);
+            //TODO: Fix this
+            var startTime = DateTime.Today.AddMinutes(config.ReleaseTime);
             startTime = startTime > DateTime.UtcNow ? startTime : startTime.AddDays(1);
 
-            if (_scheduler != null)
-            {
+            if (_scheduler != null) {
                 _scheduler.Shutdown();
             }
 

@@ -23,8 +23,7 @@ namespace iCTF_Website.Pages
 
         public async Task OnGetAsync()
         {
-            List<Solve> solves = await _context.Solves.OrderByDescending(x => x.SolvedAt).Take(30).ToListAsync();
-            Solves = solves;
+            Solves = await _context.Solves.Include(x => x.User.WebsiteUser).Include(x => x.Challenge).Include(x => x.Team).OrderByDescending(x => x.SolvedAt).Take(50).ToListAsync();
         }
     }
 }

@@ -11,6 +11,7 @@ using iCTF_Shared_Resources;
 using iCTF_Shared_Resources.Models;
 using iCTF_Shared_Resources.Managers;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.EntityFrameworkCore;
 
 namespace iCTF_Discord_Bot
 {
@@ -35,24 +36,33 @@ namespace iCTF_Discord_Bot
         [RequireContext(ContextType.DM)]
         public async Task Flag(string flag)
         {
-            Challenge challenge = await SharedFlagManager.GetChallByFlag(_context, flag);
-            Config config = await _context.Configuration.FirstOrDefaultAsync();
+            var challenge = await SharedFlagManager.GetChallByFlag(_context, flag, includeArchived: true);
+            var config = await _context.Configuration.AsQueryable().FirstOrDefaultAsync();
             if (challenge == null)
             {
                 await ReplyAsync("Your flag is incorrect.");
                 if (config != null && config.GuildId != 0 && config.LogsChannelId != 0)
                 {
                     var logsChannel = _client.GetGuild(config.GuildId).GetTextChannel(config.LogsChannelId);
-                    await logsChannel.SendMessageAsync($"<@{Context.User.Id}> submitted a wrong flag: **{Format.Sanitize(flag)}**");
+                    await logsChannel.SendMessageAsync($"<@{Context.User.Id}> submitted a wrong flag: **{Format.Sanitize(flag).Replace("@", "@\u200B")}**");
                 }
                 return;
             }
 
-            User user = await UserManager.GetOrCreateUser(_context, Context.User.Id, Context.User.ToString());
+            if (challenge.State == 3) {
+                await ReplyAsync("You are trying to submit a flag for an archived challenge.");
+                if (config != null && config.GuildId != 0 && config.LogsChannelId != 0) {
+                    var logsChannel = _client.GetGuild(config.GuildId).GetTextChannel(config.LogsChannelId);
+                    await logsChannel.SendMessageAsync($"<@{Context.User.Id}> submitted a flag for an archived challenge: **{Format.Sanitize(flag).Replace("@", "@\u200B")}**");
+                }
+                return;
+            }
 
-            Solve alreadySolved = await _context.Solves.AsAsyncEnumerable()
-                .Where(x => x.UserId == user.Id && x.ChallengeId == challenge.Id).FirstOrDefaultAsync();
-            if (alreadySolved != null)
+            var user = await UserManager.GetOrCreateUser(_context, Context.User.Id, Context.User.ToString());
+
+            bool isTeam = (user.Team != null);
+
+            if ((!isTeam && user.SolvedChallenges.Contains(challenge)) || (isTeam && user.Team.SolvedChallenges.Contains(challenge)))
             {
                 await ReplyAsync("You already solved that challenge!");
                 return;
@@ -60,8 +70,8 @@ namespace iCTF_Discord_Bot
 
             if (config != null && config.GuildId != 0 && config.TodaysRoleId != 0)
             {
-                var lastChall = await _context.Challenges.AsAsyncEnumerable().Where(x => x.State == 2).OrderByDescending(x => x.ReleaseDate).FirstOrDefaultAsync();
-                if (lastChall.Id == challenge.Id)
+                var lastChall = await _context.Challenges.AsQueryable().OrderByDescending(x => x.ReleaseDate).FirstOrDefaultAsync(x => x.State == 2);
+                if (lastChall == challenge)
                 {
                     var guildUser = _client.GetGuild(config.GuildId).GetUser(Context.User.Id);
                     if (guildUser != null)
@@ -72,22 +82,29 @@ namespace iCTF_Discord_Bot
                 }
             }
 
-            user.Score += challenge.Points;
-            user.DiscordUsername = Context.User.ToString();
-            user.LastUpdated = DateTime.UtcNow;
-
-            Solve solve = new Solve
+            if (isTeam)
             {
-                UserId = user.Id,
-                Username = Context.User.ToString(),
-                ChallengeId = challenge.Id,
-                ChallengeTitle = challenge.Title,
+                user.Team.Score += challenge.Points;
+                user.Team.SolvedChallenges.Add(challenge);
+                user.Team.LastUpdated = DateTime.UtcNow;
+            }
+            else
+            {
+                user.Score += challenge.Points;
+                user.SolvedChallenges.Add(challenge);
+                user.LastUpdated = DateTime.UtcNow;
+            }
+
+            var solve = new Solve
+            {
+                User = user,
+                Team = user.Team,
+                Challenge = challenge,
                 SolvedAt = DateTime.UtcNow,
                 Announced = true
             };
-            await _context.Solves.AddAsync(solve);
-            await _context.SaveChangesAsync();
 
+            await _context.SaveChangesAsync();
             await ReplyAsync($"Congratulations! You solved **{challenge.Title}** challenge!");
 
             await SolvesManager.AnnounceWebsiteSolves(_client, _context);

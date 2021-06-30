@@ -8,13 +8,19 @@
 <div class="container mb-3">
     <h1 class="text-center m-3">Solves</h1>
     <ul class="list-group">
-        @if (Model.Solves.Count == 0)
-        {
+        @if (Model.Solves.Count == 0) {
             <p>Looks like no challenge was solved yet :'(</p>
         }
-        @foreach (Solve solve in Model.Solves)
-        {
-            <li class="list-group-item">@solve.SolvedAt - <b>@solve.Username</b> solved <b>@solve.ChallengeTitle</b></li>
+        @foreach (Solve solve in Model.Solves) {
+            <li class="list-group-item">
+                @solve.SolvedAt -
+                <a class="text-decoration-none gray-text cool-link fw-bold" href="/User/@solve.User.Id">@(solve.User.WebsiteUser?.UserName ?? solve.User.DiscordUsername)</a>
+                @if (solve.Team != null) {
+                    @:(<a class="text-decoration-none gray-text cool-link fw-bold" href="/Team/@solve.Team.Id">@solve.Team.Name</a> team)
+                }
+                solved
+                <b>@solve.Challenge.Title</b>
+            </li>
         }
-    </ul>
+            </ul>
 </div>

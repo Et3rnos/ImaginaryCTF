@@ -10,6 +10,7 @@ using iCTF_Shared_Resources;
 using iCTF_Shared_Resources.Models;
 using iCTF_Shared_Resources.Managers;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.EntityFrameworkCore;
 
 namespace iCTF_Discord_Bot
 {
@@ -34,28 +35,45 @@ namespace iCTF_Discord_Bot
         [Summary("Prints the player statistics.")]
         public async Task Stats(IUser dUser = null)
         {
-            if (dUser == null)
-            {
+            if (dUser == null) {
                 dUser = Context.User;
             }
 
-            User user = (await _context.Users.AsAsyncEnumerable().Where(x => x.DiscordId == dUser.Id).ToListAsync()).FirstOrDefault();
+            var user = await _context.Users.AsQueryable().Include(x => x.SolvedChallenges).Include(x => x.WebsiteUser).Include(x => x.Team).ThenInclude(x => x.SolvedChallenges).FirstOrDefaultAsync(x => x.DiscordId == dUser.Id);
 
-            if (user == null)
-            {
+            if (user == null) {
                 await ReplyAsync("That user is not on the leaderboard yet");
                 return;
             }
 
-            SharedStatsManager.Stats stats = await SharedStatsManager.GetStats(_context, user);
+            bool isTeam = (user.Team != null);
 
-            List<string> solvedChallengesTitles = stats.SolvedChallenges.Select(x => x.Title).ToList();
-            List<string> unsolvedChallengesTitles = stats.UnsolvedChallenges.Select(x => x.Title).ToList();
+            SharedStatsManager.Stats stats;
+            if (isTeam)
+            {
+                stats = await SharedStatsManager.GetTeamStats(_context, user.Team);
+            }
+            else
+            {
+                stats = await SharedStatsManager.GetStats(_context, user);
+            }
+
+            var solvedChallengesTitles = stats.SolvedChallenges.Select(x => x.Title).ToList();
+            var unsolvedChallengesTitles = stats.UnsolvedChallenges.Select(x => x.Title).ToList();
 
             CustomEmbedBuilder eb = new CustomEmbedBuilder();
-            eb.WithTitle($"Stats for {_client.GetUser(user.DiscordId).Username}");
-            eb.WithThumbnailUrl(dUser.GetAvatarUrl() ?? dUser.GetDefaultAvatarUrl());
-            eb.AddField("Score", $"{user.Score} ({stats.Position}/{stats.PlayersCount})");
+
+            if (isTeam)
+            {
+                eb.WithTitle($"Stats for {user.Team.Name} (team)");
+                eb.AddField("Score", $"{user.Team.Score} ({stats.Position}/{stats.PlayersCount})");
+            }
+            else
+            {
+                eb.WithTitle($"Stats for {_client.GetUser(user.DiscordId).Username}");
+                eb.WithThumbnailUrl(dUser.GetAvatarUrl() ?? dUser.GetDefaultAvatarUrl());
+                eb.AddField("Score", $"{user.Score} ({stats.Position}/{stats.PlayersCount})");
+            }
 
             if (solvedChallengesTitles.Count > 0)
             {

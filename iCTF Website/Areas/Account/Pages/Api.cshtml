@@ -1,0 +1,50 @@
+﻿@page
+@model iCTF_Website.Areas.Account.Pages.ApiModel
+
+@{
+    ViewData["Title"] = "API";
+}
+
+<div class="container">
+    <h1 class="text-center m-3">Account</h1>
+    <div class="row mb-3">
+        <partial name="_MenuPartial" />
+        <div class="col-md-9 text-start">
+            <h4>API</h4>
+            <hr />
+            <p><b>Api Key - </b>@Model.ApiKey</p>
+            <h5 class="mb-3">Endpoints List</h5>
+            <small>NOTE: When the Api Key is required it should be <u>always</u> passed as a GET parameter.</small>
+            <div class="accordion" id="accordion">
+                @for (int i = 0; i < Model.Endpoints.Count; i++)
+                {
+                    var endpoint = Model.Endpoints[i];
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="heading@(i)">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse@(i)" aria-expanded="false" aria-controls="collapse@(i)">
+                                @if (!endpoint.AllowedRoles.Any() || endpoint.AllowedRoles.Intersect(Model.Roles).Any())
+                                {
+                                    <span class="badge bg-success me-3">AVAILABLE</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger me-3">FORBIDDEN</span>
+                                }
+                                @endpoint.Name
+                            </button>
+                        </h2>
+                        <div id="collapse@(i)" class="accordion-collapse collapse" aria-labelledby="heading@(i)" data-bs-parent="#accordion">
+                            <div class="accordion-body">
+                                <span><b>Endpoint:</b> @endpoint.Path </span><br />
+                                <span><b>Method:</b> @endpoint.Method </span><br />
+                                <span><b>Requires Api Key:</b> @(endpoint.RequiresApiKey ? "Yes": "No")</span><br />
+                                <span><b>Allowed Roles:</b> @(endpoint.AllowedRoles.Any() ? string.Join(", ", endpoint.AllowedRoles) : "All")</span><br />
+                                <span><b>Parameters:</b> @(endpoint.Parameters.Any() ? string.Join(", ", endpoint.Parameters) : "None")</span>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
