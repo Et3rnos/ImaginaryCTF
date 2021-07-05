@@ -27,8 +27,7 @@ namespace iCTF_Website.Areas.Admin.Pages
 
         public async Task OnGetAsync()
         {
-            List<Challenge> challenges = await _context.Challenges.Where(x => x.State == 2).OrderByDescending(x => x.Id).ToListAsync();
-            Challenges = challenges;
+            Challenges = await _context.Challenges.Where(x => x.State == 2).OrderByDescending(x => x.ReleaseDate).ToListAsync();
         }
     }
 }

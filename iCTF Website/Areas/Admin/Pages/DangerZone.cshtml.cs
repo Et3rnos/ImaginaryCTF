@@ -27,25 +27,37 @@ namespace iCTF_Website.Areas.Admin.Pages
             
         }
 
-        public async Task OnPostAsync(string action)
+        public async Task OnPostReleaseAsync()
         {
-            if (!ModelState.IsValid)
+            foreach (var chall in await _context.Challenges.Where(x => x.State == 1).OrderBy(x => x.Priority).ToListAsync())
             {
-                return;
+                chall.State = 2;
+                chall.ReleaseDate = DateTime.UtcNow;
             }
-            
-            _context.Solves.RemoveRange(await _context.Solves.ToListAsync());
-            foreach (var user in await _context.Users.ToListAsync()) {
-                user.Score = 0;
-                user.SolvedChallenges = new List<Challenge>();
-            }
-            foreach (var team in await _context.Teams.ToListAsync()) {
-                team.Score = 0;
-                team.SolvedChallenges = new List<Challenge>();
-            }
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task OnPostArchiveAsync()
+        {            
             foreach (var chall in await _context.Challenges.Where(x => x.State == 2).ToListAsync())
             {
                 chall.State = 3;
+            }
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task OnPostResetAsync()
+        {
+            _context.Solves.RemoveRange(await _context.Solves.ToListAsync());
+            foreach (var user in await _context.Users.Include(x => x.SolvedChallenges).ToListAsync())
+            {
+                user.Score = 0;
+                user.SolvedChallenges.Clear();
+            }
+            foreach (var team in await _context.Teams.Include(x => x.SolvedChallenges).ToListAsync())
+            {
+                team.Score = 0;
+                team.SolvedChallenges.Clear();
             }
             await _context.SaveChangesAsync();
         }

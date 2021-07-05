@@ -15,6 +15,8 @@ namespace iCTF_Shared_Resources.Models
         public ulong LeaderboardChannelId { get; set; }
         public ulong TodaysChannelId { get; set; }
         public ulong LogsChannelId { get; set; }
+        public ulong BoardChannelId { get; set; }
+        public ulong BoardRoleId { get; set; }
         public ulong FirstPlaceRoleId { get; set; }
         public ulong SecondPlaceRoleId { get; set; }
         public ulong ThirdPlaceRoleId { get; set; }

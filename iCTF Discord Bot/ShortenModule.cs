@@ -33,6 +33,24 @@ namespace iCTF_Discord_Bot
         [RequireContext(ContextType.Guild)]
         [RequireOwner(Group = "Permission")]
         [RequireUserPermission(GuildPermission.ManageGuild, Group = "Permission")]
+        public async Task Shorten(string url, string name)
+        {
+
+        }
+
+        [Command("shorten")]
+        [RequireContext(ContextType.Guild)]
+        [RequireOwner(Group = "Permission")]
+        [RequireUserPermission(GuildPermission.ManageGuild, Group = "Permission")]
+        public async Task Shorten(string url)
+        {
+
+        }
+
+        [Command("shorten")]
+        [RequireContext(ContextType.Guild)]
+        [RequireOwner(Group = "Permission")]
+        [RequireUserPermission(GuildPermission.ManageGuild, Group = "Permission")]
         public async Task Shorten()
         {
             var attachment = Context.Message.Attachments.FirstOrDefault();

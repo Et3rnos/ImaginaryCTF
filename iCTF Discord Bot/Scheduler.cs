@@ -43,6 +43,9 @@ namespace iCTF_Discord_Bot
             var startTime = DateTime.Today.AddMinutes(config.ReleaseTime);
             startTime = startTime > DateTime.UtcNow ? startTime : startTime.AddDays(1);
 
+            var warningTime = startTime.Subtract(TimeSpan.FromHours(1));
+            warningTime = warningTime > DateTime.UtcNow ? warningTime : warningTime.AddDays(1);
+
             if (_scheduler != null) {
                 _scheduler.Shutdown();
             }
@@ -69,7 +72,18 @@ namespace iCTF_Discord_Bot
             IJobDetail job2 = JobBuilder.Create<AnnounceWebsiteSolvesJob>()
                 .WithIdentity("announce_website_solves_job", "main_group")
                 .Build();
+
             _scheduler.ScheduleJob(job2, trigger2);
+
+            ITrigger trigger3 = TriggerBuilder.Create()
+                .WithIdentity("warning_no_approved_challenges")
+                .WithSimpleSchedule(x => x.RepeatForever().WithIntervalInHours(24))
+                .Build();
+            IJobDetail job3 = JobBuilder.Create<WarnNoApprovedChallsJob>()
+                .WithIdentity("warning_no_approved_challenges", "main_group")
+                .Build();
+
+            _scheduler.ScheduleJob(job3, trigger3);
 
             _scheduler.Start();
         }

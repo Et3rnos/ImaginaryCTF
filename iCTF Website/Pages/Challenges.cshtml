@@ -8,6 +8,11 @@
 
 <div class="container">
     <h1 class="text-center m-3">Challenges</h1>
+    <div>
+        <div class="alert alert-warning">
+            Because we will be running ImaginaryCTF 2021 from July 23 to July 27 no challenges will be released during those days. We encourage anyone that still wants to solve challenges during this time to join <a href="https://2021.imaginaryctf.org" target="_blank" class="text-decoration-none cool-link">ImaginaryCTF 2021</a> for 42 additional challenges.
+        </div>
+    </div>
     <div class="row">
         <div class="col-md-6 offset-md-3">
             <form method="post">
@@ -19,24 +24,28 @@
                 </div>
             </form>
         </div>
-        @if (!string.IsNullOrEmpty(Model.Success)) {
+        @if (!string.IsNullOrEmpty(Model.Success))
+        {
             <div>
                 <div class="alert alert-success">
                     @Model.Success
                 </div>
             </div>
         }
-        @if (!string.IsNullOrEmpty(Model.Error)) {
+        @if (!string.IsNullOrEmpty(Model.Error))
+        {
             <div>
                 <div class="alert alert-danger">
                     @Model.Error
                 </div>
             </div>
         }
-        @if (Model.Challenges.Count == 0 && Model.SolvedChallenges.Count == 0) {
+        @if (Model.Challenges.Count == 0 && Model.SolvedChallenges.Count == 0)
+        {
             <p>Looks like no challenge was released during this round yet :'(</p>
         }
-        @foreach (ChallengeInfo challengeInfo in Model.Challenges) {
+        @foreach (ChallengeInfo challengeInfo in Model.Challenges)
+        {
             var challenge = challengeInfo.Challenge;
             <div class="col-md-6 col-lg-4 mb-3">
                 <div class="card challenge">
@@ -79,7 +88,8 @@
                 </div>
             </div>
         }
-        @foreach (ChallengeInfo challengeInfo in Model.SolvedChallenges) {
+        @foreach (ChallengeInfo challengeInfo in Model.SolvedChallenges)
+        {
             var challenge = challengeInfo.Challenge;
             <div class="col-md-6 col-lg-4 mb-3">
                 <div class="card challenge-solved">

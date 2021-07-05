@@ -86,6 +86,16 @@ namespace iCTF_Discord_Bot
             else
                 embed.Description += $"**Logs Channel:** <#{config.LogsChannelId}>\n";
 
+            if (config.BoardChannelId == 0)
+                embed.Description += $"**Board's Channel:** None\n";
+            else
+                embed.Description += $"**Board's Channel:** <#{config.BoardChannelId}>\n";
+
+            if (config.BoardRoleId == 0)
+                embed.Description += $"**Board's Role:** None\n";
+            else
+                embed.Description += $"**Board's Role:** <@&{config.BoardRoleId}>\n";
+
             if (config.FirstPlaceRoleId == 0 || config.SecondPlaceRoleId == 0 || config.ThirdPlaceRoleId == 0)
                 embed.Description += $"**Top Roles:** None\n";
             else
@@ -212,6 +222,49 @@ namespace iCTF_Discord_Bot
             await _context.SaveChangesAsync();
 
             await ReplyAsync($"Logs channel set to: <#{channel.Id}>");
+        }
+
+        [Command("setboardchannel")]
+        [RequireContext(ContextType.Guild)]
+        [RequireUserPermission(GuildPermission.ManageGuild, Group = "Permission")]
+        [RequireOwner(Group = "Permission")]
+        public async Task SetBoardChannel(IChannel channel = null)
+        {
+            var config = await _context.Configuration.FirstOrDefaultAsync();
+            if (config == null)
+            {
+                await Link();
+                config = await _context.Configuration.FirstOrDefaultAsync();
+            }
+
+            if (channel == null)
+            {
+                channel = Context.Channel;
+            }
+
+            config.BoardChannelId = channel.Id;
+            await _context.SaveChangesAsync();
+
+            await ReplyAsync($"Board channel set to: <#{channel.Id}>");
+        }
+
+        [Command("setboardrole")]
+        [RequireContext(ContextType.Guild)]
+        [RequireUserPermission(GuildPermission.ManageGuild, Group = "Permission")]
+        [RequireOwner(Group = "Permission")]
+        public async Task SetBoardRole(IRole role)
+        {
+            var config = await _context.Configuration.FirstOrDefaultAsync();
+            if (config == null)
+            {
+                await Link();
+                config = await _context.Configuration.FirstOrDefaultAsync();
+            }
+
+            config.BoardChannelId = role.Id;
+            await _context.SaveChangesAsync();
+
+            await ReplyAsync($"Board's role set to: {role.Mention}");
         }
 
         [Command("settoproles")]

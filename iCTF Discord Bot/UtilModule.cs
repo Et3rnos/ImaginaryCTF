@@ -73,6 +73,7 @@ namespace iCTF_Discord_Bot
             embedBuilder.AddField("`.setleaderboardchannel [channel]`", "Sets the leaderboard channel.", true);
             embedBuilder.AddField("`.settodayschannel [channel]`", "Sets the today's channel.", true);
             embedBuilder.AddField("`.setlogschannel [channel]`", "Sets the logs channel.", true);
+            embedBuilder.AddField("`.setboardchannel [channel]`", "Sets the logs channel.", true);
             embedBuilder.AddField("`.settoproles <1st-role> <2nd-role> <3rd-role>`", "Sets the top roles.", true);
             embedBuilder.AddField("`.settodaysrole <role>`", "Sets the today's role.", true);
             embedBuilder.AddField("`.setchallengepingrole <role>`", "Sets the challenge ping role.", true);

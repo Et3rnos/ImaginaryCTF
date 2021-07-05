@@ -71,15 +71,6 @@ namespace iCTF_Shared_Resources.Migrations
                         .HasDatabaseName("RoleNameIndex");
 
                     b.ToTable("AspNetRoles");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = "365af12d-bbee-42de-a35b-63a5a6fdb69e",
-                            ConcurrencyStamp = "38c9d491-8853-4e9a-beec-983b5a7ed6e7",
-                            Name = "Administrator",
-                            NormalizedName = "ADMINISTRATOR"
-                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -311,6 +302,12 @@ namespace iCTF_Shared_Resources.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
+
+                    b.Property<ulong>("BoardChannelId")
+                        .HasColumnType("bigint unsigned");
+
+                    b.Property<ulong>("BoardRoleId")
+                        .HasColumnType("bigint unsigned");
 
                     b.Property<ulong>("ChallengePingRoleId")
                         .HasColumnType("bigint unsigned");

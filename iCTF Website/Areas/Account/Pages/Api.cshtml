@@ -14,7 +14,7 @@
             <hr />
             <p><b>Api Key - </b>@Model.ApiKey</p>
             <h5 class="mb-3">Endpoints List</h5>
-            <small>NOTE: When the Api Key is required it should be <u>always</u> passed as a GET parameter.</small>
+            <small>NOTE: When the Api Key is required it should be <u>always</u> passed as a GET parameter named "apikey". Also, all the data passed along POST requests must be in JSON format.</small>
             <div class="accordion" id="accordion">
                 @for (int i = 0; i < Model.Endpoints.Count; i++)
                 {

@@ -98,7 +98,9 @@ namespace iCTF_Website.Controllers {
                 Announced = false
             };
 
+            await _context.Solves.AddAsync(solve);
             await _context.SaveChangesAsync();
+
             return Json(new { 
                 Success = true, Challenge = new ApiChallenge
                 {

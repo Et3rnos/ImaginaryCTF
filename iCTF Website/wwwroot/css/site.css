@@ -1,3 +1,11 @@
+a {
+    color: inherit;
+}
+
+a:hover {
+    color: inherit;
+}
+
 .gray-text {
     color: #444;
 }

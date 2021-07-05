@@ -2,7 +2,7 @@
 
 ImaginaryCTF is a platform that brings the beauty of CTF Competitions to discord, releasing a challenge every day.
 
-**Current Version:** 0.1.0-rc1
+**Current Version:** 0.1.0-rc2
 
 **Website Live Demo:** [https://imaginaryctf.org](https://imaginaryctf.org)
 
@@ -82,6 +82,6 @@ The easier way to contact me is through Discord. My username is Et3rnos#6556.
 
 ## Support Me
 
-You can support me either via Patreon (subscription-based): [https://www.patreon.com/et3rnos](https://www.patreon.com/et3rnos)
+You can support me either via Patreon: [https://www.patreon.com/et3rnos](https://www.patreon.com/et3rnos)
 
-Or via BuyMeACoffee (one-time donation): [https://www.buymeacoffee.com/et3rnos](https://www.buymeacoffee.com/et3rnos)
+Or via Paypal: [https://www.paypal.com/donate?hosted_button_id=JSM77LBGLJ3FG](https://www.paypal.com/donate?hosted_button_id=JSM77LBGLJ3FG)

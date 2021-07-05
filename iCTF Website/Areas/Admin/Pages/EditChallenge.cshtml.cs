@@ -54,7 +54,7 @@ namespace iCTF_Website.Areas.Admin.Pages
         }
 
         public async Task<IActionResult> OnGetAsync(int id) {
-            Chall = await _context.Challenges.FirstOrDefaultAsync(x => x.Id == id && (x.State == 0 || x.State == 1));
+            Chall = await _context.Challenges.FirstOrDefaultAsync(x => x.Id == id && (x.State == 0 || x.State == 1 || x.State == 2));
             if (Chall == null) {
                 return NotFound();
             } else {
@@ -64,7 +64,7 @@ namespace iCTF_Website.Areas.Admin.Pages
 
         public async Task<IActionResult> OnPostAsync(int id)
         {
-            Chall = await _context.Challenges.FirstOrDefaultAsync(x => x.Id == id && (x.State == 0 || x.State == 1));
+            Chall = await _context.Challenges.FirstOrDefaultAsync(x => x.Id == id && (x.State == 0 || x.State == 1 || x.State == 2));
             if (Chall == null) {
                 return NotFound();
             }

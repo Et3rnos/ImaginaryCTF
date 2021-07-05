@@ -32,7 +32,7 @@ namespace iCTF_Discord_Bot
 
         ~FlagModule() { _scope.Dispose(); }
 
-        [Command("flag")]
+        [Command("flag", RunMode = RunMode.Async)]
         [RequireContext(ContextType.DM)]
         public async Task Flag(string flag)
         {
@@ -104,6 +104,7 @@ namespace iCTF_Discord_Bot
                 Announced = true
             };
 
+            await _context.Solves.AddAsync(solve);
             await _context.SaveChangesAsync();
             await ReplyAsync($"Congratulations! You solved **{challenge.Title}** challenge!");
 
