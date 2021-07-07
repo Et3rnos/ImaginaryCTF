@@ -27,7 +27,6 @@ namespace iCTF_Discord_Bot
         {
             _client = new DiscordSocketClient();
             _commands = new CommandService(new CommandServiceConfig {
-                IgnoreExtraArgs = true, 
                 CaseSensitiveCommands = false 
             });
             _client.Log += Log;

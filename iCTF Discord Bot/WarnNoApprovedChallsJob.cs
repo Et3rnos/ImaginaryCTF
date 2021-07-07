@@ -29,7 +29,7 @@ namespace iCTF_Discord_Bot
             if (config == null || config.GuildId == 0 || config.BoardChannelId == 0 || config.BoardRoleId == 0)
                 return;
 
-            var weShouldGoWork = !(await dbContext.Challenges.AnyAsync(x => x.State == 1));
+            var weShouldGoWork = !await dbContext.Challenges.AnyAsync(x => x.State == 1);
 
             if (weShouldGoWork)
             {

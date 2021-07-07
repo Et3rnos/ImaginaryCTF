@@ -261,7 +261,7 @@ namespace iCTF_Discord_Bot
                 config = await _context.Configuration.FirstOrDefaultAsync();
             }
 
-            config.BoardChannelId = role.Id;
+            config.BoardRoleId = role.Id;
             await _context.SaveChangesAsync();
 
             await ReplyAsync($"Board's role set to: {role.Mention}");

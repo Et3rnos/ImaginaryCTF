@@ -35,7 +35,8 @@ namespace iCTF_Discord_Bot
         [RequireUserPermission(GuildPermission.ManageGuild, Group = "Permission")]
         public async Task Shorten(string url, string name)
         {
-
+            //To Be Implemented
+            return;
         }
 
         [Command("shorten")]
@@ -44,7 +45,8 @@ namespace iCTF_Discord_Bot
         [RequireUserPermission(GuildPermission.ManageGuild, Group = "Permission")]
         public async Task Shorten(string url)
         {
-
+            //To Be Implemented
+            return;
         }
 
         [Command("shorten")]

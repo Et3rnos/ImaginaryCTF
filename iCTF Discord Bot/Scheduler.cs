@@ -39,12 +39,13 @@ namespace iCTF_Discord_Bot
                 return;
             }
 
-            //TODO: Fix this
             var startTime = DateTime.Today.AddMinutes(config.ReleaseTime);
             startTime = startTime > DateTime.UtcNow ? startTime : startTime.AddDays(1);
+            startTime = DateTime.SpecifyKind(startTime, DateTimeKind.Utc);
 
             var warningTime = startTime.Subtract(TimeSpan.FromHours(1));
             warningTime = warningTime > DateTime.UtcNow ? warningTime : warningTime.AddDays(1);
+            warningTime = DateTime.SpecifyKind(warningTime, DateTimeKind.Utc);
 
             if (_scheduler != null) {
                 _scheduler.Shutdown();
@@ -77,6 +78,7 @@ namespace iCTF_Discord_Bot
 
             ITrigger trigger3 = TriggerBuilder.Create()
                 .WithIdentity("warning_no_approved_challenges")
+                .StartAt(warningTime)
                 .WithSimpleSchedule(x => x.RepeatForever().WithIntervalInHours(24))
                 .Build();
             IJobDetail job3 = JobBuilder.Create<WarnNoApprovedChallsJob>()
