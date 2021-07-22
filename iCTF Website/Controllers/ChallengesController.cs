@@ -15,7 +15,6 @@ namespace iCTF_Website.Controllers {
 
     [ApiController]
     [Route("/api/[controller]")]
-    [IgnoreAntiforgeryToken]
     public class ChallengesController : Controller {
 
         private readonly DatabaseContext _context;

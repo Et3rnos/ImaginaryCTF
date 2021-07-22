@@ -10,8 +10,9 @@ using iCTF_Shared_Resources;
 using Microsoft.Extensions.DependencyInjection;
 using iCTF_Shared_Resources.Models;
 
-namespace iCTF_Discord_Bot
+namespace iCTF_Discord_Bot.Modules
 {
+    [Name("shorten")]
     public class ShortenModule : ModuleBase<SocketCommandContext>
     {
         private readonly DiscordSocketClient _client;
@@ -33,6 +34,7 @@ namespace iCTF_Discord_Bot
         [RequireContext(ContextType.Guild)]
         [RequireOwner(Group = "Permission")]
         [RequireUserPermission(GuildPermission.ManageGuild, Group = "Permission")]
+        [Summary("Shortens an url and make it accessible under /{randomid}-{name}")]
         public async Task Shorten(string url, string name)
         {
             //To Be Implemented
@@ -43,6 +45,7 @@ namespace iCTF_Discord_Bot
         [RequireContext(ContextType.Guild)]
         [RequireOwner(Group = "Permission")]
         [RequireUserPermission(GuildPermission.ManageGuild, Group = "Permission")]
+        [Summary("Shortens an url and make it accessible under /{randomid}")]
         public async Task Shorten(string url)
         {
             //To Be Implemented
@@ -53,6 +56,7 @@ namespace iCTF_Discord_Bot
         [RequireContext(ContextType.Guild)]
         [RequireOwner(Group = "Permission")]
         [RequireUserPermission(GuildPermission.ManageGuild, Group = "Permission")]
+        [Summary("Presents you with a shortened url to access the file you uploaded")]
         public async Task Shorten()
         {
             var attachment = Context.Message.Attachments.FirstOrDefault();

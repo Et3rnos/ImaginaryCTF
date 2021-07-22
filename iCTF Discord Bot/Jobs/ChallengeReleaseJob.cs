@@ -5,18 +5,21 @@ using iCTF_Shared_Resources;
 using iCTF_Shared_Resources.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Quartz;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace iCTF_Discord_Bot
+namespace iCTF_Discord_Bot.Jobs
 {
     class ChallengeReleaseJob : IJob
     {
         public async Task Execute(IJobExecutionContext context)
         {
+            Log.Information("Starting Challenge Release Job");
+
             SchedulerContext schedulerContext = context.Scheduler.Context;
             DiscordSocketClient client = (DiscordSocketClient)schedulerContext.Get("client");
             IServiceScopeFactory scopeFactory = (IServiceScopeFactory)schedulerContext.Get("scopeFactory");
@@ -25,7 +28,9 @@ namespace iCTF_Discord_Bot
             var dbContext = scope.ServiceProvider.GetService<DatabaseContext>();
 
             var config = dbContext.Configuration.FirstOrDefault();
-            if (config == null || config.ChallengeReleaseChannelId == 0) {
+            if (config == null || config.ChallengeReleaseChannelId == 0)
+            {
+                Log.Information("Aborting Challenge Release Job because some configuration values are not defined");
                 return;
             }
 
@@ -35,25 +40,31 @@ namespace iCTF_Discord_Bot
 
             var chall = ChallengesManager.GetChallengeToBeReleased(dbContext, release: true).GetAwaiter().GetResult();
             
-            if (chall == null) {
+            if (chall == null)
+            {
+                Log.Information("Aborting Challenge Release Job because no challenge is ready to be released");
                 return;
             }
 
-            if (config.TodaysChannelId != 0 && config.TodaysRoleId != 0) {
-                if (lastChall != null) {
-                    var oldRole = client.GetGuild(config.GuildId).GetRole(config.TodaysRoleId);
-                    var newRole = await client.GetGuild(config.GuildId).CreateRoleAsync(oldRole.Name, oldRole.Permissions, oldRole.Color, oldRole.IsHoisted, oldRole.IsMentionable);
-                    await client.GetGuild(config.GuildId).GetTextChannel(config.TodaysChannelId).AddPermissionOverwriteAsync(newRole, new OverwritePermissions(viewChannel: PermValue.Allow));
-                    await oldRole.DeleteAsync();
-                    config.TodaysRoleId = newRole.Id;
-                    await dbContext.SaveChangesAsync();
-                }
+            if (config.TodaysChannelId != 0 && config.TodaysRoleId != 0)
+            {
+                Log.Information("Deleting and re-creating Today's Channel role");
+                var oldRole = client.GetGuild(config.GuildId).GetRole(config.TodaysRoleId);
+                var newRole = await client.GetGuild(config.GuildId).CreateRoleAsync(oldRole.Name, oldRole.Permissions, oldRole.Color, oldRole.IsHoisted, oldRole.IsMentionable);
+                await client.GetGuild(config.GuildId).GetTextChannel(config.TodaysChannelId).AddPermissionOverwriteAsync(newRole, new OverwritePermissions(viewChannel: PermValue.Allow));
+                await oldRole.DeleteAsync();
+                config.TodaysRoleId = newRole.Id;
+                await dbContext.SaveChangesAsync();
+
+                Log.Information("Purging Today's Channel");
                 var todaysChannel = client.GetGuild(config.GuildId).GetTextChannel(config.TodaysChannelId);
                 var messages = await todaysChannel.GetMessagesAsync(int.MaxValue).FlattenAsync();
                 messages = messages.Where(x => (DateTimeOffset.UtcNow - x.Timestamp).TotalDays <= 14);
                 if (messages.Any()) {
                     await todaysChannel.DeleteMessagesAsync(messages);
                 }
+
+                Log.Information("Posting the challenge writeup");
                 if (!string.IsNullOrEmpty(chall.Writeup)) {
                     var writeupEmbed = new CustomEmbedBuilder();
                     writeupEmbed.WithTitle("Intended Solution");
@@ -63,12 +74,15 @@ namespace iCTF_Discord_Bot
                 }
             }
 
+            Log.Information("Posting the challenge on Discord");
             var embed = ChallengesManager.GetChallengeEmbed(chall);
             if (config.ChallengePingRoleId != 0) {
                 await channel.SendMessageAsync($"<@&{config.ChallengePingRoleId}>", embed: embed);
             } else {
                 await channel.SendMessageAsync(embed: embed);
             }
+
+            Log.Information("Ending Challenge Release Job");
         }
     }
 }

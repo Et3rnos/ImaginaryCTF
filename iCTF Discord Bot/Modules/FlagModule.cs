@@ -13,8 +13,9 @@ using iCTF_Shared_Resources.Managers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 
-namespace iCTF_Discord_Bot
+namespace iCTF_Discord_Bot.Modules
 {
+    [Name("flags")]
     public class FlagModule : ModuleBase<SocketCommandContext>
     {
         private readonly DiscordSocketClient _client;
@@ -32,8 +33,9 @@ namespace iCTF_Discord_Bot
 
         ~FlagModule() { _scope.Dispose(); }
 
-        [Command("flag", RunMode = RunMode.Async)]
+        [Command("flag")]
         [RequireContext(ContextType.DM)]
+        [Summary("Submits a flag")]
         public async Task Flag(string flag)
         {
             var challenge = await SharedFlagManager.GetChallByFlag(_context, flag, includeArchived: true);
@@ -118,6 +120,7 @@ namespace iCTF_Discord_Bot
         [RequireContext(ContextType.Guild)]
         [RequireUserPermission(GuildPermission.ManageGuild, Group = "Permission")]
         [RequireOwner(Group = "Permission")]
+        [Summary("Verifies a flag without submitting it")]
         public async Task Verify(string flag)
         {
             Challenge chall = await SharedFlagManager.GetChallByFlag(_context, flag);

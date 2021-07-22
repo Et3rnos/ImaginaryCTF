@@ -36,12 +36,22 @@ namespace iCTF_Discord_Bot
 
             var users = await SharedLeaderboardManager.GetTopPlayers(context, 5);
 
+            var top = users.FirstOrDefault();
+            if (top != null && top.DiscordId != 0)
+            {
+                var topUser = client.GetGuild(config.GuildId).GetUser(top.DiscordId);
+                if (topUser != null && !topUser.Roles.Any(x => x.Id == firstRole.Id))
+                    await topUser.SendMessageAsync("Congrats for reaching the top of the leaderboard :partying_face:");
+            }
+
             for (int i = 0; i < users.Count; i++)
             {
                 var user = users[i];
-                if (user.DiscordId == 0) { continue; }
+                if (user.DiscordId == 0) continue;
 
                 var dUser = client.GetGuild(config.GuildId).GetUser(user.DiscordId);
+                if (dUser == null) continue;
+
                 await dUser.RemoveRolesAsync(rolesToRemove);
                 switch (i)
                 {

@@ -12,8 +12,9 @@ using iCTF_Shared_Resources.Managers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 
-namespace iCTF_Discord_Bot
+namespace iCTF_Discord_Bot.Modules
 {
+    [Name("user")]
     public class UserModule : ModuleBase<SocketCommandContext>
     {
         private readonly DiscordSocketClient _client;
@@ -32,8 +33,8 @@ namespace iCTF_Discord_Bot
         ~UserModule() { _scope.Dispose(); }
 
         [Command("stats")]
-        [Summary("Prints the player statistics.")]
-        public async Task Stats(IUser dUser = null)
+        [Summary("Prints the player statistics")]
+        public async Task Stats([Name("user")] IUser dUser = null)
         {
             if (dUser == null) {
                 dUser = Context.User;

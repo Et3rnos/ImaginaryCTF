@@ -9,7 +9,7 @@ namespace iCTF_Discord_Bot
 {
     class CustomEmbedBuilder : EmbedBuilder
     {
-        public CustomEmbedBuilder(bool credits = false)
+        public CustomEmbedBuilder()
         {
             WithColor(Discord.Color.Blue);
         }

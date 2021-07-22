@@ -1,6 +1,7 @@
 ﻿using Discord.WebSocket;
 using iCTF_Shared_Resources;
 using iCTF_Shared_Resources.Models;
+using iCTF_Discord_Bot.Jobs;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Quartz;

@@ -75,6 +75,30 @@ namespace iCTF_Website.Areas.Account.Pages
                     AllowedRoles = new List<string> { "Administrator" },
                     Parameters = new List<string> { "title", "category", "description", "attachments", "writeup", "flag", "author", "points" }
                 },
+                new Endpoint {
+                    Name = "Last Solves",
+                    Path = "/api/solves/last/{limit}",
+                    Method = "GET",
+                    RequiresApiKey = false
+                },
+                new Endpoint {
+                    Name = "Solves By User Id",
+                    Path = "/api/solves/byuserid/{id}",
+                    Method = "GET",
+                    RequiresApiKey = false
+                },
+                new Endpoint {
+                    Name = "Solves By Discord Id",
+                    Path = "/api/solves/bydiscordid/{id}",
+                    Method = "GET",
+                    RequiresApiKey = false
+                },
+                new Endpoint {
+                    Name = "Solves By Team Id",
+                    Path = "/api/solves/byteamid/{id}",
+                    Method = "GET",
+                    RequiresApiKey = false
+                },
             };
         }
 

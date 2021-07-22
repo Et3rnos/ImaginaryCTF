@@ -11,8 +11,9 @@ using iCTF_Shared_Resources;
 using iCTF_Shared_Resources.Models;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace iCTF_Discord_Bot
+namespace iCTF_Discord_Bot.Modules
 {
+    [Name("config")]
     public class ConfigModule : ModuleBase<SocketCommandContext>
     {
         private readonly DiscordSocketClient _client;
@@ -34,6 +35,7 @@ namespace iCTF_Discord_Bot
         [RequireContext(ContextType.Guild)]
         [RequireUserPermission(GuildPermission.ManageGuild, Group = "Permission")]
         [RequireOwner(Group = "Permission")]
+        [Summary("Links this bot to this server")]
         public async Task Link()
         {
             var config = await _context.Configuration.FirstOrDefaultAsync();
@@ -51,6 +53,7 @@ namespace iCTF_Discord_Bot
 
         [Command("config")]
         [RequireContext(ContextType.Guild)]
+        [Summary("View the current configuration values")]
         public async Task Config() {
             var config = await _context.Configuration.FirstOrDefaultAsync();
             if (config == null) {
@@ -119,6 +122,7 @@ namespace iCTF_Discord_Bot
         [RequireContext(ContextType.Guild)]
         [RequireUserPermission(GuildPermission.ManageGuild, Group = "Permission")]
         [RequireOwner(Group = "Permission")]
+        [Summary("Sets the released challenges channel")]
         public async Task SetChallReleaseChannel(IChannel channel = null) {
             var config = await _context.Configuration.FirstOrDefaultAsync();
             if (config == null) {
@@ -140,6 +144,7 @@ namespace iCTF_Discord_Bot
         [RequireContext(ContextType.Guild)]
         [RequireUserPermission(GuildPermission.ManageGuild, Group = "Permission")]
         [RequireOwner(Group = "Permission")]
+        [Summary("Sets the solves announcement channel")]
         public async Task SetChallSolvesChannel(IChannel channel = null)
         {
             var config = await _context.Configuration.FirstOrDefaultAsync();
@@ -162,6 +167,7 @@ namespace iCTF_Discord_Bot
         [RequireContext(ContextType.Guild)]
         [RequireUserPermission(GuildPermission.ManageGuild, Group = "Permission")]
         [RequireOwner(Group = "Permission")]
+        [Summary("Sets the leaderboard channel")]
         public async Task SetLeaderboardChannel(IChannel channel = null)
         {
             var config = await _context.Configuration.FirstOrDefaultAsync();
@@ -184,6 +190,7 @@ namespace iCTF_Discord_Bot
         [RequireContext(ContextType.Guild)]
         [RequireUserPermission(GuildPermission.ManageGuild, Group = "Permission")]
         [RequireOwner(Group = "Permission")]
+        [Summary("Sets the today's channel")]
         public async Task SetTodaysChannel(IChannel channel = null)
         {
             var config = await _context.Configuration.FirstOrDefaultAsync();
@@ -206,6 +213,7 @@ namespace iCTF_Discord_Bot
         [RequireContext(ContextType.Guild)]
         [RequireUserPermission(GuildPermission.ManageGuild, Group = "Permission")]
         [RequireOwner(Group = "Permission")]
+        [Summary("Sets the logs channel")]
         public async Task SetLogsChannel(IChannel channel = null)
         {
             var config = await _context.Configuration.FirstOrDefaultAsync();
@@ -228,6 +236,7 @@ namespace iCTF_Discord_Bot
         [RequireContext(ContextType.Guild)]
         [RequireUserPermission(GuildPermission.ManageGuild, Group = "Permission")]
         [RequireOwner(Group = "Permission")]
+        [Summary("Sets the board channel")]
         public async Task SetBoardChannel(IChannel channel = null)
         {
             var config = await _context.Configuration.FirstOrDefaultAsync();
@@ -252,6 +261,7 @@ namespace iCTF_Discord_Bot
         [RequireContext(ContextType.Guild)]
         [RequireUserPermission(GuildPermission.ManageGuild, Group = "Permission")]
         [RequireOwner(Group = "Permission")]
+        [Summary("Sets the board role")]
         public async Task SetBoardRole(IRole role)
         {
             var config = await _context.Configuration.FirstOrDefaultAsync();
@@ -271,6 +281,7 @@ namespace iCTF_Discord_Bot
         [RequireContext(ContextType.Guild)]
         [RequireUserPermission(GuildPermission.ManageGuild, Group = "Permission")]
         [RequireOwner(Group = "Permission")]
+        [Summary("Sets the top roles")]
         public async Task SetTopRoles(IRole first, IRole second, IRole third)
         {
             var config = await _context.Configuration.FirstOrDefaultAsync();
@@ -291,6 +302,7 @@ namespace iCTF_Discord_Bot
         [RequireContext(ContextType.Guild)]
         [RequireUserPermission(GuildPermission.ManageGuild, Group = "Permission")]
         [RequireOwner(Group = "Permission")]
+        [Summary("Sets the today's role")]
         public async Task SetTodaysRole(IRole role)
         {
             var config = await _context.Configuration.FirstOrDefaultAsync();
@@ -309,6 +321,7 @@ namespace iCTF_Discord_Bot
         [RequireContext(ContextType.Guild)]
         [RequireUserPermission(GuildPermission.ManageGuild, Group = "Permission")]
         [RequireOwner(Group = "Permission")]
+        [Summary("Sets the challenge ping role")]
         public async Task SetChallengePingRole(IRole role) {
             var config = await _context.Configuration.FirstOrDefaultAsync();
             if (config == null) {
@@ -326,6 +339,7 @@ namespace iCTF_Discord_Bot
         [RequireContext(ContextType.Guild)]
         [RequireUserPermission(GuildPermission.ManageGuild, Group = "Permission")]
         [RequireOwner(Group = "Permission")]
+        [Summary("Sets the release time (UTC)")]
         public async Task SetReleaseTime(int hours, int minutes)
         {
             var config = await _context.Configuration.FirstOrDefaultAsync();

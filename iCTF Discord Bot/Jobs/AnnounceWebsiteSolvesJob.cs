@@ -11,9 +11,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace iCTF_Discord_Bot
+namespace iCTF_Discord_Bot.Jobs
 {
-    class WarnNoApprovedChallsJob : IJob
+    class AnnounceWebsiteSolvesJob : IJob
     {
         public async Task Execute(IJobExecutionContext context)
         {
@@ -24,17 +24,7 @@ namespace iCTF_Discord_Bot
             using var scope = scopeFactory.CreateScope();
             var dbContext = scope.ServiceProvider.GetService<DatabaseContext>();
 
-            var config = await dbContext.Configuration.FirstOrDefaultAsync();
-
-            if (config == null || config.GuildId == 0 || config.BoardChannelId == 0 || config.BoardRoleId == 0)
-                return;
-
-            var weShouldGoWork = !await dbContext.Challenges.AnyAsync(x => x.State == 1);
-
-            if (weShouldGoWork)
-            {
-                await client.GetGuild(config.GuildId).GetTextChannel(config.BoardChannelId).SendMessageAsync($"Hey <@&{config.BoardRoleId}>! There are no approved challenges! Go work, you have one hour!");
-            }
+            await SolvesManager.AnnounceWebsiteSolves(client, dbContext);
         }
     }
 }
