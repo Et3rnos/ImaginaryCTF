@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using iCTF_Shared_Resources.Managers;
+using Microsoft.Extensions.Logging;
 
 namespace iCTF_Website.Pages
 {
@@ -19,12 +20,14 @@ namespace iCTF_Website.Pages
         public List<ChallengeInfo> Challenges { get; set; } = new List<ChallengeInfo>();
         public List<ChallengeInfo> SolvedChallenges { get; set; } = new List<ChallengeInfo>();
 
+        private readonly ILogger<ChallengesModel> _logger;
         private readonly DatabaseContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
 
-        public ChallengesModel(DatabaseContext context, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
+        public ChallengesModel(ILogger<ChallengesModel> logger, DatabaseContext context, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
         {
+            _logger = logger;
             _context = context;
             _userManager = userManager;
             _signInManager = signInManager;
@@ -56,6 +59,7 @@ namespace iCTF_Website.Pages
             var challenge = await SharedFlagManager.GetChallByFlag(_context, flag, includeArchived: true);
             if (challenge == null) {
                 await PopulateChallenges(appUser.User);
+                _logger.LogInformation($"User \"{appUser.UserName}\" submitted a wrong flag ({flag})");
                 Error = "Your flag is incorrect";
                 return;
             }
@@ -82,6 +86,7 @@ namespace iCTF_Website.Pages
             var time = DateTime.UtcNow;
             if (time.Hour == 13 && time.Minute == 37)
             {
+                _logger.LogInformation($"User \"{appUser.UserName}\" got the \"13:37 Hacker\" role");
                 await _userManager.AddToRoleAsync(appUser, "13:37 Hacker");
             }
 
