@@ -37,8 +37,17 @@ namespace iCTF_Discord_Bot.Modules
         [Summary("Shortens an url and make it accessible under /{randomid}-{name}")]
         public async Task Shorten(string url, string name)
         {
-            //To Be Implemented
-            return;
+            string randomId = GenerateRandomIdentifier() + "-" + name;
+
+            var redirect = new Redirect
+            {
+                RandomId = randomId,
+                RedirectUrl = url
+            };
+            await _context.Redirects.AddAsync(redirect);
+            await _context.SaveChangesAsync();
+
+            await ReplyAsync($"Your file is now accessible at:\n<https://imaginaryctf.org/r/{randomId}>");
         }
 
         [Command("shorten")]
@@ -48,8 +57,17 @@ namespace iCTF_Discord_Bot.Modules
         [Summary("Shortens an url and make it accessible under /{randomid}")]
         public async Task Shorten(string url)
         {
-            //To Be Implemented
-            return;
+            string randomId = GenerateRandomIdentifier();
+
+            var redirect = new Redirect
+            {
+                RandomId = randomId,
+                RedirectUrl = url
+            };
+            await _context.Redirects.AddAsync(redirect);
+            await _context.SaveChangesAsync();
+
+            await ReplyAsync($"Your file is now accessible at:\n<https://imaginaryctf.org/r/{randomId}>");
         }
 
         [Command("shorten")]
