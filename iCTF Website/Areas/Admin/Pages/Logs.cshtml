@@ -1,0 +1,18 @@
+﻿@page
+@model iCTF_Website.Areas.Admin.Pages.LogsModel
+
+@{
+    ViewData["Title"] = "Admin Panel";
+}
+
+<div class="container">
+    <h1 class="text-center m-3">Admin Panel</h1>
+    <div class="row mb-3">
+        <partial name="_MenuPartial" />
+        <div class="col-md-9 text-start">
+            <h4>Logs</h4>
+            <hr />
+            <pre><code>@Model.Logs</code></pre>
+        </div>
+    </div>
+</div>
