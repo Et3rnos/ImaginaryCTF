@@ -1,4 +1,4 @@
-﻿@page
+﻿@page "{round:int?}"
 @model iCTF_Website.Pages.ArchivedChallengesModel
 @using Westwind.AspNetCore.Markdown;
 
@@ -8,6 +8,8 @@
 
 <div class="container mb-3">
     <h1 class="text-center m-3">Archived Challenges</h1>
+    <h2>@Model.Round</h2>
+    <hr />
     @if (Model.Challenges.Count > 0) {
         <div class="row">
             @foreach (Challenge challenge in Model.Challenges) {
@@ -56,6 +58,12 @@
             }
         </div>
     } else {
-        <p>There are no archived challenges yet.</p>
+        <p>There are no archived challenges for this round.</p>
     }
+<div>
+    @foreach (var round in Model.Rounds)
+    {
+        <a href="/ArchivedChallenges/@round" class="btn @(round == Model.Page ? "btn-primary" : "btn-secondary")">@round</a>
+    }
+</div>
 </div>

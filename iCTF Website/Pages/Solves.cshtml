@@ -13,7 +13,10 @@
         }
         @foreach (Solve solve in Model.Solves) {
             <li class="list-group-item">
-                @solve.SolvedAt -
+                <script>
+                    var date = new Date("@(solve.SolvedAt.ToString("o") + "Z")");
+                    document.write(date.toISOString().substring(0, 19).replace("T", " ").replaceAll("-", "/"));
+                </script> -
                 <a class="text-decoration-none gray-text cool-link fw-bold" href="/User/@solve.User.Id">@(solve.User.WebsiteUser?.UserName ?? solve.User.DiscordUsername)</a>
                 @if (solve.Team != null) {
                     @:(<a class="text-decoration-none gray-text cool-link fw-bold" href="/Team/@solve.Team.Id">@solve.Team.Name</a> team)

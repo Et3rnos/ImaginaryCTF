@@ -15,6 +15,8 @@ namespace iCTF_Website.Areas.Admin.Pages
     [Authorize(Roles = "Administrator")]
     public class ChallengeSubmissionModel : PageModel
     {
+        public List<string> Categories { get; set; }
+
         private readonly DatabaseContext _context;
         
         public ChallengeSubmissionModel(DatabaseContext context)
@@ -32,6 +34,9 @@ namespace iCTF_Website.Areas.Admin.Pages
 
             [Required]
             public string Category { get; set; }
+
+            [Display(Name = "If \"Other\" please specify")]
+            public string OtherCategory { get; set; }
 
             [Required]
             public string Description { get; set; }
@@ -51,8 +56,10 @@ namespace iCTF_Website.Areas.Admin.Pages
             public int Points { get; set; }
         }
 
-        public void OnGet()
+        public async Task OnGetAsync()
         {
+            Categories = await _context.Challenges.Select(x => x.Category).Distinct().ToListAsync();
+            Categories = new List<string> { "Other" }.Union(Categories).ToList();
         }
 
         public async Task<IActionResult> OnPostAsync()
@@ -71,7 +78,7 @@ namespace iCTF_Website.Areas.Admin.Pages
                 Challenge challenge = new Challenge()
                 {
                     Title = Input.Title.Trim(),
-                    Category = Input.Category.Trim(),
+                    Category = Input.Category != "Other" ? Input.Category : Input.OtherCategory,
                     Description = Input.Description.Trim(),
                     Attachments = Input.Attachments.Trim(),
                     Flag = Input.Flag.Trim(),

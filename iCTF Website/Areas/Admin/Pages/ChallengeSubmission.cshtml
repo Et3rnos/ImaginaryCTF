@@ -13,43 +13,53 @@
             <h4>Challenge Submission</h4>
             <hr />
             <form method="POST">
-                <div class="row">
-                    <div class="col-lg-6 col-md-7">
-                        <div class="form-group">
-                            <label asp-for="Input.Title"></label>
-                            <input asp-for="Input.Title" class="form-control" />
-                            <span asp-validation-for="Input.Title" class="text-danger"></span>
-                        </div>
-                    </div>
-                    <div class="col-lg-6 col-md-5">
+                <div class="form-group mb-2">
+                    <label asp-for="Input.Title"></label>
+                    <input asp-for="Input.Title" class="form-control" />
+                    <span asp-validation-for="Input.Title" class="text-danger"></span>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-md-6">
                         <div class="form-group">
                             <label asp-for="Input.Category"></label>
-                            <input asp-for="Input.Category" class="form-control" />
+                            <select class="form-select" asp-for="Input.Category">
+                                @foreach (var category in Model.Categories)
+                                {
+                                    <option value="@category">@category</option>
+                                }
+                            </select>
                             <span asp-validation-for="Input.Category" class="text-danger"></span>
                         </div>
                     </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="Input.OtherCategory"></label>
+                            <input asp-for="Input.OtherCategory" class="form-control" />
+                            <span asp-validation-for="Input.OtherCategory" class="text-danger"></span>
+                        </div>
+                    </div>
                 </div>
-                <div class="form-group">
+                <div class="form-group mb-2">
                     <label asp-for="Input.Description"></label>
                     <textarea rows="3" asp-for="Input.Description" class="form-control"></textarea>
                     <span asp-validation-for="Input.Description" class="text-danger"></span>
                 </div>
-                <div class="form-group">
+                <div class="form-group mb-2">
                     <label asp-for="Input.Attachments"></label>
                     <textarea rows="2" asp-for="Input.Attachments" class="form-control"></textarea>
                     <span asp-validation-for="Input.Attachments" class="text-danger"></span>
                 </div>
-                <div class="form-group">
+                <div class="form-group mb-2">
                     <label asp-for="Input.Writeup"></label>
                     <textarea rows="3" asp-for="Input.Writeup" class="form-control"></textarea>
                     <span asp-validation-for="Input.Writeup" class="text-danger"></span>
                 </div>
-                <div class="form-group">
+                <div class="form-group mb-2">
                     <label asp-for="Input.Flag"></label>
                     <input asp-for="Input.Flag" class="form-control" />
                     <span asp-validation-for="Input.Flag" class="text-danger"></span>
                 </div>
-                <div class="row">
+                <div class="row mb-2">
                     <div class="col-lg-6 col-md-7">
                         <div class="form-group">
                             <label asp-for="Input.Author"></label>

@@ -48,7 +48,7 @@ namespace iCTF_Discord_Bot.Modules
                 config.GuildId = Context.Guild.Id;
             }
             await _context.SaveChangesAsync();
-            await ReplyAsync("This bot is now linked to this server.");
+            await ReplyAsync(embed: new EmbedBuilder().WithDescription("This bot is now linked to this server.").Build());
         }
 
         [Command("config")]
@@ -137,7 +137,7 @@ namespace iCTF_Discord_Bot.Modules
             config.ChallengeReleaseChannelId = channel.Id;
             await _context.SaveChangesAsync();
 
-            await ReplyAsync($"Challenge release channel set to: <#{channel.Id}>");
+            await ReplyAsync(embed: new EmbedBuilder().WithDescription($"Challenge release channel set to: <#{channel.Id}>").Build());
         }
 
         [Command("setchallsolveschannel")]
@@ -160,7 +160,7 @@ namespace iCTF_Discord_Bot.Modules
             config.ChallengeSolvesChannelId = channel.Id;
             await _context.SaveChangesAsync();
 
-            await ReplyAsync($"Challenge solves announcement channel set to: <#{channel.Id}>");
+            await ReplyAsync(embed: new EmbedBuilder().WithDescription($"Challenge solves announcement channel set to: <#{channel.Id}>").Build());
         }
 
         [Command("setleaderboardchannel")]
@@ -183,7 +183,7 @@ namespace iCTF_Discord_Bot.Modules
             config.LeaderboardChannelId = channel.Id;
             await _context.SaveChangesAsync();
 
-            await ReplyAsync($"Leaderboard channel set to: <#{channel.Id}>");
+            await ReplyAsync(embed: new EmbedBuilder().WithDescription($"Leaderboard channel set to: <#{channel.Id}>").Build());
         }
 
         [Command("settodayschannel")]
@@ -205,8 +205,7 @@ namespace iCTF_Discord_Bot.Modules
 
             config.TodaysChannelId = channel.Id;
             await _context.SaveChangesAsync();
-
-            await ReplyAsync($"Today's channel set to: <#{channel.Id}>");
+            await ReplyAsync(embed: new EmbedBuilder().WithDescription($"Today's channel set to: <#{channel.Id}>").Build());
         }
 
         [Command("setlogschannel")]
@@ -229,7 +228,7 @@ namespace iCTF_Discord_Bot.Modules
             config.LogsChannelId = channel.Id;
             await _context.SaveChangesAsync();
 
-            await ReplyAsync($"Logs channel set to: <#{channel.Id}>");
+            await ReplyAsync(embed: new EmbedBuilder().WithDescription($"Logs channel set to: <#{channel.Id}>").Build());
         }
 
         [Command("setboardchannel")]
@@ -254,7 +253,7 @@ namespace iCTF_Discord_Bot.Modules
             config.BoardChannelId = channel.Id;
             await _context.SaveChangesAsync();
 
-            await ReplyAsync($"Board channel set to: <#{channel.Id}>");
+            await ReplyAsync(embed: new EmbedBuilder().WithDescription($"Board channel set to: <#{channel.Id}>").Build());
         }
 
         [Command("setboardrole")]
@@ -274,7 +273,7 @@ namespace iCTF_Discord_Bot.Modules
             config.BoardRoleId = role.Id;
             await _context.SaveChangesAsync();
 
-            await ReplyAsync($"Board's role set to: {role.Mention}");
+            await ReplyAsync(embed: new EmbedBuilder().WithDescription($"Board's role set to: {role.Mention}").Build());
         }
 
         [Command("settoproles")]
@@ -295,7 +294,7 @@ namespace iCTF_Discord_Bot.Modules
             config.ThirdPlaceRoleId = third.Id;
             await _context.SaveChangesAsync();
 
-            await ReplyAsync($"Top roles set to: {first.Mention}, {second.Mention}, {third.Mention}");
+            await ReplyAsync(embed: new EmbedBuilder().WithDescription($"Top roles set to: {first.Mention}, {second.Mention}, {third.Mention}").Build());
         }
 
         [Command("settodaysrole")]
@@ -314,7 +313,7 @@ namespace iCTF_Discord_Bot.Modules
             config.TodaysRoleId = role.Id;
             await _context.SaveChangesAsync();
 
-            await ReplyAsync($"Today's role set to: {role.Mention}");
+            await ReplyAsync(embed: new EmbedBuilder().WithDescription($"Today's role set to: {role.Mention}").Build());
         }
 
         [Command("setchallengepingrole")]
@@ -332,7 +331,7 @@ namespace iCTF_Discord_Bot.Modules
             config.ChallengePingRoleId = role.Id;
             await _context.SaveChangesAsync();
 
-            await ReplyAsync($"Challenge ping role set to: {role.Mention}");
+            await ReplyAsync(embed: new EmbedBuilder().WithDescription($"Challenge ping role set to: {role.Mention}").Build());
         }
 
         [Command("setreleasetime")]
@@ -354,7 +353,7 @@ namespace iCTF_Discord_Bot.Modules
             await _context.SaveChangesAsync();
 
             Scheduler.UpdateChallengeReleaseJob(config);
-            await ReplyAsync($"Release time set to: **{(hours < 10 ? "0" + hours : hours)}H{(minutes < 10 ? "0" + minutes : minutes)} UTC**");
+            await ReplyAsync(embed: new EmbedBuilder().WithDescription($"Release time set to: **{(hours < 10 ? "0" + hours : hours)}H{(minutes < 10 ? "0" + minutes : minutes)} UTC**").Build());
         }
     }
 }
