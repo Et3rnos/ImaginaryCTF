@@ -58,7 +58,7 @@ namespace iCTF_Website.Areas.Admin.Pages
 
         public async Task OnGetAsync()
         {
-            Categories = await _context.Challenges.Select(x => x.Category).Distinct().ToListAsync();
+            Categories = await _context.Challenges.Where(x => x.State != 3).Select(x => x.Category).Distinct().ToListAsync();
             Categories = new List<string> { "Other" }.Union(Categories).ToList();
         }
 

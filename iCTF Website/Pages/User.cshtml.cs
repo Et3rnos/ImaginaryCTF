@@ -20,6 +20,7 @@ namespace iCTF_Website.Pages
         public List<string> Roles { get; set; } = new List<string>();
         public User Player { get; set; }
         public Stats PlayerStats { get; set; }
+        public DateTime FirstChallengeReleaseDate { get; set; }
 
         private readonly DatabaseContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
@@ -33,18 +34,19 @@ namespace iCTF_Website.Pages
         public async Task<IActionResult> OnGetAsync(int id)
         {
             Player = await _context.Users.Include(x => x.WebsiteUser).Include(x => x.Solves).ThenInclude(x => x.Challenge).Include(x => x.Team).FirstOrDefaultAsync(x => x.Id == id);
-            if (Player == null) { 
-                return NotFound();
-            }
+            if (Player == null) return NotFound();
 
             AppUser = Player.WebsiteUser;
-            if (AppUser != null)
-            {
-                Roles = (await _userManager.GetRolesAsync(AppUser)).ToList();
-            }
-            PlayerStats = await GetStats(_context, Player);
+            if (AppUser != null) Roles = (await _userManager.GetRolesAsync(AppUser)).ToList();
 
+            PlayerStats = await GetStats(_context, Player);
             Name = AppUser?.UserName ?? Player.DiscordUsername;
+
+            if (PlayerStats.SolvedChallenges.Any())
+            {
+                var challs = PlayerStats.SolvedChallenges.Union(PlayerStats.UnsolvedChallenges);
+                FirstChallengeReleaseDate = challs.Min(x => x.ReleaseDate);
+            }
 
             return Page();
         }

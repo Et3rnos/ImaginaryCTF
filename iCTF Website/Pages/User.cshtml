@@ -25,15 +25,70 @@
         </h2>
         <h4>
             @foreach (var role in Model.Roles)
-        {
-            <span class="badge bg-danger m-1">@role</span>
-        }
-            </h4>
+            {
+                <span class="badge bg-danger m-1">@role</span>
+            }
+        </h4>
         <hr />
+        @if (Model.FirstChallengeReleaseDate != default(DateTime))
+        {
+            <div>
+                <canvas id="chart" width="50" height="200"></canvas>
+            </div>
+            <script src="https://cdn.jsdelivr.net/npm/chart.js@3.4.1/dist/chart.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0"></script>
+            <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment@0.1.1"></script>
+            <script>
+                var ctx = document.getElementById('chart').getContext('2d');
+                var myChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        datasets: [
+                            {
+                                label: "Score",
+                                borderColor: "#3db6f2",
+                                backgroundColor: "#3db6f2",
+                                data: [
+                                    { x: moment("@(Model.FirstChallengeReleaseDate.ToString("o") + "Z")"), y: 0 },
+                                @{ int score = 0; }
+                                @foreach (var solve in Model.Player.Solves)
+                                {
+                                    score += solve.Challenge.Points;
+                                    @:{ x: moment("@(solve.SolvedAt.ToString("o") + "Z")"), y: @score },
+                                }
+                                    { x: moment(), y: @score },
+                                ]
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            x: {
+                                type: 'time',
+                                time: {
+                                    tooltipFormat: 'DD/MM - HH:mm'
+                                },
+                                title: {
+                                    display: true,
+                                }
+                            },
+                            y: {
+                                title: {
+                                    display: true,
+                                    text: 'Score'
+                                }
+                            }
+                        },
+                    }
+                });
+            </script>
+                                    }
         <div class="row">
             <div class="col-md-6">
                 <h4>Solved Challenges</h4>
-                @if (Model.PlayerStats.SolvedChallenges.Count > 0)
+                @if (Model.Player.Solves.Any())
                 {
                     <div class="table-responsive">
                         <table class="table table-striped table-light table-bordered">
@@ -41,14 +96,16 @@
                                 <tr>
                                     <th>Challenge</th>
                                     <th>Points</th>
+                                    <th>Solved At</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach (var chall in Model.PlayerStats.SolvedChallenges)
+                                @foreach (var solve in Model.Player.Solves.OrderByDescending(x => x.SolvedAt))
                                 {
                                     <tr>
-                                        <td>@chall.Title</td>
-                                        <td>@chall.Points</td>
+                                        <td>@solve.Challenge.Title</td>
+                                        <td>@solve.Challenge.Points</td>
+                                        <td><script>document.write(moment("@(solve.SolvedAt.ToString("o") + "Z")").format('DD/MM HH:mm:ss'))</script></td>
                                     </tr>
                                 }
                             </tbody>
