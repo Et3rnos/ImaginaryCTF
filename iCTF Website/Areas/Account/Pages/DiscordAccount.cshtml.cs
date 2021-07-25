@@ -41,7 +41,7 @@ namespace iCTF_Website.Areas.Account.Pages
         public async Task OnGetAsync(string code, string state)
         {
             var appUser = await _userManager.GetUserAsync(User);
-            var wPlayer = await _context.Users.Where(x => x.Id == appUser.UserId).Include(x => x.SolvedChallenges).FirstOrDefaultAsync();
+            var wPlayer = await _context.Users.Where(x => x.Id == appUser.UserId).Include(x => x.Solves).ThenInclude(x => x.Challenge).FirstOrDefaultAsync();
 
             DiscordId = wPlayer.DiscordId;
 
@@ -94,7 +94,7 @@ namespace iCTF_Website.Areas.Account.Pages
             string username = (string)data.username;
             string discriminator = (string)data.discriminator;
 
-            var dPlayer = await _context.Users.Where(x => x.DiscordId == discordId).Include(x => x.WebsiteUser).Include(x => x.SolvedChallenges).FirstOrDefaultAsync();
+            var dPlayer = await _context.Users.Where(x => x.DiscordId == discordId).Include(x => x.WebsiteUser).Include(x => x.Solves).FirstOrDefaultAsync();
 
             if (dPlayer != null && dPlayer.WebsiteUser != null)
             {
@@ -112,7 +112,6 @@ namespace iCTF_Website.Areas.Account.Pages
                         dSolve.UserId = wPlayer.Id;
                     }
                     wPlayer.Score = dPlayer.Score;
-                    wPlayer.SolvedChallenges = dPlayer.SolvedChallenges;
                     wPlayer.LastUpdated = dPlayer.LastUpdated;
                 }
                 _context.Users.Remove(dPlayer);

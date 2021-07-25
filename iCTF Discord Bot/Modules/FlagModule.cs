@@ -64,7 +64,7 @@ namespace iCTF_Discord_Bot.Modules
 
             bool isTeam = (user.Team != null);
 
-            if ((!isTeam && user.SolvedChallenges.Contains(challenge)) || (isTeam && user.Team.SolvedChallenges.Contains(challenge)))
+            if ((!isTeam && user.Solves.Select(x => x.Challenge).Contains(challenge)) || (isTeam && user.Team.Solves.Select(x => x.Challenge).Contains(challenge)))
             {
                 await ReplyAsync("You already solved that challenge!");
                 return;
@@ -87,13 +87,11 @@ namespace iCTF_Discord_Bot.Modules
             if (isTeam)
             {
                 user.Team.Score += challenge.Points;
-                user.Team.SolvedChallenges.Add(challenge);
                 user.Team.LastUpdated = DateTime.UtcNow;
             }
             else
             {
                 user.Score += challenge.Points;
-                user.SolvedChallenges.Add(challenge);
                 user.LastUpdated = DateTime.UtcNow;
             }
 

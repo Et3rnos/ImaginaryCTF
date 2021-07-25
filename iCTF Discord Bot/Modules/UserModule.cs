@@ -40,7 +40,7 @@ namespace iCTF_Discord_Bot.Modules
                 dUser = Context.User;
             }
 
-            var user = await _context.Users.AsQueryable().Include(x => x.SolvedChallenges).Include(x => x.WebsiteUser).Include(x => x.Team).ThenInclude(x => x.SolvedChallenges).FirstOrDefaultAsync(x => x.DiscordId == dUser.Id);
+            var user = await _context.Users.AsQueryable().Include(x => x.Solves).ThenInclude(x => x.Challenge).Include(x => x.WebsiteUser).Include(x => x.Team).ThenInclude(x => x.Solves).ThenInclude(x => x.Challenge).FirstOrDefaultAsync(x => x.DiscordId == dUser.Id);
 
             if (user == null) {
                 await ReplyAsync("That user is not on the leaderboard yet");

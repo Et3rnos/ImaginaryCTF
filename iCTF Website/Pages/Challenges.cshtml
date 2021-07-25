@@ -19,7 +19,7 @@
     List<ChallengeInfo> solvedChallengeInfos = new List<ChallengeInfo>();
     if (!signInManager.IsSignedIn(User))
     {
-        challengeInfos = await context.Challenges.Where(x => x.State == 2).OrderByDescending(x => x.ReleaseDate).Select(x => new ChallengeInfo { Challenge = x, UserSolvesCount = x.UserSolves.Count, TeamSolvesCount = x.TeamSolves.Count }).ToListAsync();
+        challengeInfos = await context.Challenges.Where(x => x.State == 2).OrderByDescending(x => x.ReleaseDate).Select(x => new ChallengeInfo { Challenge = x, SolvesCount = x.Solves.Count }).ToListAsync();
         categories = challengeInfos.Select(x => x.Challenge.Category).Distinct().ToList();
     }
     else
@@ -121,7 +121,7 @@
                                 <b>Points</b>
                                 <p>@challenge.Points</p>
                                 <b>Solves</b>
-                                <p>@(challengeInfo.UserSolvesCount + challengeInfo.TeamSolvesCount)</p>
+                                <p>@(challengeInfo.SolvesCount)</p>
                             </div>
                             <div class="modal-footer">
                                 <div class="text-center w-100">
@@ -165,7 +165,7 @@
                                 <b>Points</b>
                                 <p>@challenge.Points</p>
                                 <b>Solves</b>
-                                <p>@(challengeInfo.UserSolvesCount + challengeInfo.TeamSolvesCount)</p>
+                                <p>@(challengeInfo.SolvesCount)</p>
                             </div>
                             <div class="modal-footer">
                                 <div class="text-center w-100">

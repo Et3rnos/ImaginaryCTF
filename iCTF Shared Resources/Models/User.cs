@@ -14,7 +14,7 @@ namespace iCTF_Shared_Resources.Models
         public int Score { get; set; }
         public DateTime LastUpdated { get; set; }
         public ApplicationUser WebsiteUser { get; set; }
-        public List<Challenge> SolvedChallenges { get; set; } = new List<Challenge>();
+        public List<Solve> Solves { get; set; } = new List<Solve>();
         public Team Team { get; set; }
         [Timestamp]
         public byte[] RowVersion { get; set; }

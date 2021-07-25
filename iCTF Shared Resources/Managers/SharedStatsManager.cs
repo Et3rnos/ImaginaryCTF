@@ -25,13 +25,13 @@ namespace iCTF_Shared_Resources.Managers
             int position = await SharedLeaderboardManager.GetPosition(context, user);
 
             var challenges = await context.Challenges.Where(x => x.State == 2).ToListAsync();
-            await context.Entry(user).Collection(x => x.SolvedChallenges).LoadAsync();
+            await context.Entry(user).Collection(x => x.Solves).Query().Include(x => x.Challenge).LoadAsync();
 
-            var solvedChallenges = user.SolvedChallenges;
+            var solvedChallenges = user.Solves.Select(x => x.Challenge).ToList();
 
             var unsolvedChallenges = challenges.Except(solvedChallenges).ToList();
 
-            Stats stats = new Stats {
+            var stats = new Stats {
                 Position = position,
                 PlayersCount = playersCount + teamsCount,
                 SolvedChallenges = solvedChallenges,
@@ -47,9 +47,9 @@ namespace iCTF_Shared_Resources.Managers
             int position = await SharedLeaderboardManager.GetPosition(context, team);
 
             var challenges = await context.Challenges.Where(x => x.State == 2).ToListAsync();
-            await context.Entry(team).Collection(x => x.SolvedChallenges).LoadAsync();
+            await context.Entry(team).Collection(x => x.Solves).Query().Include(x => x.Challenge).LoadAsync();
 
-            var solvedChallenges = team.SolvedChallenges;
+            var solvedChallenges = team.Solves.Select(x => x.Challenge).ToList();
 
             var unsolvedChallenges = challenges.Except(solvedChallenges).ToList();
 
@@ -75,10 +75,10 @@ namespace iCTF_Shared_Resources.Managers
             int playersCount = await context.Users.Where(x => x.Score > 0 && x.Team == null).CountAsync();
             int position = await SharedLeaderboardManager.GetPosition(context, user);
 
-            var challengesInfo = await context.Challenges.Where(x => x.State == 2).OrderByDescending(x => x.ReleaseDate).Select(x => new ChallengeInfo { Challenge = x, UserSolvesCount = x.UserSolves.Count, TeamSolvesCount = x.TeamSolves.Count }).ToListAsync();
-            await context.Entry(user).Collection(x => x.SolvedChallenges).LoadAsync();
+            var challengesInfo = await context.Challenges.Where(x => x.State == 2).OrderByDescending(x => x.ReleaseDate).Select(x => new ChallengeInfo { Challenge = x, SolvesCount = x.Solves.Count }).ToListAsync();
+            await context.Entry(user).Collection(x => x.Solves).Query().Include(x => x.Challenge).LoadAsync();
 
-            var solvedChallenges = user.SolvedChallenges;
+            var solvedChallenges = user.Solves.Select(x => x.Challenge).ToList();
 
             var stats = new FullStats {
                 Position = position,
@@ -101,10 +101,10 @@ namespace iCTF_Shared_Resources.Managers
             int playersCount = await context.Users.Where(x => x.Score > 0 && x.Team == null).CountAsync();
             int position = await SharedLeaderboardManager.GetPosition(context, team);
 
-            var challengesInfo = await context.Challenges.Where(x => x.State == 2).OrderByDescending(x => x.ReleaseDate).Select(x => new ChallengeInfo { Challenge = x, UserSolvesCount = x.UserSolves.Count, TeamSolvesCount = x.TeamSolves.Count }).ToListAsync();
-            await context.Entry(team).Collection(x => x.SolvedChallenges).LoadAsync();
+            var challengesInfo = await context.Challenges.Where(x => x.State == 2).OrderByDescending(x => x.ReleaseDate).Select(x => new ChallengeInfo { Challenge = x, SolvesCount = x.Solves.Count }).ToListAsync();
+            await context.Entry(team).Collection(x => x.Solves).Query().Include(x => x.Challenge).LoadAsync();
 
-            var solvedChallenges = team.SolvedChallenges;
+            var solvedChallenges = team.Solves.Select(x => x.Challenge).ToList();
 
             var stats = new FullStats {
                 Position = position,

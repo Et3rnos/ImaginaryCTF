@@ -45,7 +45,7 @@ namespace iCTF_Website.Pages
                 return Page();
             }
 
-            Team = await _context.Teams.Include(x => x.Members).ThenInclude(x => x.WebsiteUser).Include(x => x.SolvedChallenges).FirstOrDefaultAsync(x => x.Id == id);
+            Team = await _context.Teams.Include(x => x.Members).ThenInclude(x => x.WebsiteUser).Include(x => x.Solves).ThenInclude(x => x.Challenge).FirstOrDefaultAsync(x => x.Id == id);
             if (Team == null) { 
                 return NotFound();
             }

@@ -57,12 +57,12 @@ namespace iCTF_Website.Pages
             }
 
             if (appUser.User.Team == null) {
-                await _context.Entry(appUser.User).Collection(x => x.SolvedChallenges).LoadAsync();
+                await _context.Entry(appUser.User).Collection(x => x.Solves).Query().Include(x => x.Challenge).LoadAsync();
             } else {
-                await _context.Entry(appUser.User.Team).Collection(x => x.SolvedChallenges).LoadAsync();
+                await _context.Entry(appUser.User.Team).Collection(x => x.Solves).Query().Include(x => x.Challenge).LoadAsync();
             }
 
-            if ((appUser.User.Team == null && appUser.User.SolvedChallenges.Contains(challenge)) || (appUser.User.Team != null && appUser.User.Team.SolvedChallenges.Contains(challenge)))
+            if ((appUser.User.Team == null && appUser.User.Solves.Select(x => x.Challenge).Contains(challenge)) || (appUser.User.Team != null && appUser.User.Team.Solves.Select(x => x.Challenge).Contains(challenge)))
             {
                 Error = "You already solved that challenge";
                 return;
@@ -77,11 +77,9 @@ namespace iCTF_Website.Pages
 
             if (appUser.User.Team != null) {
                 appUser.User.Team.Score += challenge.Points;
-                appUser.User.Team.SolvedChallenges.Add(challenge);
                 appUser.User.Team.LastUpdated = DateTime.UtcNow;
             } else {
                 appUser.User.Score += challenge.Points;
-                appUser.User.SolvedChallenges.Add(challenge);
                 appUser.User.LastUpdated = DateTime.UtcNow;
             }
 

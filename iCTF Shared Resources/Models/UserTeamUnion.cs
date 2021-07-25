@@ -19,8 +19,8 @@ namespace iCTF_Shared_Resources.Models
         public Team Team { get; set; }
         public List<User> Members { get; set; }
         public int MembersCount { get; set; }
-        public List<Challenge> SolvedChallenges { get; set; } = new List<Challenge>();
-        public int SolvedChallengesCount { get; set; }
+        public List<Solve> Solves { get; set; } = new List<Solve>();
+        public int SolvesCount { get; set; }
         public bool IsTeam { get; set; }
     }
 }

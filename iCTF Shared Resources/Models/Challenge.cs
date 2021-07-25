@@ -20,8 +20,7 @@ namespace iCTF_Shared_Resources.Models
         public string Writeup { get; set; }
         public int Priority { get; set; }
         public DateTime ReleaseDate { get; set; }
-        public List<User> UserSolves { get; set; } = new List<User>();
-        public List<Team> TeamSolves { get; set; } = new List<Team>();
+        public List<Solve> Solves { get; set; } = new List<Solve>();
         [Timestamp]
         public byte[] RowVersion { get; set; }
     }

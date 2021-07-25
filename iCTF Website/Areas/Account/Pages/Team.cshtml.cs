@@ -69,7 +69,7 @@ namespace iCTF_Website.Areas.Account.Pages
             }
 
             var appUser = await _userManager.GetUserAsync(User);
-            await _context.Entry(appUser).Reference(x => x.User).Query().Include(x => x.Team).LoadAsync();
+            await _context.Entry(appUser).Reference(x => x.User).Query().Include(x => x.Team).Include(x => x.Solves).LoadAsync();
             Team = appUser.User.Team;
             if (Team != null) {
                 return Forbid();
@@ -85,7 +85,7 @@ namespace iCTF_Website.Areas.Account.Pages
                 Name = CreateJoin.CreateModel.TeamName,
                 Code = RandomHelper.GenerateRandomString(),
             };
-            appUser.User.SolvedChallenges.Clear();
+            appUser.User.Solves.Clear();
             appUser.User.Score = 0;
             Team = appUser.User.Team;
             Success = $"You have successfully created {CreateJoin.CreateModel.TeamName} team.";
@@ -100,7 +100,7 @@ namespace iCTF_Website.Areas.Account.Pages
             }
 
             var appUser = await _userManager.GetUserAsync(User);
-            await _context.Entry(appUser).Reference(x => x.User).Query().Include(x => x.Team).LoadAsync();
+            await _context.Entry(appUser).Reference(x => x.User).Query().Include(x => x.Team).Include(x => x.Solves).LoadAsync();
             Team = appUser.User.Team;
             if (Team != null) {
                 return Forbid();
@@ -115,7 +115,7 @@ namespace iCTF_Website.Areas.Account.Pages
             if (team.Code == CreateJoin.JoinModel.TeamCode) {
                 Team = team;
                 appUser.User.Team = team;
-                appUser.User.SolvedChallenges.Clear();
+                appUser.User.Solves.Clear();
                 appUser.User.Score = 0;
                 Success = $"You have successfully joined {team.Name} team.";
             } else {

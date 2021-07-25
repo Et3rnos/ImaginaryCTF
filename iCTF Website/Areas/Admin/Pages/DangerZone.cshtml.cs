@@ -49,15 +49,15 @@ namespace iCTF_Website.Areas.Admin.Pages
         public async Task OnPostResetAsync()
         {
             _context.Solves.RemoveRange(await _context.Solves.ToListAsync());
-            foreach (var user in await _context.Users.Include(x => x.SolvedChallenges).ToListAsync())
+            foreach (var user in await _context.Users.Include(x => x.Solves).ToListAsync())
             {
                 user.Score = 0;
-                user.SolvedChallenges.Clear();
+                user.Solves.Clear();
             }
-            foreach (var team in await _context.Teams.Include(x => x.SolvedChallenges).ToListAsync())
+            foreach (var team in await _context.Teams.Include(x => x.Solves).ToListAsync())
             {
                 team.Score = 0;
-                team.SolvedChallenges.Clear();
+                team.Solves.Clear();
             }
             await _context.SaveChangesAsync();
         }

@@ -13,10 +13,10 @@ namespace iCTF_Shared_Resources.Managers
         public static async Task<List<UserTeamUnion>> GetTopUsersAndTeams(DatabaseContext context, int max = 10)
         {
             var users = await context.Users.Where(x => x.Score > 0 && x.Team == null)
-                .Select(x => new UserTeamUnion { Id = x.Id, Team = x.Team, DiscordId = x.DiscordId, DiscordUsername = x.DiscordUsername, LastUpdated = x.LastUpdated, Score = x.Score, SolvedChallengesCount = x.SolvedChallenges.Count, WebsiteUser = x.WebsiteUser, IsTeam = false })
+                .Select(x => new UserTeamUnion { Id = x.Id, Team = x.Team, DiscordId = x.DiscordId, DiscordUsername = x.DiscordUsername, LastUpdated = x.LastUpdated, Score = x.Score, SolvesCount = x.Solves.Count, WebsiteUser = x.WebsiteUser, IsTeam = false })
                 .ToListAsync();
             var teams = await context.Teams.Where(x => x.Score > 0)
-                .Select(x => new UserTeamUnion { Id = x.Id, LastUpdated = x.LastUpdated, TeamName = x.Name, TeamCode = x.Code, Score = x.Score, SolvedChallengesCount = x.SolvedChallenges.Count, MembersCount = x.Members.Count, IsTeam = true })
+                .Select(x => new UserTeamUnion { Id = x.Id, LastUpdated = x.LastUpdated, TeamName = x.Name, TeamCode = x.Code, Score = x.Score, SolvesCount = x.Solves.Count, MembersCount = x.Members.Count, IsTeam = true })
                 .ToListAsync();
             var players = users.Union(teams).OrderByDescending(x => x.Score).ThenBy(x => x.LastUpdated).Take(max).ToList();
             return players;

@@ -64,14 +64,14 @@ namespace iCTF_Website.Controllers {
 
             if (isTeam)
             {
-                await _context.Entry(user.User.Team).Collection(x => x.SolvedChallenges).LoadAsync();
+                await _context.Entry(user.User.Team).Collection(x => x.Solves).Query().Include(x => x.Challenge).LoadAsync();
             }
             else
             {
-                await _context.Entry(user.User).Collection(x => x.SolvedChallenges).LoadAsync();
+                await _context.Entry(user.User).Collection(x => x.Solves).Query().Include(x => x.Challenge).LoadAsync();
             }
 
-            if ((!isTeam && user.User.SolvedChallenges.Contains(challenge)) || (isTeam && user.User.Team.SolvedChallenges.Contains(challenge)))
+            if ((!isTeam && user.User.Solves.Select(x => x.Challenge).Contains(challenge)) || (isTeam && user.User.Team.Solves.Select(x => x.Challenge).Contains(challenge)))
             {
                 return Json(new { Success = false, Error = "You already solved that challenge" });
             }
@@ -79,13 +79,11 @@ namespace iCTF_Website.Controllers {
             if (isTeam)
             {
                 user.User.Team.Score += challenge.Points;
-                user.User.Team.SolvedChallenges.Add(challenge);
                 user.User.Team.LastUpdated = DateTime.UtcNow;
             }
             else
             {
                 user.User.Score += challenge.Points;
-                user.User.SolvedChallenges.Add(challenge);
                 user.User.LastUpdated = DateTime.UtcNow;
             }
 
