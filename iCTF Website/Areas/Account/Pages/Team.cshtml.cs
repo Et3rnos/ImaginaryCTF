@@ -125,5 +125,30 @@ namespace iCTF_Website.Areas.Account.Pages
             await _context.SaveChangesAsync();
             return Page();
         }
+
+        public async Task<IActionResult> OnPostLeaveAsync()
+        {
+            var appUser = await _userManager.GetUserAsync(User);
+            await _context.Entry(appUser).Reference(x => x.User).Query().Include(x => x.Team).ThenInclude(x => x.Members).Include(x => x.Solves).ThenInclude(x => x.Challenge).LoadAsync();
+            var team = appUser.User.Team;
+            if (team == null) return Forbid();
+
+            if (team.Members.Count == 1)
+                _context.Teams.Remove(team);
+            else
+            {
+                appUser.User.Team = null;
+                var userPoints = appUser.User.Solves.Sum(x => x.Challenge.Points);
+                team.Score -= userPoints;
+            }
+
+            appUser.User.Solves.Clear();
+
+            await _context.SaveChangesAsync();
+
+            Success = "You left your team";
+
+            return Page();
+        }
     }
 }
