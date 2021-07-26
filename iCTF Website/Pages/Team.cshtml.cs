@@ -17,6 +17,7 @@ namespace iCTF_Website.Pages
     {
         public Team Team { get; set; }
         public Stats TeamStats { get; set; }
+        public DateTime FirstChallengeReleaseDate { get; set; }
 
         private readonly DatabaseContext _context;
 
@@ -46,11 +47,16 @@ namespace iCTF_Website.Pages
             }
 
             Team = await _context.Teams.Include(x => x.Members).ThenInclude(x => x.WebsiteUser).Include(x => x.Solves).ThenInclude(x => x.Challenge).FirstOrDefaultAsync(x => x.Id == id);
-            if (Team == null) { 
-                return NotFound();
-            }
+            if (Team == null) return NotFound();
+
 
             TeamStats = await GetTeamStats(_context, Team);
+            if (TeamStats.SolvedChallenges.Any())
+            {
+                var challs = TeamStats.SolvedChallenges.Union(TeamStats.UnsolvedChallenges);
+                FirstChallengeReleaseDate = challs.Min(x => x.ReleaseDate);
+            }
+
             return Page();
         }
     }
