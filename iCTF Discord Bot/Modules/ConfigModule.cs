@@ -256,6 +256,31 @@ namespace iCTF_Discord_Bot.Modules
             await ReplyAsync(embed: new EmbedBuilder().WithDescription($"Board channel set to: <#{channel.Id}>").Build());
         }
 
+        [Command("setboardwriteupschannel")]
+        [RequireContext(ContextType.Guild)]
+        [RequireUserPermission(GuildPermission.ManageGuild, Group = "Permission")]
+        [RequireOwner(Group = "Permission")]
+        [Summary("Sets the board writeups channel")]
+        public async Task SetBoardWriteupsChannel(IChannel channel = null)
+        {
+            var config = await _context.Configuration.FirstOrDefaultAsync();
+            if (config == null)
+            {
+                await Link();
+                config = await _context.Configuration.FirstOrDefaultAsync();
+            }
+
+            if (channel == null)
+            {
+                channel = Context.Channel;
+            }
+
+            config.BoardWriteupsChannelId = channel.Id;
+            await _context.SaveChangesAsync();
+
+            await ReplyAsync(embed: new EmbedBuilder().WithDescription($"Board writeups channel set to: <#{channel.Id}>").Build());
+        }
+
         [Command("setboardrole")]
         [RequireContext(ContextType.Guild)]
         [RequireUserPermission(GuildPermission.ManageGuild, Group = "Permission")]

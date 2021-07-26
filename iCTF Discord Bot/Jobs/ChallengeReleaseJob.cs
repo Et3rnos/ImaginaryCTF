@@ -64,7 +64,7 @@ namespace iCTF_Discord_Bot.Jobs
                     await todaysChannel.DeleteMessagesAsync(messages);
                 }
 
-                Log.Information("Posting the challenge writeup");
+                Log.Information("Posting the challenge writeup on today's channel");
                 if (!string.IsNullOrEmpty(chall.Writeup)) {
                     var writeupEmbed = new CustomEmbedBuilder();
                     writeupEmbed.WithTitle("Intended Solution");
@@ -72,6 +72,16 @@ namespace iCTF_Discord_Bot.Jobs
                     var message = await todaysChannel.SendMessageAsync(embed: writeupEmbed.Build());
                     await message.PinAsync();
                 }
+            }
+
+            if (!string.IsNullOrEmpty(chall.Writeup) && config.BoardWriteupsChannelId != 0)
+            {
+                Log.Information("Posting the challenge writeup on the board writeups channel");
+                var writeupEmbed = new CustomEmbedBuilder();
+                writeupEmbed.WithTitle($"Writeup for {chall.Title}");
+                writeupEmbed.WithDescription(chall.Writeup);
+                var writeupsChannel = client.GetGuild(config.GuildId).GetTextChannel(config.BoardWriteupsChannelId);
+                await writeupsChannel.SendMessageAsync(embed: writeupEmbed.Build());
             }
 
             Log.Information("Posting the challenge on Discord");
