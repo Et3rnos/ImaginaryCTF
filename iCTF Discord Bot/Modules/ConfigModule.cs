@@ -94,6 +94,11 @@ namespace iCTF_Discord_Bot.Modules
             else
                 embed.Description += $"**Board's Channel:** <#{config.BoardChannelId}>\n";
 
+            if (config.BoardWriteupsChannelId == 0)
+                embed.Description += $"**Board Writeups Channel:** None\n";
+            else
+                embed.Description += $"**Board Writeups Channel:** <#{config.BoardWriteupsChannelId}>\n";
+
             if (config.BoardRoleId == 0)
                 embed.Description += $"**Board's Role:** None\n";
             else

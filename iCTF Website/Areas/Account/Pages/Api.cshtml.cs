@@ -99,6 +99,13 @@ namespace iCTF_Website.Areas.Account.Pages
                     Method = "GET",
                     RequiresApiKey = false
                 },
+                new Endpoint {
+                    Name = "CTFTime Leaderboard",
+                    Path = "/api/leaderboard/ctftime",
+                    Method = "GET",
+                    RequiresApiKey = true,
+                    AllowedRoles = new List<string> { "Administrator" }
+                },
             };
         }
 
