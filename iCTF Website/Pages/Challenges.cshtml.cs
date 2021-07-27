@@ -33,8 +33,9 @@ namespace iCTF_Website.Pages
 
         public void OnGet() { }
 
-        public async Task OnPostAsync(string flag)
+        public async Task OnPostAsync(string flagraw)
         {
+            string flag = flagraw.Trim();
             if (!_signInManager.IsSignedIn(User))
             {
                 Error = "You must log in first in order to submit a flag";
