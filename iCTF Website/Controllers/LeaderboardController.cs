@@ -36,7 +36,7 @@ namespace iCTF_Website.Controllers {
             {
                 teams.Add(new CtftimeTeam { Pos = i + 1, Team = top[i].IsTeam ? top[i].TeamName : (top[i].WebsiteUser?.UserName ?? top[i].DiscordUsername), Score = top[i].Score });
             }
-            return Json(teams);
+            return Json(new { standings = teams });
         }
 
         class CtftimeTeam {
