@@ -41,7 +41,7 @@ namespace iCTF_Website.Controllers {
                 return BadRequest();
             }
 
-            string flag = data.Flag;
+            string flag = data.Flag.Trim();
 
             var user = await _userManager.Users.FirstOrDefaultAsync(x => x.ApiKey == apiKey);
             if (user == null)
