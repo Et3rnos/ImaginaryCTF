@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using Serilog;
 using System;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -27,7 +28,10 @@ namespace iCTF_Discord_Bot
 
         private Program()
         {
-            _client = new DiscordSocketClient();
+            _client = new DiscordSocketClient(new DiscordSocketConfig {
+                GatewayIntents = GatewayIntents.All,
+                AlwaysAcknowledgeInteractions = false
+            });
             _commands = new CommandService(new CommandServiceConfig {
                 CaseSensitiveCommands = false,
                 DefaultRunMode = RunMode.Async
@@ -109,6 +113,7 @@ namespace iCTF_Discord_Bot
 
             _client.MessageReceived += HandleCommandAsync;
             _client.UserJoined += UserJoinedAsync;
+            _client.InteractionCreated += InteractionCreatedAsync;
         }
 
         private async Task HandleCommandAsync(SocketMessage messageParam)
@@ -144,6 +149,28 @@ namespace iCTF_Discord_Bot
             eb.Description += "No problem! You can solve them at <https://imaginaryctf.org>\n";
             eb.WithFooter($"You are our #{user.Guild.MemberCount + 1} member!");
             await channel.SendMessageAsync(embed: eb.Build());
+        }
+
+        private async Task InteractionCreatedAsync(SocketInteraction arg)
+        {
+            if (arg is SocketSlashCommand command)
+            {
+                var scopeFactory = _services.GetService<IServiceScopeFactory>();
+                var slashCommands = new SlashCommands(command, scopeFactory);
+
+                switch (command.Data.Name)
+                {
+                    case "stats":
+                        var user = command.Data.Options?.Where(x => x.Name == "user")?.FirstOrDefault()?.Value as IUser;
+                        await slashCommands.StatsAsync(user);
+                        break;
+                    case "leaderboard":
+                        await slashCommands.Leaderboard();
+                        break;
+                }
+
+
+            }
         }
     }
 }

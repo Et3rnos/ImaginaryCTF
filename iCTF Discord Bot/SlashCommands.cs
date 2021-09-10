@@ -1,49 +1,43 @@
-﻿using Discord;
-using Discord.Commands;
-using Discord.WebSocket;
+﻿using iCTF_Shared_Resources;
+using iCTF_Shared_Resources.Managers;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Linq;
-using iCTF_Shared_Resources;
-using iCTF_Shared_Resources.Models;
-using iCTF_Shared_Resources.Managers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
+using Discord.WebSocket;
+using Discord;
 
-namespace iCTF_Discord_Bot.Modules
+namespace iCTF_Discord_Bot
 {
-    [Name("user")]
-    public class UserModule : ModuleBase<SocketCommandContext>
+    public class SlashCommands
     {
-        private readonly DiscordSocketClient _client;
-        private readonly CommandService _commands;
-        private readonly DatabaseContext _context;
+        private readonly SocketSlashCommand _command;
         private readonly IServiceScope _scope;
+        private readonly DiscordSocketClient _client;
+        private readonly DatabaseContext _context;
 
-        private UserModule(DiscordSocketClient client, CommandService commands, IServiceScopeFactory scopeFactory)
+        public SlashCommands(SocketSlashCommand command, IServiceScopeFactory scopeFactory)
         {
-            _client = client;
-            _commands = commands;
+            _command = command;
             _scope = scopeFactory.CreateScope();
             _context = _scope.ServiceProvider.GetService<DatabaseContext>();
+            _client = _scope.ServiceProvider.GetService<DiscordSocketClient>();
         }
 
-        ~UserModule() { _scope.Dispose(); }
+        ~SlashCommands() { _scope.Dispose(); }
 
-        [Command("stats")]
-        [Summary("Prints the player statistics")]
-        public async Task Stats([Name("user")] IUser dUser = null)
+        public async Task StatsAsync(IUser dUser)
         {
-            if (dUser == null) {
-                dUser = Context.User;
-            }
+            if (dUser == null) dUser = _command.User;
 
             var user = await _context.Users.AsQueryable().Include(x => x.Solves).ThenInclude(x => x.Challenge).Include(x => x.WebsiteUser).Include(x => x.Team).ThenInclude(x => x.Solves).ThenInclude(x => x.Challenge).FirstOrDefaultAsync(x => x.DiscordId == dUser.Id);
 
-            if (user == null) {
-                await ReplyAsync("That user is not on the leaderboard yet.\nIf they have a website account make sure it is linked to their discord one.");
+            if (user == null)
+            {
+                await _command.RespondAsync("That user is not on the leaderboard yet");
                 return;
             }
 
@@ -56,7 +50,7 @@ namespace iCTF_Discord_Bot.Modules
             var solvedChallengesTitles = stats.SolvedChallenges.Select(x => x.Title).ToList();
             var unsolvedChallengesTitles = stats.UnsolvedChallenges.Select(x => x.Title).ToList();
 
-            CustomEmbedBuilder eb = new CustomEmbedBuilder();
+            var eb = new CustomEmbedBuilder();
 
             if (isTeam)
             {
@@ -73,7 +67,30 @@ namespace iCTF_Discord_Bot.Modules
             if (solvedChallengesTitles.Count > 0) eb.AddField("Solved Challenges", string.Join('\n', solvedChallengesTitles), true);
             if (unsolvedChallengesTitles.Count > 0) eb.AddField("Unsolved Challenges", string.Join('\n', unsolvedChallengesTitles), true);
 
-            await ReplyAsync(embed: eb.Build());
+            await _command.RespondAsync(embed: eb.Build());
+        }
+
+        public async Task Leaderboard()
+        {
+            var users = await SharedLeaderboardManager.GetTopUsersAndTeams(_context, 20);
+
+            var eb = new CustomEmbedBuilder();
+            eb.WithTitle("Leaderboard");
+
+            for (int i = 0; i < users.Count; i++)
+            {
+                if (users[i].IsTeam)
+                {
+                    eb.Description += $"\n**{i + 1}. {users[i].TeamName}** (team) - {users[i].Score} points";
+                }
+                else
+                {
+                    eb.Description += $"\n**{i + 1}. {users[i].WebsiteUser?.UserName ?? users[i].DiscordUsername}** - {users[i].Score} points";
+                }
+            }
+
+            var builder = new ComponentBuilder().WithButton("Full Leaderboard", style: ButtonStyle.Link, url: "https://imaginaryctf.org/leaderboard");
+            await _command.RespondAsync(embed: eb.Build(), component: builder.Build(), ephemeral: true);
         }
     }
 }

@@ -207,5 +207,26 @@ namespace iCTF_Discord_Bot.Modules
         {
             await ReplyAsync($"The latency is currently {_client.Latency}ms.");
         }
+
+        [Command("resetslashcommands")]
+        [Summary("Resets slash commands.")]
+        [RequireOwner]
+        public async Task ResetSlashCommands()
+        {
+            await _client.Rest.DeleteAllGlobalCommandsAsync();
+
+            var statsCommand = new SlashCommandBuilder();
+            statsCommand.WithName("stats");
+            statsCommand.WithDescription("Prints the player statistics");
+            statsCommand.AddOption("user", ApplicationCommandOptionType.User, "the user to print the stats", required: false);
+            await _client.Rest.CreateGlobalCommand(statsCommand.Build());
+
+            var leaderboardCommand = new SlashCommandBuilder();
+            leaderboardCommand.WithName("leaderboard");
+            leaderboardCommand.WithDescription("Prints the leaderboard");
+            await _client.Rest.CreateGlobalCommand(leaderboardCommand.Build());
+
+            await ReplyAsync("Slash commands were reset. Please give it some time for the changes to take effect.");
+        }
     }
 }

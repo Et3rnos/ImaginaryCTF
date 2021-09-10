@@ -28,7 +28,7 @@ namespace iCTF_Discord_Bot
 
         public static async Task AnnounceWebsiteSolves(DiscordSocketClient client, DatabaseContext context)
         {
-            var solves = await context.Solves.Include(x => x.User.WebsiteUser).Include(x => x.Challenge).Include(x => x.Team).Where(x => x.Announced == false).ToListAsync();
+            var solves = await context.Solves.Include(x => x.User.WebsiteUser).Include(x => x.Challenge).Include(x => x.Team).ThenInclude(x => x.Members).Where(x => x.Announced == false).ToListAsync();
             if (solves.Count == 0) {
                 return;
             }
@@ -45,11 +45,27 @@ namespace iCTF_Discord_Bot
                     var lastChall = await context.Challenges.AsAsyncEnumerable().Where(x => x.State == 2).OrderByDescending(x => x.ReleaseDate).FirstOrDefaultAsync();
                     if (lastChall == solve.Challenge)
                     {
-                        var guildUser = client.GetGuild(config.GuildId).GetUser(solve.User.DiscordId);
-                        if (guildUser != null)
+                        if (solve.Team != null)
                         {
-                            var role = client.GetGuild(config.GuildId).GetRole(config.TodaysRoleId);
-                            await guildUser.AddRoleAsync(role);
+                            foreach (var member in solve.Team.Members)
+                            {
+                                if (member.DiscordId == 0) continue;
+                                var guildUser = client.GetGuild(config.GuildId).GetUser(member.DiscordId);
+                                if (guildUser != null)
+                                {
+                                    var role = client.GetGuild(config.GuildId).GetRole(config.TodaysRoleId);
+                                    await guildUser.AddRoleAsync(role);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            var guildUser = client.GetGuild(config.GuildId).GetUser(solve.User.DiscordId);
+                            if (guildUser != null)
+                            {
+                                var role = client.GetGuild(config.GuildId).GetRole(config.TodaysRoleId);
+                                await guildUser.AddRoleAsync(role);
+                            }
                         }
                     }
                 }

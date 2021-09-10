@@ -30,7 +30,7 @@ namespace iCTF_Website.Pages
                 RooYayUrl = "https://cdn.discordapp.com/emojis/811895872568819743.png?v=1";
             } else {
                 RooNoBooliUrl = "https://cdn.discordapp.com/emojis/778310888243200021.png?v=1";
-                RooYayUrl = "https://cdn.discordapp.com/emojis/778310889689841664.png?v=1";
+                RooYayUrl = "/img/rooYay.png";
             }
         }
     }

@@ -97,11 +97,9 @@
                             @challenge.Title (@(challenge.Points)pts) - @challenge.ReleaseDate.ToString("dd/MM")
                         </div>
                         <div class="card-body">
-                            <div class="card-body">
-                                <a class="text-decoration-none view-challenge-btn py-3 px-4" data-bs-toggle="modal" data-bs-target="#challenge-modal-@(challenge.Id)" href="#">
-                                    VIEW CHALLENGE
+                                <a class="text-decoration-none view-challenge-btn py-1 px-4" data-bs-toggle="modal" data-bs-target="#challenge-modal-@(challenge.Id)" href="#">
+                                    <i class="fas fa-caret-right"></i> VIEW CHALLENGE <i class="fas fa-caret-left"></i>
                                 </a>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -141,11 +139,9 @@
                             @challenge.Title (@(challenge.Points)pts) - @challenge.ReleaseDate.ToString("dd/MM") <i class="fas fa-check"></i>
                         </div>
                         <div class="card-body">
-                            <div class="card-body">
-                                <a class="text-decoration-none view-challenge-solved-btn py-3 px-4" data-bs-toggle="modal" data-bs-target="#challenge-modal-@(challenge.Id)" href="#">
-                                    VIEW CHALLENGE
-                                </a>
-                            </div>
+                            <a class="text-decoration-none view-challenge-solved-btn py-1 px-4" data-bs-toggle="modal" data-bs-target="#challenge-modal-@(challenge.Id)" href="#">
+                                <i class="fas fa-caret-right"></i> VIEW CHALLENGE <i class="fas fa-caret-left"></i>
+                            </a>
                         </div>
                     </div>
                 </div>

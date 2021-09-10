@@ -69,17 +69,33 @@ namespace iCTF_Discord_Bot.Modules
                 await ReplyAsync("You already solved that challenge!");
                 return;
             }
-
+			
             if (config != null && config.GuildId != 0 && config.TodaysRoleId != 0)
             {
                 var lastChall = await _context.Challenges.AsQueryable().OrderByDescending(x => x.ReleaseDate).FirstOrDefaultAsync(x => x.State == 2);
                 if (lastChall == challenge)
                 {
-                    var guildUser = _client.GetGuild(config.GuildId).GetUser(Context.User.Id);
-                    if (guildUser != null)
+                    if (isTeam)
                     {
-                        var role = _client.GetGuild(config.GuildId).GetRole(config.TodaysRoleId);
-                        await guildUser.AddRoleAsync(role);
+                        foreach (var member in user.Team.Members)
+                        {
+                            if (member.DiscordId == 0) continue;
+                            var guildUser = _client.GetGuild(config.GuildId).GetUser(member.DiscordId);
+                            if (guildUser != null)
+                            {
+                                var role = _client.GetGuild(config.GuildId).GetRole(config.TodaysRoleId);
+                                await guildUser.AddRoleAsync(role);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        var guildUser = _client.GetGuild(config.GuildId).GetUser(Context.User.Id);
+                        if (guildUser != null)
+                        {
+                            var role = _client.GetGuild(config.GuildId).GetRole(config.TodaysRoleId);
+                            await guildUser.AddRoleAsync(role);
+                        }
                     }
                 }
             }

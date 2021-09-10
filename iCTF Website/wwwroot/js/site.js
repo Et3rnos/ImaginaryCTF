@@ -1,3 +1,17 @@
+function navHover() {
+    let roos = this.getElementsByClassName("nav-roo");
+    for (var i = 0; i < roos.length; i++) {
+        roos.item(i).style.bottom = "100%";
+    }
+}
+
+function navHoverLeave() {
+    let roos = this.getElementsByClassName("nav-roo");
+    for (var i = 0; i < roos.length; i++) {
+        roos.item(i).style.bottom = "";
+    }
+}
+
 function countdown(minutes, id) {
     var element = document.getElementById(id);
     var target = minutes * 60;
@@ -23,30 +37,24 @@ function countdown(minutes, id) {
     }, 1000);
 }
 
-$('.nav-link, .dropdown-item, .anchor-link').not('#navbarDropdownMenuLink').click(function () {
-    $(".sidenav").width("0px");
-    var sectionTo = $(this).attr('href');
-    $('html, body').animate({
-      scrollTop: $(sectionTo).offset().top - 66
-    }, 500);
-});
-
-$(".sidenav-toggler").click(e => {
-  if($(".sidenav").width() != 0){
-    $(".sidenav").width("0px");
+function toggleSidenav(e) {
+    let elem = document.getElementsByClassName("sidenav")[0]
+    if (elem.style.transform === "translate(100%)"){
+      elem.style.transform = ""
   } else {
-    $(".sidenav").width("300px");
-  }
+      elem.style.transform = "translate(100%)"
+    }
   e.stopPropagation();
   return false;
-})
+}
 
 $(".sidenav").click(e => {
     e.stopPropagation();
 })
 
 $(document).click(() => {
-    $(".sidenav").width("0px");
+    let elem = document.getElementsByClassName("sidenav")[0]
+    elem.style.transform = "translate(100%)"
 })
 
 function isScrolledIntoView(elem)
@@ -78,6 +86,15 @@ $(window).scroll(() => {
 );
 
 $(window).on("load", () => {
+    let navItems = document.getElementsByClassName("nav-item")
+    for (var i = 0; i < navItems.length; i++) {
+        navItems.item(i).addEventListener("mouseover", navHover)
+        navItems.item(i).addEventListener("mouseout", navHoverLeave)
+    }
+
+    let sidenavToggler = document.getElementsByClassName("sidenav-toggler")[0]
+    sidenavToggler.addEventListener("click", toggleSidenav)
+
     $.each($(".small-avatar"), (index, record) => {
         $(record).click(() => {
             if (!($(record).hasClass("rotated"))) {

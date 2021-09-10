@@ -28,7 +28,6 @@ namespace iCTF_Discord_Bot
 
             var embedBuilder = new CustomEmbedBuilder();
             embedBuilder.WithTitle("Leaderboard");
-            embedBuilder.WithDescription("For the full leaderboard please visit <https://imaginaryctf.org/leaderboard>");
 
             for (int i = 0; i < users.Count; i++) {
                 if (users[i].IsTeam)
@@ -42,11 +41,11 @@ namespace iCTF_Discord_Bot
             }
 
             var message = (await channel.GetMessagesAsync(1).FlattenAsync()).FirstOrDefault();
-
             if (message != null && message.Author.Id == client.CurrentUser.Id) {
                 await ((IUserMessage)message).ModifyAsync(x => x.Embed = embedBuilder.Build());
             } else {
-                await channel.SendMessageAsync(embed: embedBuilder.Build());
+                var builder = new ComponentBuilder().WithButton("Full Leaderboard", style: ButtonStyle.Link, url: "https://imaginaryctf.org/leaderboard");
+                await channel.SendMessageAsync(embed: embedBuilder.Build(), component: builder.Build());
             }
         }
     }

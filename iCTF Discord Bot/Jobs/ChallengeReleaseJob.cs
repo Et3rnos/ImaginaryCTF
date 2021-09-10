@@ -79,7 +79,7 @@ namespace iCTF_Discord_Bot.Jobs
                 Log.Information("Posting the challenge writeup on the board writeups channel");
                 var writeupEmbed = new CustomEmbedBuilder();
                 writeupEmbed.WithTitle($"Writeup for {chall.Title}");
-                writeupEmbed.WithDescription(chall.Writeup);
+                writeupEmbed.WithDescription($"{chall.Writeup}\n**Flag:** {chall.Flag}");
                 var writeupsChannel = client.GetGuild(config.GuildId).GetTextChannel(config.BoardWriteupsChannelId);
                 await writeupsChannel.SendMessageAsync(embed: writeupEmbed.Build());
             }
