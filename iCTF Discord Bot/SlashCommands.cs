@@ -9,88 +9,64 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using Discord.WebSocket;
 using Discord;
+using iCTF_Discord_Bot.Logic;
+using Discord.Commands;
 
 namespace iCTF_Discord_Bot
 {
-    public class SlashCommands
+    public static class SlashCommands
     {
-        private readonly SocketSlashCommand _command;
-        private readonly IServiceScope _scope;
-        private readonly DiscordSocketClient _client;
-        private readonly DatabaseContext _context;
-
-        public SlashCommands(SocketSlashCommand command, IServiceScopeFactory scopeFactory)
+        public static async Task ExecuteCommandAsync(IServiceProvider serviceProvider, SocketSlashCommand command)
         {
-            _command = command;
-            _scope = scopeFactory.CreateScope();
-            _context = _scope.ServiceProvider.GetService<DatabaseContext>();
-            _client = _scope.ServiceProvider.GetService<DiscordSocketClient>();
+            var scopeFactory = serviceProvider.GetService<IServiceScopeFactory>();
+            using var scope = scopeFactory.CreateScope();
+            var services = scope.ServiceProvider;
+            var client = services.GetService<DiscordSocketClient>();
+            var commandService = services.GetService<CommandService>();
+            var dbContext = scope.ServiceProvider.GetService<DatabaseContext>();
+
+            switch (command.Data.Name)
+            {
+                case "stats":
+                    await UserLogic.StatsSlashAsync(command, client, dbContext);
+                    break;
+                case "leaderboard":
+                    await LeaderboardLogic.LeaderboardSlashAsync(command, dbContext);
+                    break;
+                case "about":
+                    await UtilLogic.AboutSlashAsync(command);
+                    break;
+                case "help":
+                    await UtilLogic.HelpSlashAsync(command, commandService);
+                    break;
+            }
         }
 
-        ~SlashCommands() { _scope.Dispose(); }
-
-        public async Task StatsAsync(IUser dUser)
+        public static async Task ResetCommandsAsync(DiscordSocketClient client)
         {
-            if (dUser == null) dUser = _command.User;
+            await client.Rest.DeleteAllGlobalCommandsAsync();
 
-            var user = await _context.Users.AsQueryable().Include(x => x.Solves).ThenInclude(x => x.Challenge).Include(x => x.WebsiteUser).Include(x => x.Team).ThenInclude(x => x.Solves).ThenInclude(x => x.Challenge).FirstOrDefaultAsync(x => x.DiscordId == dUser.Id);
+            var statsCommand = new SlashCommandBuilder();
+            statsCommand.WithName("stats");
+            statsCommand.WithDescription("Prints the player statistics");
+            statsCommand.AddOption("user", ApplicationCommandOptionType.User, "the user to print the stats", required: false);
+            await client.Rest.CreateGlobalCommand(statsCommand.Build());
 
-            if (user == null)
-            {
-                await _command.RespondAsync("That user is not on the leaderboard yet");
-                return;
-            }
+            var leaderboardCommand = new SlashCommandBuilder();
+            leaderboardCommand.WithName("leaderboard");
+            leaderboardCommand.WithDescription("Prints the leaderboard");
+            await client.Rest.CreateGlobalCommand(leaderboardCommand.Build());
 
-            bool isTeam = (user.Team != null);
+            var aboutCommand = new SlashCommandBuilder();
+            aboutCommand.WithName("about");
+            aboutCommand.WithDescription("Prints information about the bot and its author");
+            await client.Rest.CreateGlobalCommand(aboutCommand.Build());
 
-            SharedStatsManager.Stats stats;
-            if (isTeam) stats = await SharedStatsManager.GetTeamStats(_context, user.Team);
-            else stats = await SharedStatsManager.GetStats(_context, user);
-
-            var solvedChallengesTitles = stats.SolvedChallenges.Select(x => x.Title).ToList();
-            var unsolvedChallengesTitles = stats.UnsolvedChallenges.Select(x => x.Title).ToList();
-
-            var eb = new CustomEmbedBuilder();
-
-            if (isTeam)
-            {
-                eb.WithTitle($"Stats for {user.Team.Name} (team)");
-                eb.AddField("Score", $"{user.Team.Score} ({stats.Position}/{stats.PlayersCount})");
-            }
-            else
-            {
-                eb.WithTitle($"Stats for {_client.GetUser(user.DiscordId).Username}");
-                eb.WithThumbnailUrl(dUser.GetAvatarUrl() ?? dUser.GetDefaultAvatarUrl());
-                eb.AddField("Score", $"{user.Score} ({stats.Position}/{stats.PlayersCount})");
-            }
-
-            if (solvedChallengesTitles.Count > 0) eb.AddField("Solved Challenges", string.Join('\n', solvedChallengesTitles), true);
-            if (unsolvedChallengesTitles.Count > 0) eb.AddField("Unsolved Challenges", string.Join('\n', unsolvedChallengesTitles), true);
-
-            await _command.RespondAsync(embed: eb.Build());
-        }
-
-        public async Task Leaderboard()
-        {
-            var users = await SharedLeaderboardManager.GetTopUsersAndTeams(_context, 20);
-
-            var eb = new CustomEmbedBuilder();
-            eb.WithTitle("Leaderboard");
-
-            for (int i = 0; i < users.Count; i++)
-            {
-                if (users[i].IsTeam)
-                {
-                    eb.Description += $"\n**{i + 1}. {users[i].TeamName}** (team) - {users[i].Score} points";
-                }
-                else
-                {
-                    eb.Description += $"\n**{i + 1}. {users[i].WebsiteUser?.UserName ?? users[i].DiscordUsername}** - {users[i].Score} points";
-                }
-            }
-
-            var builder = new ComponentBuilder().WithButton("Full Leaderboard", style: ButtonStyle.Link, url: "https://imaginaryctf.org/leaderboard");
-            await _command.RespondAsync(embed: eb.Build(), component: builder.Build(), ephemeral: true);
+            var helpCommand = new SlashCommandBuilder();
+            helpCommand.WithName("help");
+            helpCommand.WithDescription("Prints all available commands in a category");
+            helpCommand.AddOption("category", ApplicationCommandOptionType.String, "the category to view its commands", required: false);
+            await client.Rest.CreateGlobalCommand(helpCommand.Build());
         }
     }
 }

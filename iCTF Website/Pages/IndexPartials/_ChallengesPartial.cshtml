@@ -26,9 +26,9 @@
                         </div>
                         <div class="card-body challenge-body">
                             <b>Description</b><br />
-                            <p>@Markdown.ParseHtmlString(challenge.Description)</p>
+                            @Markdown.ParseHtmlString(challenge.Description)
                             <b>Attachments</b><br />
-                            <p>@Markdown.ParseHtmlString(challenge.Attachments)</p>
+                            @Markdown.ParseHtmlString(challenge.Attachments)
                             <b>Category</b><br />
                             <p>@challenge.Category</p>
                             <b>Author</b><br />

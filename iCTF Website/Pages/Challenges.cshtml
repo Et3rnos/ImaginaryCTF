@@ -97,9 +97,9 @@
                             @challenge.Title (@(challenge.Points)pts) - @challenge.ReleaseDate.ToString("dd/MM")
                         </div>
                         <div class="card-body">
-                                <a class="text-decoration-none view-challenge-btn py-1 px-4" data-bs-toggle="modal" data-bs-target="#challenge-modal-@(challenge.Id)" href="#">
-                                    <i class="fas fa-caret-right"></i> VIEW CHALLENGE <i class="fas fa-caret-left"></i>
-                                </a>
+                            <a class="text-decoration-none view-challenge-btn py-1 px-4" data-bs-toggle="modal" data-bs-target="#challenge-modal-@(challenge.Id)" href="#">
+                                <i class="fas fa-caret-right"></i> VIEW CHALLENGE <i class="fas fa-caret-left"></i>
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -107,19 +107,13 @@
                     <div class="modal-dialog modal-dialog-centered modal-lg">
                         <div class="modal-content text-dark">
                             <div class="modal-header">
-                                <h5 class="modal-title text-center w-100">@challenge.Title</h5>
+                                <h5 class="modal-title text-center w-100">@challenge.Title (@(challenge.Points)pts) <span class="d-inline-block">- @challengeInfo.SolvesCount solves</span><br /><small class="text-muted">by @challenge.Author</small></h5>
                             </div>
-                            <div class="modal-body">
+                            <div class="modal-body pb-0">
                                 <b>Description</b>
-                                <p>@Markdown.ParseHtmlString(challenge.Description)</p>
+                                @Markdown.ParseHtmlString(challenge.Description)
                                 <b>Attachments</b>
-                                <p>@Markdown.ParseHtmlString(challenge.Attachments)</p>
-                                <b>Author</b>
-                                <p>@challenge.Author</p>
-                                <b>Points</b>
-                                <p>@challenge.Points</p>
-                                <b>Solves</b>
-                                <p>@(challengeInfo.SolvesCount)</p>
+                                @Markdown.ParseHtmlString(challenge.Attachments)
                             </div>
                             <div class="modal-footer">
                                 <div class="text-center w-100">
@@ -149,19 +143,13 @@
                     <div class="modal-dialog modal-dialog-centered modal-lg">
                         <div class="modal-content text-dark">
                             <div class="modal-header">
-                                <h5 class="modal-title text-center w-100">@challenge.Title</h5>
+                                <h5 class="modal-title text-center w-100">@challenge.Title (@(challenge.Points)pts) <span class="d-inline-block">- @challengeInfo.SolvesCount solves</span><br /><small class="text-muted">by @challenge.Author</small></h5>
                             </div>
-                            <div class="modal-body">
+                            <div class="modal-body pb-0">
                                 <b>Description</b>
-                                <p>@Markdown.ParseHtmlString(challenge.Description)</p>
+                                @Markdown.ParseHtmlString(challenge.Description)
                                 <b>Attachments</b>
-                                <p>@Markdown.ParseHtmlString(challenge.Attachments)</p>
-                                <b>Author</b>
-                                <p>@challenge.Author</p>
-                                <b>Points</b>
-                                <p>@challenge.Points</p>
-                                <b>Solves</b>
-                                <p>@(challengeInfo.SolvesCount)</p>
+                                @Markdown.ParseHtmlString(challenge.Attachments)
                             </div>
                             <div class="modal-footer">
                                 <div class="text-center w-100">

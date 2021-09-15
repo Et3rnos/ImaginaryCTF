@@ -13,6 +13,7 @@ using Microsoft.Extensions.Logging;
 using Serilog;
 using System.IO;
 using System.Security.Cryptography;
+using iCTF_Discord_Bot.Logic;
 
 namespace iCTF_Discord_Bot.Modules
 {
@@ -38,124 +39,21 @@ namespace iCTF_Discord_Bot.Modules
         [Summary("Prints information about the bot and its author")]
         public async Task About()
         {
-            var eb = new CustomEmbedBuilder();
-            eb.WithThumbnailUrl("https://cdn.discordapp.com/avatars/669798825765896212/572b97a2e8c1dc33265ac51679303c41.png?size=256");
-            eb.WithTitle("About");
-            eb.AddField("Author", "This bot was created by Et3rnos#6556");
-            eb.AddField("Support", "If you want to support me you can visit my Patreon:\n<https://www.patreon.com/et3rnos>");
-            await ReplyAsync(embed: eb.Build());
+            await UtilLogic.AboutCommandAsync(Context);
         }
 
         [Command("help")]
         [Summary("Prints information about available commands")]
         public async Task Help()
         {
-            var eb = new CustomEmbedBuilder()
-            {
-                Title = "Available Commands"
-            };
-
-            var mainCommandsNames = new string[] { "flag", "stats" };
-            var mainCommands = _commands.Commands.Where(x => mainCommandsNames.Contains(x.Name));
-
-            eb.Description += "\n**Main Commands**";
-
-            foreach (var command in mainCommands)
-            {
-                eb.Description += $"\n`.{command.Name}";
-                foreach (var parameter in command.Parameters)
-                {
-                    if (parameter.IsOptional)
-                        eb.Description += $" [{parameter.Name}]";
-                    else
-                        eb.Description += $" <{parameter.Name}>";
-                }
-                eb.Description += "`";
-                var requirePermission = command.Preconditions.OfType<RequireUserPermissionAttribute>().FirstOrDefault();
-                if (requirePermission != null)
-                {
-                    eb.Description += " :star:";
-                }
-                eb.Description += $"\n➜ {command.Summary}";
-                var requireContext = command.Preconditions.OfType<RequireContextAttribute>().FirstOrDefault();
-                if (requireContext != null)
-                {
-                    switch (requireContext.Contexts)
-                    {
-                        case ContextType.DM:
-                            eb.Description += " (DMs only)";
-                            break;
-                        case ContextType.Guild:
-                            eb.Description += " (Guild only)";
-                            break;
-                    }
-                }
-            }
-
-            eb.Description += "\n\n**Other Commands**";
-
-            foreach (var module in _commands.Modules)
-            {
-                eb.Description += $"\n`.help {module.Name}`";
-            }
-
-            eb.WithFooter("Starred commands require the user to have certain permissions");
-
-            await ReplyAsync(embed: eb.Build());
+            await UtilLogic.HelpCommandAsync(Context, _commands);
         }
 
         [Command("help")]
         [Summary("Prints all available commands in a category")]
-        public async Task HelpAdmin([Name("category")] string category)
+        public async Task HelpCategory([Name("category")] string category)
         {
-            var module = _commands.Modules.FirstOrDefault(x => x.Name.ToLower() == category.ToLower());
-            if (module == null)
-            {
-                await ReplyAsync("That's not a valid category name.");
-                return;
-            }
-
-            var eb = new CustomEmbedBuilder
-            {
-                Title = "Available Commands",
-                Color = Color.Blue
-            };
-
-            foreach (var command in module.Commands)
-            {
-                eb.Description += $"\n`.{command.Name}";
-                foreach (var parameter in command.Parameters)
-                {
-                    if (parameter.IsOptional)
-                        eb.Description += $" [{parameter.Name}]";
-                    else
-                        eb.Description += $" <{parameter.Name}>";
-                }
-                eb.Description += "`";
-                var requirePermission = command.Preconditions.OfType<RequireUserPermissionAttribute>().FirstOrDefault();
-                if (requirePermission != null)
-                {
-                    eb.Description += " :star:";
-                }
-                eb.Description += $"\n➜ {command.Summary}";
-                var requireContext = command.Preconditions.OfType<RequireContextAttribute>().FirstOrDefault();
-                if (requireContext != null)
-                {
-                    switch (requireContext.Contexts)
-                    {
-                        case ContextType.DM:
-                            eb.Description += " (DMs only)";
-                            break;
-                        case ContextType.Guild:
-                            eb.Description += " (Guild only)";
-                            break;
-                    }
-                }
-            }
-
-            eb.WithFooter("Starred commands require the user to have certain permissions");
-
-            await ReplyAsync(embed: eb.Build());
+            await UtilLogic.HelpCommandAsync(Context, _commands, category);
         }
 
         [Command("logs")]
@@ -213,19 +111,7 @@ namespace iCTF_Discord_Bot.Modules
         [RequireOwner]
         public async Task ResetSlashCommands()
         {
-            await _client.Rest.DeleteAllGlobalCommandsAsync();
-
-            var statsCommand = new SlashCommandBuilder();
-            statsCommand.WithName("stats");
-            statsCommand.WithDescription("Prints the player statistics");
-            statsCommand.AddOption("user", ApplicationCommandOptionType.User, "the user to print the stats", required: false);
-            await _client.Rest.CreateGlobalCommand(statsCommand.Build());
-
-            var leaderboardCommand = new SlashCommandBuilder();
-            leaderboardCommand.WithName("leaderboard");
-            leaderboardCommand.WithDescription("Prints the leaderboard");
-            await _client.Rest.CreateGlobalCommand(leaderboardCommand.Build());
-
+            await SlashCommands.ResetCommandsAsync(_client);
             await ReplyAsync("Slash commands were reset. Please give it some time for the changes to take effect.");
         }
     }

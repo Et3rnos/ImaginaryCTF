@@ -1,6 +1,7 @@
 ﻿using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
+using iCTF_Discord_Bot.Logic;
 using iCTF_Shared_Resources;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -147,7 +148,7 @@ namespace iCTF_Discord_Bot
             eb.Description += ":small_blue_diamond: <#762690967093379082>\n";
             eb.Description += "\n**Prefer solving challenges through web?**\n";
             eb.Description += "No problem! You can solve them at <https://imaginaryctf.org>\n";
-            eb.WithFooter($"You are our #{user.Guild.MemberCount + 1} member!");
+            eb.WithFooter($"You are our #{user.Guild.MemberCount + 1 /*idk if the +1 is necessary, if you know pls message me*/ } member!");
             await channel.SendMessageAsync(embed: eb.Build());
         }
 
@@ -155,21 +156,7 @@ namespace iCTF_Discord_Bot
         {
             if (arg is SocketSlashCommand command)
             {
-                var scopeFactory = _services.GetService<IServiceScopeFactory>();
-                var slashCommands = new SlashCommands(command, scopeFactory);
-
-                switch (command.Data.Name)
-                {
-                    case "stats":
-                        var user = command.Data.Options?.Where(x => x.Name == "user")?.FirstOrDefault()?.Value as IUser;
-                        await slashCommands.StatsAsync(user);
-                        break;
-                    case "leaderboard":
-                        await slashCommands.Leaderboard();
-                        break;
-                }
-
-
+                await SlashCommands.ExecuteCommandAsync(_services, command);
             }
         }
     }
