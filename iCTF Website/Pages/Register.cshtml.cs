@@ -135,7 +135,7 @@ ImaginaryCTF's Team
             if (string.IsNullOrEmpty(reCaptchaResponse)) { return false; }
 
             var client = new HttpClient();
-            var secretKey = _configuration.GetValue<string>("RecaptchaV3SecretKey");
+            var secretKey = _configuration.GetValue<string>("RecaptchaV2SecretKey");
             var values = new Dictionary<string, string>
             {
                 { "secret", secretKey },
@@ -147,18 +147,6 @@ ImaginaryCTF's Team
             var responseString = await response.Content.ReadAsStringAsync();
             dynamic json = JsonConvert.DeserializeObject(responseString);
             return (bool)json.success;
-        }
-
-        private static string GenerateApiKey()
-        {
-            using var rng = new RNGCryptoServiceProvider();
-            var bytes = new byte[32];
-            rng.GetBytes(bytes);
-            var base64 = Convert.ToBase64String(bytes);
-            base64 = base64.Replace("=", string.Empty);
-            base64 = base64.Replace("/", "-");
-            base64 = base64.Replace("+", "_");
-            return base64;
         }
     }
 }

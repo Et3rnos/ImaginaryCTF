@@ -1,7 +1,18 @@
 ﻿<header>
     <div class="pos-rel">
         <div class="overflow-hidden">
-            <img src="/img/banner.jpg" class="d-block banner-img" alt="Banner">
+            @{
+                var now = DateTime.UtcNow;
+                // Halloween
+                if (now.Month == 10)
+                {
+                    <img src="/img/halloween_banner.jpg" class="d-block banner-img" alt="Banner">
+                }
+                else
+                {
+                    <img src="/img/banner.jpg" class="d-block banner-img" alt="Banner">
+                }
+            }
             <div class="position-absolute header-text text-white text-start bg-dark-smooth p-3 w-75" style="display:none">
                 <h2>Daily CTF Challenges For Everyone</h2>
                 <p>Create an <a class="anchor-link btn btn-outline-light p-0 ps-1 pe-1" asp-page="Register">account</a> or join our <a class="anchor-link btn btn-outline-light p-0 ps-1 pe-1" href="https://discord.gg/vReKWNxPuE" target="_blank">discord</a> server to get started.</p>

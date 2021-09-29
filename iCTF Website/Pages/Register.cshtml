@@ -31,17 +31,12 @@
                     <input asp-for="Input.ConfirmPassword" class="form-control" />
                 </div>
                 <script src="https://www.google.com/recaptcha/api.js"></script>
-                <script>
-                    function onSubmit(token) {
-                        document.getElementById("register-form").submit();
-                    }
-                </script>
-                <button class="g-recaptcha btn btn-primary"
-                        data-sitekey="@(configuration.GetValue<string>("RecaptchaV3SiteKey"))"
-                        data-callback='onSubmit'
-                        data-action='submit'>
-                    Register
-                </button>
+                <div class="mb-2 text-center">
+                    <div class="g-recaptcha d-inline-block" data-sitekey="@(configuration.GetValue<string>("RecaptchaV2SiteKey"))"></div>
+                </div>
+                <div class="mb-2">
+                    <button type="submit" class="btn btn-primary">Register</button>
+                </div>
             </form>
         </div>
     </div>

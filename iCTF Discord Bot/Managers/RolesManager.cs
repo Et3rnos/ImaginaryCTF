@@ -34,7 +34,7 @@ namespace iCTF_Discord_Bot
 
             var rolesToRemove = new List<SocketRole> { firstRole, secondRole, thirdRole };
 
-            var users = await SharedLeaderboardManager.GetTopPlayers(context, 5);
+            var users = await SharedLeaderboardManager.GetTopUsersAndTeams(context, 5);
 
             var top = users.FirstOrDefault();
             if (top != null && top.DiscordId != 0)
@@ -52,17 +52,31 @@ namespace iCTF_Discord_Bot
                 var dUser = client.GetGuild(config.GuildId).GetUser(user.DiscordId);
                 if (dUser == null) continue;
 
-                await dUser.RemoveRolesAsync(rolesToRemove);
                 switch (i)
                 {
                     case 0:
-                        await dUser.AddRoleAsync(firstRole);
+                        if (!dUser.Roles.Any(x => x.Id == firstRole.Id))
+                        {
+                            await dUser.RemoveRolesAsync(rolesToRemove);
+                            await dUser.AddRoleAsync(firstRole);
+                        }
                         break;
                     case 1:
-                        await dUser.AddRoleAsync(secondRole);
+                        if (!dUser.Roles.Any(x => x.Id == secondRole.Id))
+                        {
+                            await dUser.RemoveRolesAsync(rolesToRemove);
+                            await dUser.AddRoleAsync(secondRole);
+                        }
                         break;
                     case 2:
-                        await dUser.AddRoleAsync(thirdRole);
+                        if (!dUser.Roles.Any(x => x.Id == thirdRole.Id))
+                        {
+                            await dUser.RemoveRolesAsync(rolesToRemove);
+                            await dUser.AddRoleAsync(thirdRole);
+                        }
+                        break;
+                    default:
+                        await dUser.RemoveRolesAsync(rolesToRemove);
                         break;
                 }
             }
