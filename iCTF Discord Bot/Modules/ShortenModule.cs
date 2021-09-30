@@ -9,6 +9,8 @@ using System.Linq;
 using iCTF_Shared_Resources;
 using Microsoft.Extensions.DependencyInjection;
 using iCTF_Shared_Resources.Models;
+using System.Net.Http;
+using Newtonsoft.Json;
 
 namespace iCTF_Discord_Bot.Modules
 {
@@ -104,6 +106,37 @@ namespace iCTF_Discord_Bot.Modules
             random.NextBytes(randomBytes);
             string randomHex = BitConverter.ToString(randomBytes).Replace("-", string.Empty);
             return randomHex;
+        }
+
+        [Command("fdownl")]
+        [RequireContext(ContextType.Guild)]
+        [RequireOwner(Group = "Permission")]
+        [RequireUserPermission(GuildPermission.ManageGuild, Group = "Permission")]
+        [Summary("Uploads a file to FDownl")]
+        public async Task Fdownl()
+        {
+            var attachment = Context.Message.Attachments.FirstOrDefault();
+            if (attachment == null) { await ReplyAsync("I could not find an attachment within your message."); return; }
+
+            var httpClient = new HttpClient();
+            using var downloadResponse = await httpClient.GetAsync(attachment.Url, HttpCompletionOption.ResponseHeadersRead);
+            if (!downloadResponse.IsSuccessStatusCode) { await ReplyAsync("Discord is having problems with their CDN I guess :("); return; }
+            using var content = await downloadResponse.Content.ReadAsStreamAsync();
+
+            var form = new MultipartFormDataContent();
+            form.Add(new StringContent("604800"), "lifetime");
+            form.Add(new StreamContent(content), "files", attachment.Filename);
+
+            var message = await ReplyAsync("Uploading...");
+            var uploadResponse = await httpClient.PostAsync("https://s1.fdow.nl/upload", form);
+            await message.DeleteAsync();
+            if (!uploadResponse.IsSuccessStatusCode) { await ReplyAsync("Upload failed :("); return; }
+
+            dynamic result = JsonConvert.DeserializeObject(await uploadResponse.Content.ReadAsStringAsync());
+            if ((int)result.code == 0)
+                await ReplyAsync($"Success! You can find your files at:\nhttps://fdow.nl/{result.id}");
+            else
+                await ReplyAsync($"The server returned the following error:\n```\n{result.error}\n```");
         }
     }
 }

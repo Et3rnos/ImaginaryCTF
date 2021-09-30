@@ -32,6 +32,7 @@ namespace iCTF_Website.Pages
         private readonly ILogger<RegisterModel> _logger;
         private readonly IConfiguration _configuration;
         private readonly IEmailService _emailService;
+        private readonly IRecaptchaService _recaptchaService;
 
         public RegisterModel(
             DatabaseContext context,
@@ -39,7 +40,8 @@ namespace iCTF_Website.Pages
             SignInManager<ApplicationUser> signInManager,
             ILogger<RegisterModel> logger,
             IConfiguration configuration,
-            IEmailService emailService)
+            IEmailService emailService,
+            IRecaptchaService recaptchaService)
         {
             _context = context;
             _userManager = userManager;
@@ -47,6 +49,7 @@ namespace iCTF_Website.Pages
             _logger = logger;
             _configuration = configuration;
             _emailService = emailService;
+            _recaptchaService = recaptchaService;
         }
 
         [BindProperty]
@@ -86,26 +89,29 @@ namespace iCTF_Website.Pages
             string reCaptchaResponse = Request.Form["g-recaptcha-response"];
             returnUrl ??= Url.Content("~/");
 
-            if(!await IsRecaptchaValid(reCaptchaResponse)) {
+            if(!await _recaptchaService.VerifyAsync(reCaptchaResponse)) {
                 ModelState.AddModelError(string.Empty, "Invalid Recaptcha");
                 return Page();
             }
 
-            if (ModelState.IsValid)
-            {
-                var user = new ApplicationUser { UserName = Input.Username, Email = Input.Email, User = new User(), ApiKey = RandomHelper.GenerateRandomString() };
-                var result = await _userManager.CreateAsync(user, Input.Password);
-                if (result.Succeeded) 
-                {
-                    var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                    code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-                    var callbackUrl = Url.Page(
-                        "/ConfirmEmail",
-                        pageHandler: null,
-                        values: new { area = "Account", userId = user.Id, code = code, returnUrl = returnUrl },
-                        protocol: Request.Scheme);
+            if (!ModelState.IsValid) return Page();
 
-                    await _emailService.SendAsync(Input.Email, "ImaginaryCTF - Confirm your email",
+            var existentUser = await _userManager.FindByEmailAsync(Input.Email);
+            if (existentUser != null && !existentUser.EmailConfirmed) await _userManager.DeleteAsync(existentUser);
+
+            var user = new ApplicationUser { UserName = Input.Username, Email = Input.Email, User = new User(), ApiKey = RandomHelper.GenerateRandomString() };
+            var result = await _userManager.CreateAsync(user, Input.Password);
+            if (result.Succeeded)
+            {
+                var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+                var callbackUrl = Url.Page(
+                    "/ConfirmEmail",
+                    pageHandler: null,
+                    values: new { area = "Account", userId = user.Id, code = code, returnUrl = returnUrl },
+                    protocol: Request.Scheme);
+
+                await _emailService.SendAsync(Input.Email, "ImaginaryCTF - Confirm your email",
 $@"
 Hello {HtmlEncoder.Default.Encode(user.UserName)}!
 <br/>
@@ -119,34 +125,14 @@ Best Regards,
 ImaginaryCTF's Team
 ");
 
-                    return RedirectToPage("/RegisterConfirmation", new { area = "Account" });
-                }
-                foreach (var error in result.Errors)
-                {
-                    ModelState.AddModelError(string.Empty, error.Description);
-                }
+                return RedirectToPage("/RegisterConfirmation", new { area = "Account" });
+            }
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError(string.Empty, error.Description);
             }
 
             return Page();
-        }
-
-        private async Task<bool> IsRecaptchaValid(string reCaptchaResponse)
-        {
-            if (string.IsNullOrEmpty(reCaptchaResponse)) { return false; }
-
-            var client = new HttpClient();
-            var secretKey = _configuration.GetValue<string>("RecaptchaV2SecretKey");
-            var values = new Dictionary<string, string>
-            {
-                { "secret", secretKey },
-                { "response", reCaptchaResponse }
-            };
-            var data = new FormUrlEncodedContent(values);
-
-            var response = await client.PostAsync("https://www.google.com/recaptcha/api/siteverify", data);
-            var responseString = await response.Content.ReadAsStringAsync();
-            dynamic json = JsonConvert.DeserializeObject(responseString);
-            return (bool)json.success;
         }
     }
 }

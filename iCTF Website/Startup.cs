@@ -41,6 +41,7 @@ namespace iCTF_Website
 
             services.AddIdentity<ApplicationUser, IdentityRole>(options => {
                 options.SignIn.RequireConfirmedAccount = true;
+                options.User.RequireUniqueEmail = true;
                 }
             )
             .AddEntityFrameworkStores<DatabaseContext>()
@@ -58,6 +59,7 @@ namespace iCTF_Website
             });
 
             services.AddTransient<IEmailService, EmailService>();
+            services.AddTransient<IRecaptchaService, RecaptchaService>();
 
             services.AddRazorPages();
             services.AddControllers();
