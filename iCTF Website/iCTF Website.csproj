@@ -42,4 +42,8 @@
     <Content Include="wwwroot\*" CopyToPublishDirectory="Always" />
   </ItemGroup>
 
+	<PropertyGroup>
+		<ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
+	</PropertyGroup>
+
 </Project>

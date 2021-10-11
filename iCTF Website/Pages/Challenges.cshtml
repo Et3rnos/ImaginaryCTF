@@ -154,6 +154,14 @@
                                 @Markdown.ParseHtmlString(challenge.Description)
                                 <b>Attachments</b>
                                 @Markdown.ParseHtmlString(challenge.Attachments)
+                                <b style="cursor: pointer" class="d-block mb-2" data-bs-toggle="collapse" href="#writeup-@(challenge.Id)">Writeup <i class="fas fa-caret-down"></i></b>
+                                <div class="collapse" id="writeup-@(challenge.Id)">
+                                    @Markdown.ParseHtmlString(challenge.Writeup)
+                                </div>
+                                <b style="cursor: pointer" class="d-block mb-2" data-bs-toggle="collapse" href="#flag-@(challenge.Id)">Flag <i class="fas fa-caret-down"></i></b>
+                                <div class="collapse" id="flag-@(challenge.Id)">
+                                    <p>@challenge.Flag</p>
+                                </div>
                             </div>
                             <div class="modal-footer">
                                 <div class="text-center w-100">
