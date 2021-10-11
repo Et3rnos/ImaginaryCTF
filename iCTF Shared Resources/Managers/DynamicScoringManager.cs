@@ -12,7 +12,6 @@ namespace iCTF_Shared_Resources.Managers
     {
         public static int GetPointsFromSolvesCount(int solvesCount)
         {
-            Console.WriteLine((100 - 500) / 5000f);
             return Math.Max(Convert.ToInt32((100 - 500) / 5000f * Convert.ToInt32(Math.Pow(solvesCount, 2)) + 500), 100);
         }
     }
