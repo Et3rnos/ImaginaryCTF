@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using iCTF_Shared_Resources.Managers;
 using static iCTF_Shared_Resources.Managers.SharedStatsManager;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
 
 namespace iCTF_Website.Pages
 {
@@ -18,12 +19,14 @@ namespace iCTF_Website.Pages
         public Team Team { get; set; }
         public Stats TeamStats { get; set; }
         public DateTime FirstChallengeReleaseDate { get; set; }
-
+        
         private readonly DatabaseContext _context;
+        private readonly IConfiguration _configuration;
 
-        public TeamModel(DatabaseContext context)
+        public TeamModel(DatabaseContext context, IConfiguration configuration)
         {
             _context = context;
+            _configuration = configuration;
         }
 
         public async Task<IActionResult> OnGetAsync(int id)
@@ -31,7 +34,6 @@ namespace iCTF_Website.Pages
             if (id == 0) {
                 Team = new Team {
                     Name = "Roo Gang",
-                    Score = 1337,
                     Members = new List<User> {
                         new User { Id = 0, WebsiteUser = new ApplicationUser { UserName = "rooYay" } },
                         new User { Id = 0, WebsiteUser = new ApplicationUser { UserName = "rooNobooli" } },
@@ -39,9 +41,10 @@ namespace iCTF_Website.Pages
                     }
                 };
                 TeamStats = new Stats { 
-                    SolvedChallenges = new List<Challenge> { new Challenge { Title = "Hack ImaginaryCTF", Points = 1337 } },
+                    SolvedChallenges = new List<ChallengeInfo> { new ChallengeInfo { Challenge = new Challenge { Title = "Hack ImaginaryCTF", Points = 1337 } } },
                     PlayersCount = 611,
-                    Position = -1
+                    Position = -1,
+                    Score = 1337
                 };
                 return Page();
             }
@@ -50,11 +53,11 @@ namespace iCTF_Website.Pages
             if (Team == null) return NotFound();
 
 
-            TeamStats = await GetTeamStats(_context, Team);
+            TeamStats = await GetTeamStats(_context, Team, _configuration.GetValue<bool>("DynamicScoring"));
             if (TeamStats.SolvedChallenges.Any())
             {
                 var challs = TeamStats.SolvedChallenges.Union(TeamStats.UnsolvedChallenges);
-                FirstChallengeReleaseDate = challs.Min(x => x.ReleaseDate);
+                FirstChallengeReleaseDate = challs.Min(x => x.Challenge.ReleaseDate);
             }
 
             return Page();

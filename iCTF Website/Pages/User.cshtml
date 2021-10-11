@@ -1,6 +1,10 @@
 ﻿@page "{id:int}"
 @model iCTF_Website.Pages.UserModel
 
+@using Microsoft.Extensions.Configuration;
+@using iCTF_Shared_Resources.Managers
+@inject IConfiguration configuration;
+
 @{
     ViewData["Title"] = Model.Name;
 }
@@ -17,8 +21,8 @@
     else
     {
         <h2 class="m-3">
-            @Model.Name - @Model.Player.Score points
-            @if (Model.Player.Score > 0)
+            @Model.Name - @Model.PlayerStats.Score points
+            @if (Model.PlayerStats.Score > 0)
             {
                 @:(@Model.PlayerStats.Position / @Model.PlayerStats.PlayersCount)
             }
@@ -53,7 +57,9 @@
                                 @{ int score = 0; }
                                 @foreach (var solve in Model.Player.Solves)
                                 {
-                                    score += solve.Challenge.Points;
+                                    score += configuration.GetValue<bool>("DynamicScoring") 
+                                            ? DynamicScoringManager.GetPointsFromSolvesCount(Model.PlayerStats.SolvedChallenges.First(x => x.Challenge == solve.Challenge).SolvesCount)
+                                            : solve.Challenge.Points;
                                     @:{ x: moment("@(solve.SolvedAt.ToString("o") + "Z")"), y: @score },
                                 }
                                     { x: moment(), y: @score },
@@ -76,7 +82,7 @@
                 });
             </script>
         }
-        <div class="row">
+        <div class="row mt-2">
             <div class="col-md-6">
                 <h4>Solved Challenges</h4>
                 @if (Model.Player.Solves.Any())
@@ -95,7 +101,9 @@
                                 {
                                     <tr>
                                         <td>@solve.Challenge.Title</td>
-                                        <td>@solve.Challenge.Points</td>
+                                        <td>@(configuration.GetValue<bool>("DynamicScoring") 
+                                            ? DynamicScoringManager.GetPointsFromSolvesCount(Model.PlayerStats.SolvedChallenges.First(x => x.Challenge == solve.Challenge).SolvesCount)
+                                            : solve.Challenge.Points)</td>
                                         <td><script>document.write(moment("@(solve.SolvedAt.ToString("o") + "Z")").format('DD/MM HH:mm:ss'))</script></td>
                                     </tr>
                                 }
@@ -124,8 +132,10 @@
                                 @foreach (var chall in Model.PlayerStats.UnsolvedChallenges)
                                 {
                                     <tr>
-                                        <td>@chall.Title</td>
-                                        <td>@chall.Points</td>
+                                        <td>@chall.Challenge.Title</td>
+                                        <td>@(configuration.GetValue<bool>("DynamicScoring") 
+                                            ? DynamicScoringManager.GetPointsFromSolvesCount(chall.SolvesCount)
+                                            : chall.Challenge.Points)</td>
                                     </tr>
                                 }
                             </tbody>

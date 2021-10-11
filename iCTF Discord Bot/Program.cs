@@ -53,14 +53,15 @@ namespace iCTF_Discord_Bot
                 .ReadFrom.Configuration(configuration)
                 .CreateLogger();
 
+            var connectionString = configuration.GetValue<string>("ConnectionString");
+
             var map = new ServiceCollection()
                 .AddSingleton(_client)
                 .AddSingleton(_commands)
                 .AddSingleton(configuration)
-                .AddDbContext<DatabaseContext>(options => {
-                    options.UseMySql(configuration.GetValue<string>("ConnectionString"),
-                    new MySqlServerVersion(new Version(5, 7)));
-                    }
+                .AddDbContext<DatabaseContext>(options =>
+                    options.UseMySql(connectionString,
+                    ServerVersion.AutoDetect(connectionString))
                 );
 
             return map.BuildServiceProvider();

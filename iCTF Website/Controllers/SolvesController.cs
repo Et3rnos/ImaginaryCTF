@@ -26,7 +26,7 @@ namespace iCTF_Website.Controllers {
 
         [HttpGet("last/{limit}")]
         public async Task<IActionResult> LastAsync([Range(1,100)] int limit) {
-            var solves = await _context.Solves.Include(x => x.User).ThenInclude(x => x.WebsiteUser).Include(x => x.Team).Include(x => x.Challenge).OrderByDescending(x => x.SolvedAt).Take(limit).ToListAsync();
+            var solves = await _context.Solves.Include(x => x.User).ThenInclude(x => x.Solves).ThenInclude(x => x.Challenge).Include(x => x.User.WebsiteUser).Include(x => x.Team.Solves).ThenInclude(x => x.Challenge).Include(x => x.Challenge).OrderByDescending(x => x.SolvedAt).Take(limit).ToListAsync();
             var apiSolves = solves.Select(x => new ApiSolve
             {
                 Id = x.Id,
@@ -35,7 +35,7 @@ namespace iCTF_Website.Controllers {
                     Id = x.User.Id,
                     DiscordId = x.User.DiscordId,
                     DiscordUsername = x.User.DiscordUsername,
-                    Score = x.User.Score,
+                    Score = x.User.Solves.Sum(x => x.Challenge.Points),
                     WebsiteUser = x.User.WebsiteUser != null ? new ApiWebsiteUser
                     {
                         Username = x.User.WebsiteUser.UserName
@@ -46,7 +46,7 @@ namespace iCTF_Website.Controllers {
                 {
                     Id = x.Team.Id,
                     Name = x.Team.Name,
-                    Score = x.Team.Score
+                    Score = x.Team.Solves.Sum(x => x.Challenge.Points)
                 } : null,
                 Challenge = x.Challenge != null ? new ApiChallenge
                 {
@@ -63,7 +63,7 @@ namespace iCTF_Website.Controllers {
         [HttpGet("byuserid/{id}")]
         public async Task<IActionResult> ByUserId(int id)
         {
-            var solves = await _context.Solves.Include(x => x.User).ThenInclude(x => x.WebsiteUser).Include(x => x.Team).Include(x => x.Challenge).OrderByDescending(x => x.SolvedAt).Where(x => x.UserId == id).ToListAsync();
+            var solves = await _context.Solves.Include(x => x.User).ThenInclude(x => x.Solves).ThenInclude(x => x.Challenge).Include(x => x.User.WebsiteUser).Include(x => x.Team.Solves).ThenInclude(x => x.Challenge).Include(x => x.Challenge).OrderByDescending(x => x.SolvedAt).Where(x => x.UserId == id).ToListAsync();
             var apiSolves = solves.Select(x => new ApiSolve
             {
                 Id = x.Id,
@@ -72,7 +72,7 @@ namespace iCTF_Website.Controllers {
                     Id = x.User.Id,
                     DiscordId = x.User.DiscordId,
                     DiscordUsername = x.User.DiscordUsername,
-                    Score = x.User.Score,
+                    Score = x.User.Solves.Sum(x => x.Challenge.Points),
                     WebsiteUser = x.User.WebsiteUser != null ? new ApiWebsiteUser
                     {
                         Username = x.User.WebsiteUser.UserName
@@ -83,7 +83,7 @@ namespace iCTF_Website.Controllers {
                 {
                     Id = x.Team.Id,
                     Name = x.Team.Name,
-                    Score = x.Team.Score
+                    Score = x.Team.Solves.Sum(x => x.Challenge.Points)
                 } : null,
                 Challenge = x.Challenge != null ? new ApiChallenge
                 {
@@ -100,7 +100,7 @@ namespace iCTF_Website.Controllers {
         [HttpGet("byteamid/{id}")]
         public async Task<IActionResult> ByTeamId(int id)
         {
-            var solves = await _context.Solves.Include(x => x.User).ThenInclude(x => x.WebsiteUser).Include(x => x.Team).Include(x => x.Challenge).OrderByDescending(x => x.SolvedAt).Where(x => x.User.Team.Id == id).ToListAsync();
+            var solves = await _context.Solves.Include(x => x.User).ThenInclude(x => x.Solves).ThenInclude(x => x.Challenge).Include(x => x.User.WebsiteUser).Include(x => x.Team.Solves).ThenInclude(x => x.Challenge).Include(x => x.Challenge).OrderByDescending(x => x.SolvedAt).Where(x => x.User.Team.Id == id).ToListAsync();
             var apiSolves = solves.Select(x => new ApiSolve
             {
                 Id = x.Id,
@@ -109,7 +109,7 @@ namespace iCTF_Website.Controllers {
                     Id = x.User.Id,
                     DiscordId = x.User.DiscordId,
                     DiscordUsername = x.User.DiscordUsername,
-                    Score = x.User.Score,
+                    Score = x.User.Solves.Sum(x => x.Challenge.Points),
                     WebsiteUser = x.User.WebsiteUser != null ? new ApiWebsiteUser
                     {
                         Username = x.User.WebsiteUser.UserName
@@ -120,7 +120,7 @@ namespace iCTF_Website.Controllers {
                 {
                     Id = x.Team.Id,
                     Name = x.Team.Name,
-                    Score = x.Team.Score
+                    Score = x.Team.Solves.Sum(x => x.Challenge.Points)
                 } : null,
                 Challenge = x.Challenge != null ? new ApiChallenge
                 {
@@ -137,7 +137,7 @@ namespace iCTF_Website.Controllers {
         [HttpGet("bydiscordid/{id}")]
         public async Task<IActionResult> ByDiscordId(ulong id)
         {
-            var solves = await _context.Solves.Include(x => x.User).ThenInclude(x => x.WebsiteUser).Include(x => x.Team).Include(x => x.Challenge).OrderByDescending(x => x.SolvedAt).Where(x => x.User.DiscordId == id).ToListAsync();
+            var solves = await _context.Solves.Include(x => x.User).ThenInclude(x => x.Solves).ThenInclude(x => x.Challenge).Include(x => x.User.WebsiteUser).Include(x => x.Team.Solves).ThenInclude(x => x.Challenge).Include(x => x.Challenge).OrderByDescending(x => x.SolvedAt).Where(x => x.User.DiscordId == id).ToListAsync();
             var apiSolves = solves.Select(x => new ApiSolve
             {
                 Id = x.Id,
@@ -146,7 +146,7 @@ namespace iCTF_Website.Controllers {
                     Id = x.User.Id,
                     DiscordId = x.User.DiscordId,
                     DiscordUsername = x.User.DiscordUsername,
-                    Score = x.User.Score,
+                    Score = x.User.Solves.Sum(x => x.Challenge.Points),
                     WebsiteUser = x.User.WebsiteUser != null ? new ApiWebsiteUser
                     {
                         Username = x.User.WebsiteUser.UserName
@@ -157,7 +157,7 @@ namespace iCTF_Website.Controllers {
                 {
                     Id = x.Team.Id,
                     Name = x.Team.Name,
-                    Score = x.Team.Score
+                    Score = x.Team.Solves.Sum(x => x.Challenge.Points)
                 } : null,
                 Challenge = x.Challenge != null ? new ApiChallenge
                 {

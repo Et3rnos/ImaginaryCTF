@@ -16,7 +16,7 @@ namespace iCTF_Discord_Bot
     class LeaderboardManager
     {
 
-        public static async Task UpdateLeaderboard(DiscordSocketClient client, DatabaseContext context)
+        public static async Task UpdateLeaderboard(DiscordSocketClient client, DatabaseContext context, bool dynamicScoring = false)
         {
             var config = await context.Configuration.FirstOrDefaultAsync();
             if (config == null || config.GuildId == 0 || config.LeaderboardChannelId == 0) {
@@ -24,7 +24,7 @@ namespace iCTF_Discord_Bot
             }
             var channel =  client.GetGuild(config.GuildId).GetTextChannel(config.LeaderboardChannelId);
 
-            var users = await SharedLeaderboardManager.GetTopUsersAndTeams(context, 20);
+            var users = await SharedLeaderboardManager.GetTopUsersAndTeams(context, 20, dynamicScoring);
 
             var embedBuilder = new CustomEmbedBuilder();
             embedBuilder.WithTitle("Leaderboard");

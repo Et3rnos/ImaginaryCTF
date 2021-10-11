@@ -86,7 +86,6 @@ namespace iCTF_Website.Areas.Account.Pages
                 Code = RandomHelper.GenerateRandomString(),
             };
             appUser.User.Solves.Clear();
-            appUser.User.Score = 0;
             Team = appUser.User.Team;
             Success = $"You have successfully created {CreateJoin.CreateModel.TeamName} team.";
 
@@ -116,7 +115,6 @@ namespace iCTF_Website.Areas.Account.Pages
                 Team = team;
                 appUser.User.Team = team;
                 appUser.User.Solves.Clear();
-                appUser.User.Score = 0;
                 Success = $"You have successfully joined {team.Name} team.";
             } else {
                 Error = "Invalid team code.";
@@ -129,7 +127,7 @@ namespace iCTF_Website.Areas.Account.Pages
         public async Task<IActionResult> OnPostLeaveAsync()
         {
             var appUser = await _userManager.GetUserAsync(User);
-            await _context.Entry(appUser).Reference(x => x.User).Query().Include(x => x.Team).ThenInclude(x => x.Members).Include(x => x.Solves).ThenInclude(x => x.Challenge).LoadAsync();
+            await _context.Entry(appUser).Reference(x => x.User).Query().Include(x => x.Team.Solves).Include(x => x.Team).ThenInclude(x => x.Members).Include(x => x.Solves).ThenInclude(x => x.Challenge).LoadAsync();
             var team = appUser.User.Team;
             if (team == null) return Forbid();
 
@@ -138,8 +136,7 @@ namespace iCTF_Website.Areas.Account.Pages
             else
             {
                 appUser.User.Team = null;
-                var userPoints = appUser.User.Solves.Sum(x => x.Challenge.Points);
-                team.Score -= userPoints;
+                team.Solves.RemoveAll(x => appUser.User.Solves.Select(x => x.ChallengeId).Contains(x.ChallengeId));
             }
 
             appUser.User.Solves.Clear();

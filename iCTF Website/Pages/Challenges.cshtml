@@ -4,16 +4,20 @@
 @using Westwind.AspNetCore.Markdown
 @using Microsoft.EntityFrameworkCore
 @using iCTF_Shared_Resources.Managers
+@using Microsoft.Extensions.Configuration
 
 @inject SignInManager<ApplicationUser> signInManager
 @inject UserManager<ApplicationUser> userManager
 @inject DatabaseContext context
+@inject IConfiguration configuration
 
 @{
     ViewData["Title"] = "Challenges";
 }
 
 @{
+    var dynamicScoring = configuration.GetValue<bool>("DynamicScoring");
+
     var categories = new List<string>();
     List<ChallengeInfo> challengeInfos = new List<ChallengeInfo>();
     List<ChallengeInfo> solvedChallengeInfos = new List<ChallengeInfo>();
@@ -27,14 +31,14 @@
         var appUser = await userManager.GetUserAsync(User);
         await context.Entry(appUser).Reference(x => x.User).Query().Include(x => x.Team).LoadAsync();
 
-        SharedStatsManager.FullStats stats;
+        SharedStatsManager.Stats stats;
         if (appUser.User.Team == null)
         {
-            stats = await SharedStatsManager.GetFullStats(context, appUser.User);
+            stats = await SharedStatsManager.GetStats(context, appUser.User, dynamicScoring);
         }
         else
         {
-            stats = await SharedStatsManager.GetFullTeamStats(context, appUser.User.Team);
+            stats = await SharedStatsManager.GetTeamStats(context, appUser.User.Team, dynamicScoring);
         }
         challengeInfos = stats.UnsolvedChallenges;
         solvedChallengeInfos = stats.SolvedChallenges;
@@ -94,7 +98,7 @@
                 <div class="col-md-6 col-lg-4 mb-3">
                     <div class="card challenge">
                         <div class="card-header challenge-header fw-bold">
-                            @challenge.Title (@(challenge.Points)pts) - @challenge.ReleaseDate.ToString("dd/MM")
+                            @challenge.Title (@(dynamicScoring ? DynamicScoringManager.GetPointsFromSolvesCount(challengeInfo.SolvesCount) : challenge.Points)pts) - @challenge.ReleaseDate.ToString("dd/MM")
                         </div>
                         <div class="card-body">
                             <a class="text-decoration-none view-challenge-btn py-1 px-4" data-bs-toggle="modal" data-bs-target="#challenge-modal-@(challenge.Id)" href="#">
@@ -107,7 +111,7 @@
                     <div class="modal-dialog modal-dialog-centered modal-lg">
                         <div class="modal-content text-dark">
                             <div class="modal-header">
-                                <h5 class="modal-title text-center w-100">@challenge.Title (@(challenge.Points)pts) <span class="d-inline-block">- @challengeInfo.SolvesCount solves</span><br /><small class="text-muted">by @challenge.Author</small></h5>
+                                <h5 class="modal-title text-center w-100">@challenge.Title (@(dynamicScoring ? DynamicScoringManager.GetPointsFromSolvesCount(challengeInfo.SolvesCount) : challenge.Points)pts) <span class="d-inline-block">- @challengeInfo.SolvesCount solves</span><br /><small class="text-muted">by @challenge.Author</small></h5>
                             </div>
                             <div class="modal-body pb-0">
                                 <b>Description</b>
@@ -130,7 +134,7 @@
                 <div class="col-md-6 col-lg-4 mb-3">
                     <div class="card challenge-solved">
                         <div class="card-header challenge-solved-header fw-bold">
-                            @challenge.Title (@(challenge.Points)pts) - @challenge.ReleaseDate.ToString("dd/MM") <i class="fas fa-check"></i>
+                            @challenge.Title (@(dynamicScoring ? DynamicScoringManager.GetPointsFromSolvesCount(challengeInfo.SolvesCount) : challenge.Points)pts) - @challenge.ReleaseDate.ToString("dd/MM") <i class="fas fa-check"></i>
                         </div>
                         <div class="card-body">
                             <a class="text-decoration-none view-challenge-solved-btn py-1 px-4" data-bs-toggle="modal" data-bs-target="#challenge-modal-@(challenge.Id)" href="#">
@@ -143,7 +147,7 @@
                     <div class="modal-dialog modal-dialog-centered modal-lg">
                         <div class="modal-content text-dark">
                             <div class="modal-header">
-                                <h5 class="modal-title text-center w-100">@challenge.Title (@(challenge.Points)pts) <span class="d-inline-block">- @challengeInfo.SolvesCount solves</span><br /><small class="text-muted">by @challenge.Author</small></h5>
+                                <h5 class="modal-title text-center w-100">@challenge.Title (@(dynamicScoring ? DynamicScoringManager.GetPointsFromSolvesCount(challengeInfo.SolvesCount) : challenge.Points)pts) <span class="d-inline-block">- @challengeInfo.SolvesCount solves</span><br /><small class="text-muted">by @challenge.Author</small></h5>
                             </div>
                             <div class="modal-body pb-0">
                                 <b>Description</b>

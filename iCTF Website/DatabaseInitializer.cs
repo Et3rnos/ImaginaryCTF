@@ -37,6 +37,8 @@ namespace iCTF_Website
 
                 var user = new ApplicationUser {
                     UserName = "admin",
+                    Email = "a@b.c",
+                    NormalizedEmail = "A@B.C",
                     User = player,
                     EmailConfirmed = true,
                     ApiKey = RandomHelper.GenerateRandomString()

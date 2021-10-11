@@ -78,12 +78,10 @@ namespace iCTF_Website.Controllers {
 
             if (isTeam)
             {
-                user.User.Team.Score += challenge.Points;
                 user.User.Team.LastUpdated = DateTime.UtcNow;
             }
             else
             {
-                user.User.Score += challenge.Points;
                 user.User.LastUpdated = DateTime.UtcNow;
             }
 

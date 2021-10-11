@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using iCTF_Shared_Resources.Models;
 using System.Net.Http;
 using Newtonsoft.Json;
+using Microsoft.Extensions.Configuration;
 
 namespace iCTF_Discord_Bot.Modules
 {
@@ -21,13 +22,15 @@ namespace iCTF_Discord_Bot.Modules
         private readonly CommandService _commands;
         private readonly DatabaseContext _context;
         private readonly IServiceScope _scope;
+        private readonly IConfigurationRoot _configuration;
 
-        private ShortenModule(DiscordSocketClient client, CommandService commands, IServiceScopeFactory scopeFactory)
+        private ShortenModule(DiscordSocketClient client, CommandService commands, IServiceScopeFactory scopeFactory, IConfigurationRoot configuration)
         {
             _client = client;
             _commands = commands;
             _scope = scopeFactory.CreateScope();
             _context = _scope.ServiceProvider.GetService<DatabaseContext>();
+            _configuration = configuration;
         }
 
         ~ShortenModule() { _scope.Dispose(); }
@@ -125,6 +128,8 @@ namespace iCTF_Discord_Bot.Modules
 
             var form = new MultipartFormDataContent();
             form.Add(new StringContent("604800"), "lifetime");
+            var coupon = _configuration.GetValue<string>("FDownlCoupon");
+            if (!string.IsNullOrEmpty(coupon)) form.Add(new StringContent(coupon), "code");
             form.Add(new StreamContent(content), "files", attachment.Filename);
 
             var message = await ReplyAsync("Uploading...");
@@ -133,10 +138,17 @@ namespace iCTF_Discord_Bot.Modules
             if (!uploadResponse.IsSuccessStatusCode) { await ReplyAsync("Upload failed :("); return; }
 
             dynamic result = JsonConvert.DeserializeObject(await uploadResponse.Content.ReadAsStringAsync());
-            if ((int)result.code == 0)
-                await ReplyAsync($"Success! You can find your files at:\nhttps://fdow.nl/{result.id}");
-            else
-                await ReplyAsync($"The server returned the following error:\n```\n{result.error}\n```");
+            if ((int)result.code != 0) { await ReplyAsync($"The server returned the following error:\n```\n{result.error}\n```"); return; }
+
+            var redirect = new Redirect
+            {
+                RandomId = (string)result.id,
+                RedirectUrl = attachment.Url
+            };
+            await _context.Redirects.AddAsync(redirect);
+            await _context.SaveChangesAsync();
+
+            await ReplyAsync($"Success! Your file is now accessible at:\nhttps://imaginaryctf.org/f/{(string)result.id}");
         }
     }
 }

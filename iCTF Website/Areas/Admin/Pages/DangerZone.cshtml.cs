@@ -51,12 +51,10 @@ namespace iCTF_Website.Areas.Admin.Pages
             _context.Solves.RemoveRange(await _context.Solves.ToListAsync());
             foreach (var user in await _context.Users.Include(x => x.Solves).ToListAsync())
             {
-                user.Score = 0;
                 user.Solves.Clear();
             }
             foreach (var team in await _context.Teams.Include(x => x.Solves).ToListAsync())
             {
-                team.Score = 0;
                 team.Solves.Clear();
             }
             await _context.SaveChangesAsync();

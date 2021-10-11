@@ -102,12 +102,10 @@ namespace iCTF_Discord_Bot.Modules
 
             if (isTeam)
             {
-                user.Team.Score += challenge.Points;
                 user.Team.LastUpdated = DateTime.UtcNow;
             }
             else
             {
-                user.Score += challenge.Points;
                 user.LastUpdated = DateTime.UtcNow;
             }
 

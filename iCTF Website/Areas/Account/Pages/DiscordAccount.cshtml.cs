@@ -94,7 +94,7 @@ namespace iCTF_Website.Areas.Account.Pages
             string username = (string)data.username;
             string discriminator = (string)data.discriminator;
 
-            var dPlayer = await _context.Users.Where(x => x.DiscordId == discordId).Include(x => x.WebsiteUser).Include(x => x.Solves).FirstOrDefaultAsync();
+            var dPlayer = await _context.Users.Where(x => x.DiscordId == discordId).Include(x => x.WebsiteUser).Include(x => x.Solves).ThenInclude(x => x.Challenge).FirstOrDefaultAsync();
 
             if (dPlayer != null && dPlayer.WebsiteUser != null)
             {
@@ -104,14 +104,13 @@ namespace iCTF_Website.Areas.Account.Pages
 
             if (dPlayer != null && dPlayer.Id != wPlayer.Id)
             {
-                if (dPlayer.Score > wPlayer.Score) {
+                if (dPlayer.Solves.Sum(x => x.Challenge.Points) > wPlayer.Solves.Sum(x => x.Challenge.Points)) {
                     var wSolves = await _context.Solves.Where(x => x.UserId == wPlayer.Id).ToListAsync();
                     _context.Solves.RemoveRange(wSolves);
                     var dSolves = await _context.Solves.Where(x => x.UserId == dPlayer.Id).ToListAsync();
                     foreach (var dSolve in dSolves) {
                         dSolve.UserId = wPlayer.Id;
                     }
-                    wPlayer.Score = dPlayer.Score;
                     wPlayer.LastUpdated = dPlayer.LastUpdated;
                 }
                 _context.Users.Remove(dPlayer);

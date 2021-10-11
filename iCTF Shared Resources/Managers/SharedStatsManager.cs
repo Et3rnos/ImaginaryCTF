@@ -10,79 +10,37 @@ namespace iCTF_Shared_Resources.Managers
 {
     public class SharedStatsManager
     {
-        public class Stats
-        {
-            public List<Challenge> SolvedChallenges { get; set; } = new List<Challenge> ();
-            public List<Challenge> UnsolvedChallenges { get; set; } = new List<Challenge> ();
-            public int Position { get; set; }
-            public int PlayersCount { get; set; }
-        }
 
-        public static async Task<Stats> GetStats(DatabaseContext context, User user)
-        {
-            int teamsCount = await context.Teams.Where(x => x.Score > 0).CountAsync();
-            int playersCount = await context.Users.Where(x => x.Score > 0 && x.Team == null).CountAsync();
-            int position = await SharedLeaderboardManager.GetPosition(context, user);
-
-            var challenges = await context.Challenges.Where(x => x.State == 2).ToListAsync();
-            await context.Entry(user).Collection(x => x.Solves).Query().Include(x => x.Challenge).LoadAsync();
-
-            var solvedChallenges = user.Solves.Select(x => x.Challenge).ToList();
-
-            var unsolvedChallenges = challenges.Except(solvedChallenges).ToList();
-
-            var stats = new Stats {
-                Position = position,
-                PlayersCount = playersCount + teamsCount,
-                SolvedChallenges = solvedChallenges,
-                UnsolvedChallenges = unsolvedChallenges
-            };
-
-            return stats;
-        }
-
-        public static async Task<Stats> GetTeamStats(DatabaseContext context, Team team) {
-            int teamsCount = await context.Teams.Where(x => x.Score > 0).CountAsync();
-            int playersCount = await context.Users.Where(x => x.Score > 0 && x.Team == null).CountAsync();
-            int position = await SharedLeaderboardManager.GetPosition(context, team);
-
-            var challenges = await context.Challenges.Where(x => x.State == 2).ToListAsync();
-            await context.Entry(team).Collection(x => x.Solves).Query().Include(x => x.Challenge).LoadAsync();
-
-            var solvedChallenges = team.Solves.Select(x => x.Challenge).ToList();
-
-            var unsolvedChallenges = challenges.Except(solvedChallenges).ToList();
-
-            Stats stats = new Stats {
-                Position = position,
-                PlayersCount = teamsCount + playersCount,
-                SolvedChallenges = solvedChallenges,
-                UnsolvedChallenges = unsolvedChallenges
-            };
-
-            return stats;
-        }
-
-        public class FullStats {
+        public class Stats {
             public List<ChallengeInfo> SolvedChallenges { get; set; } = new List<ChallengeInfo>();
             public List<ChallengeInfo> UnsolvedChallenges { get; set; } = new List<ChallengeInfo>();
             public int Position { get; set; }
             public int PlayersCount { get; set; }
+            public int Score { get; set;  }
         }
 
-        public static async Task<FullStats> GetFullStats(DatabaseContext context, User user) {
-            int teamsCount = await context.Teams.Where(x => x.Score > 0).CountAsync();
-            int playersCount = await context.Users.Where(x => x.Score > 0 && x.Team == null).CountAsync();
+        public static async Task<Stats> GetStats(DatabaseContext context, User user, bool dynamicScoring = false) {
+            await context.Entry(user).Collection(x => x.Solves).Query().Include(x => x.Challenge).LoadAsync();
+
+            int teamsCount = await context.Teams.Where(x => x.Solves.Any()).CountAsync();
+            int playersCount = await context.Users.Where(x => x.Solves.Any() && x.Team == null).CountAsync();
             int position = await SharedLeaderboardManager.GetPosition(context, user);
 
             var challengesInfo = await context.Challenges.Where(x => x.State == 2).OrderByDescending(x => x.ReleaseDate).Select(x => new ChallengeInfo { Challenge = x, SolvesCount = x.Solves.Count }).ToListAsync();
-            await context.Entry(user).Collection(x => x.Solves).Query().Include(x => x.Challenge).LoadAsync();
+           
 
             var solvedChallenges = user.Solves.Select(x => x.Challenge).ToList();
 
-            var stats = new FullStats {
+            int score;
+            if (dynamicScoring)
+                score = solvedChallenges.Sum(x => DynamicScoringManager.GetPointsFromSolvesCount(x.Solves.Count));
+            else
+                score = solvedChallenges.Sum(x => x.Points);
+
+            var stats = new Stats {
                 Position = position,
-                PlayersCount = playersCount + teamsCount
+                PlayersCount = playersCount + teamsCount,
+                Score = score
             };
 
             foreach (var challengeInfo in challengesInfo) {
@@ -96,19 +54,27 @@ namespace iCTF_Shared_Resources.Managers
             return stats;
         }
 
-        public static async Task<FullStats> GetFullTeamStats(DatabaseContext context, Team team) {
-            int teamsCount = await context.Teams.Where(x => x.Score > 0).CountAsync();
-            int playersCount = await context.Users.Where(x => x.Score > 0 && x.Team == null).CountAsync();
+        public static async Task<Stats> GetTeamStats(DatabaseContext context, Team team, bool dynamicScoring = false) {
+            await context.Entry(team).Collection(x => x.Solves).Query().Include(x => x.Challenge).LoadAsync();
+
+            int teamsCount = await context.Teams.Where(x => x.Solves.Any()).CountAsync();
+            int playersCount = await context.Users.Where(x => x.Solves.Any() && x.Team == null).CountAsync();
             int position = await SharedLeaderboardManager.GetPosition(context, team);
 
             var challengesInfo = await context.Challenges.Where(x => x.State == 2).OrderByDescending(x => x.ReleaseDate).Select(x => new ChallengeInfo { Challenge = x, SolvesCount = x.Solves.Count }).ToListAsync();
-            await context.Entry(team).Collection(x => x.Solves).Query().Include(x => x.Challenge).LoadAsync();
 
             var solvedChallenges = team.Solves.Select(x => x.Challenge).ToList();
 
-            var stats = new FullStats {
+            int score;
+            if (dynamicScoring)
+                score = solvedChallenges.Sum(x => DynamicScoringManager.GetPointsFromSolvesCount(x.Solves.Count));
+            else
+                score = solvedChallenges.Sum(x => x.Points);
+
+            var stats = new Stats {
                 Position = position,
-                PlayersCount = teamsCount + playersCount
+                PlayersCount = teamsCount + playersCount,
+                Score = score
             };
 
             foreach(var challengeInfo in challengesInfo) {

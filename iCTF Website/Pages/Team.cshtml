@@ -1,14 +1,18 @@
 ﻿@page "{id:int}"
 @model iCTF_Website.Pages.TeamModel
 
+@using Microsoft.Extensions.Configuration;
+@using iCTF_Shared_Resources.Managers
+@inject IConfiguration configuration;
+
 @{
     ViewData["Title"] = Model.Team.Name;
 }
 
 <div class="container mb-3">
     <h2 class="m-3">
-        @Model.Team.Name - @Model.Team.Score points
-        @if (Model.Team.Score > 0)
+        @Model.Team.Name - @Model.TeamStats.Score points
+        @if (Model.TeamStats.Score > 0)
         {
             @:(@Model.TeamStats.Position / @Model.TeamStats.PlayersCount)
         }
@@ -37,7 +41,9 @@
                                 @{ int score = 0; }
                                 @foreach (var solve in Model.Team.Solves)
                                 {
-                                    score += solve.Challenge.Points;
+                                    score += configuration.GetValue<bool>("DynamicScoring") 
+                                            ? DynamicScoringManager.GetPointsFromSolvesCount(Model.TeamStats.SolvedChallenges.First(x => x.Challenge == solve.Challenge).SolvesCount)
+                                            : solve.Challenge.Points;
                                     @:{ x: moment("@(solve.SolvedAt.ToString("o") + "Z")"), y: @score },
                                 }
                                     { x: moment(), y: @score },
@@ -60,7 +66,7 @@
                 });
         </script>
     }
-    <div class="row">
+    <div class="row mt-2">
         <div class="col-md-6">
             <h4>Solved Challenges</h4>
             @if (Model.Team.Solves.Any())
@@ -79,7 +85,9 @@
                             {
                                 <tr>
                                     <td>@solve.Challenge.Title</td>
-                                    <td>@solve.Challenge.Points</td>
+                                    <td>@(configuration.GetValue<bool>("DynamicScoring") 
+                                            ? DynamicScoringManager.GetPointsFromSolvesCount(Model.TeamStats.SolvedChallenges.First(x => x.Challenge == solve.Challenge).SolvesCount)
+                                            : solve.Challenge.Points)</td>
                                     <td>
                                     <script>document.write(moment("@(solve.SolvedAt.ToString("o") + "Z")").format('DD/MM HH:mm:ss'))</script></td>
                                 </tr>
@@ -109,8 +117,12 @@
                             @foreach (var chall in Model.TeamStats.UnsolvedChallenges)
                             {
                                 <tr>
-                                    <td>@chall.Title</td>
-                                    <td>@chall.Points</td>
+                                    <td>@chall.Challenge.Title</td>
+                                    <td>
+                                        @(configuration.GetValue<bool>("DynamicScoring") 
+                                            ? DynamicScoringManager.GetPointsFromSolvesCount(chall.SolvesCount)
+                                            : chall.Challenge.Points)
+                                        </td>
                                 </tr>
                             }
                         </tbody>
@@ -128,7 +140,11 @@
         <ul>
             @foreach (var member in Model.Team.Members)
             {
-                <li><a class="text-decoration-none gray-text cool-link fw-bold" href="/User/@member.Id">@(member.WebsiteUser?.UserName ?? member.DiscordUsername)</a> - @Model.Team.Solves.Where(x => x.User == member).Sum(x => x.Challenge.Points) points</li>
+                <li><a class="text-decoration-none gray-text cool-link fw-bold" href="/User/@member.Id">
+                    @(member.WebsiteUser?.UserName ?? member.DiscordUsername)</a> - 
+                    @(configuration.GetValue<bool>("DynamicScoring") ?
+                    Model.Team.Solves.Where(x => x.User == member).Sum(x => DynamicScoringManager.GetPointsFromSolvesCount(Model.TeamStats.SolvedChallenges.First(y => y.Challenge == x.Challenge).SolvesCount)) : 
+                    Model.Team.Solves.Where(x => x.User == member).Sum(x => x.Challenge.Points)) points</li>
             }
         </ul>
     </div>

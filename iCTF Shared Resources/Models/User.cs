@@ -11,7 +11,6 @@ namespace iCTF_Shared_Resources.Models
         public int Id { get; set; }
         public ulong DiscordId { get; set; }
         public string DiscordUsername { get; set; }
-        public int Score { get; set; }
         public DateTime LastUpdated { get; set; }
         public ApplicationUser WebsiteUser { get; set; }
         public List<Solve> Solves { get; set; } = new List<Solve>();

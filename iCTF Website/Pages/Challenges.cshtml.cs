@@ -77,10 +77,8 @@ namespace iCTF_Website.Pages
             }
 
             if (appUser.User.Team != null) {
-                appUser.User.Team.Score += challenge.Points;
                 appUser.User.Team.LastUpdated = DateTime.UtcNow;
             } else {
-                appUser.User.Score += challenge.Points;
                 appUser.User.LastUpdated = DateTime.UtcNow;
             }
 

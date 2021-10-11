@@ -26,9 +26,9 @@
                     <tr>
                         <td>@(i + 1)</td>
                         @if (item.IsTeam) {
-                            <td><a class="text-decoration-none text-dark cool-link" href="/Team/@item.Id">@item.Name</a><span class="badge bg-danger ms-2">Team</span></td>
+                            <td><a class="text-decoration-none text-dark cool-link" href="/Team/@item.Id">@item.TeamName</a><span class="badge bg-danger ms-2">Team</span></td>
                         } else {
-                            <td><a class="text-decoration-none text-dark cool-link" href="/User/@item.Id">@item.Name</a><span class="badge bg-primary ms-2">Solo</span></td>
+                            <td><a class="text-decoration-none text-dark cool-link" href="/User/@item.Id">@(item.WebsiteUser?.UserName ?? item.DiscordUsername)</a><span class="badge bg-primary ms-2">Solo</span></td>
                         }
                         <td>@item.Score</td>
                     </tr>

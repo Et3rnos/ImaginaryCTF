@@ -11,6 +11,7 @@ using Discord.WebSocket;
 using Discord;
 using iCTF_Discord_Bot.Logic;
 using Discord.Commands;
+using Microsoft.Extensions.Configuration;
 
 namespace iCTF_Discord_Bot
 {
@@ -24,14 +25,15 @@ namespace iCTF_Discord_Bot
             var client = services.GetService<DiscordSocketClient>();
             var commandService = services.GetService<CommandService>();
             var dbContext = scope.ServiceProvider.GetService<DatabaseContext>();
+            var configuration = scope.ServiceProvider.GetService<IConfigurationRoot>();
 
             switch (command.Data.Name)
             {
                 case "stats":
-                    await UserLogic.StatsSlashAsync(command, client, dbContext);
+                    await UserLogic.StatsSlashAsync(command, client, dbContext, configuration);
                     break;
                 case "leaderboard":
-                    await LeaderboardLogic.LeaderboardSlashAsync(command, dbContext);
+                    await LeaderboardLogic.LeaderboardSlashAsync(command, dbContext, configuration);
                     break;
                 case "about":
                     await UtilLogic.AboutSlashAsync(command);

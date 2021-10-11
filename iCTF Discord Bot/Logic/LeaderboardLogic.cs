@@ -11,21 +11,22 @@ using iCTF_Shared_Resources.Models;
 using iCTF_Shared_Resources.Managers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace iCTF_Discord_Bot.Logic
 {
     public static class LeaderboardLogic
     {
         #region Leaderboard
-        public static async Task LeaderboardSlashAsync(SocketSlashCommand command, DatabaseContext dbContext)
+        public static async Task LeaderboardSlashAsync(SocketSlashCommand command, DatabaseContext dbContext, IConfigurationRoot configuration)
         {
-            var message = await GetLeaderboardMessageAsync(dbContext);
+            var message = await GetLeaderboardMessageAsync(dbContext, configuration);
             await command.RespondAsync(embed: message.Embed, component: message.MessageComponent, ephemeral: message.Ephemeral);
         }
 
-        public static async Task LeaderboardCommandAsync(SocketCommandContext context, DatabaseContext dbContext)
+        public static async Task LeaderboardCommandAsync(SocketCommandContext context, DatabaseContext dbContext, IConfigurationRoot configuration)
         {
-            var message = await GetLeaderboardMessageAsync(dbContext);
+            var message = await GetLeaderboardMessageAsync(dbContext, configuration);
             await context.Channel.SendMessageAsync(embed: message.Embed, component: message.MessageComponent);
         }
 
@@ -36,9 +37,9 @@ namespace iCTF_Discord_Bot.Logic
             public bool Ephemeral { get; set; }
         }
 
-        private static async Task<Message> GetLeaderboardMessageAsync(DatabaseContext dbContext)
+        private static async Task<Message> GetLeaderboardMessageAsync(DatabaseContext dbContext, IConfigurationRoot configuration)
         {
-            var users = await SharedLeaderboardManager.GetTopUsersAndTeams(dbContext, 20);
+            var users = await SharedLeaderboardManager.GetTopUsersAndTeams(dbContext, 20, configuration.GetValue<bool>("DynamicScoring"));
 
             var eb = new CustomEmbedBuilder();
             eb.WithTitle("Leaderboard");

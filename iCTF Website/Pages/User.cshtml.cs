@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using iCTF_Shared_Resources.Managers;
 using static iCTF_Shared_Resources.Managers.SharedStatsManager;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
 
 namespace iCTF_Website.Pages
 {
@@ -24,11 +25,13 @@ namespace iCTF_Website.Pages
 
         private readonly DatabaseContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IConfiguration _configuration;
 
-        public UserModel(DatabaseContext context, UserManager<ApplicationUser> userManager)
+        public UserModel(DatabaseContext context, UserManager<ApplicationUser> userManager, IConfiguration configuration)
         {
             _context = context;
             _userManager = userManager;
+            _configuration = configuration;
         }
 
         public async Task<IActionResult> OnGetAsync(int id)
@@ -39,13 +42,13 @@ namespace iCTF_Website.Pages
             AppUser = Player.WebsiteUser;
             if (AppUser != null) Roles = (await _userManager.GetRolesAsync(AppUser)).ToList();
 
-            PlayerStats = await GetStats(_context, Player);
+            PlayerStats = await GetStats(_context, Player, _configuration.GetValue<bool>("DynamicScoring"));
             Name = AppUser?.UserName ?? Player.DiscordUsername;
 
             if (PlayerStats.SolvedChallenges.Any())
             {
                 var challs = PlayerStats.SolvedChallenges.Union(PlayerStats.UnsolvedChallenges);
-                FirstChallengeReleaseDate = challs.Min(x => x.ReleaseDate);
+                FirstChallengeReleaseDate = challs.Min(x => x.Challenge.ReleaseDate);
             }
 
             return Page();

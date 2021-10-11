@@ -21,7 +21,6 @@ namespace iCTF_Discord_Bot.Managers
                 {
                     DiscordId = discordId,
                     DiscordUsername = username,
-                    Score = 0,
                     LastUpdated = DateTime.UtcNow
                 };
                 await context.Users.AddAsync(user);

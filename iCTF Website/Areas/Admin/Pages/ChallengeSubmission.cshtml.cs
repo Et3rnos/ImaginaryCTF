@@ -84,7 +84,7 @@ namespace iCTF_Website.Areas.Admin.Pages
                     Flag = Input.Flag.Trim(),
                     Author = Input.Author.Trim(),
                     Points = Input.Points,
-                    Writeup = Input.Writeup.Trim(),
+                    Writeup = Input.Writeup?.Trim(),
                     State = 0,
                     Priority = max + 1
                 };
