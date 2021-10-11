@@ -21,7 +21,7 @@
                 <a class="text-decoration-none gray-text cool-link fw-bold" href="/User/@solve.User.Id">@(solve.User.WebsiteUser?.UserName ?? solve.User.DiscordUsername)</a>
                 @if (solve.Team != null)
                 {
-                    @:(<a class="text-decoration-none gray-text cool-link fw-bold" href="/Team/@solve.Team.Id">@solve.Team.Name</a> team)
+                    @:(team <a class="text-decoration-none gray-text cool-link fw-bold" href="/Team/@solve.Team.Id">@solve.Team.Name</a>)
                 }
                 solved
                 <b>@solve.Challenge.Title</b>
