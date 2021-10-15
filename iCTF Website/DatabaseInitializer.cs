@@ -1,9 +1,11 @@
 ﻿using iCTF_Shared_Resources;
+using iCTF_Shared_Resources.Managers;
 using iCTF_Shared_Resources.Models;
 using iCTF_Website.Helpers;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
