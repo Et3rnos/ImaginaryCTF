@@ -66,12 +66,14 @@ namespace iCTF_Shared_Resources.Managers
         private static async Task<int> GetPosition(DatabaseContext context, int score, DateTime lastUpdated, bool dynamicScoring = false)
         {
             int teamsCount = await context.Teams
+                .AsExpandable()
                 .Where(x => x.Solves.Any())
                 .Where(x =>
                     ((dynamicScoring ? x.Solves.Sum(x => DynamicScoringManager.SolvePoints.Invoke(x.Challenge.Solves.Count)) : x.Solves.Sum(x => x.Challenge.Points)) > score) ||
                     ((dynamicScoring ? x.Solves.Sum(x => DynamicScoringManager.SolvePoints.Invoke(x.Challenge.Solves.Count)) : x.Solves.Sum(x => x.Challenge.Points)) == score && x.LastUpdated < lastUpdated)
                 ).CountAsync();
             int playersCount = await context.Users
+                .AsExpandable()
                 .Where(x => x.Solves.Any())
                 .Where(x =>
                     ((dynamicScoring ? x.Solves.Sum(x => DynamicScoringManager.SolvePoints.Invoke(x.Challenge.Solves.Count)) : x.Solves.Sum(x => x.Challenge.Points)) > score ||
