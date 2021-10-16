@@ -1,9 +1,12 @@
 ﻿using iCTF_Shared_Resources;
+using iCTF_Shared_Resources.Managers;
 using iCTF_Shared_Resources.Models;
 using iCTF_Website.Attributes;
+using LinqKit;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -19,11 +22,16 @@ namespace iCTF_Website.Controllers {
 
         private readonly DatabaseContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IConfiguration _configuration;
 
-        public ChallengesController(DatabaseContext context, UserManager<ApplicationUser> userManager)
+        private bool dynamicScoring;
+
+        public ChallengesController(DatabaseContext context, UserManager<ApplicationUser> userManager, IConfiguration configuration)
         {
             _context = context;
             _userManager = userManager;
+            _configuration = configuration;
+            dynamicScoring = _configuration.GetValue<bool>("DynamicScoring");
         }
 
         [HttpPost("submit")]
@@ -108,21 +116,24 @@ namespace iCTF_Website.Controllers {
 
         [HttpGet("released")]
         public async Task<IActionResult> ReleasedAsync() {
-            var challenges = await _context.Challenges.Where(x => x.State == 2).OrderByDescending(x => x.ReleaseDate).ToListAsync();
-            var apiChallenges = new List<ReleasedChallenge>();
-            foreach (var chall in challenges) {
-                apiChallenges.Add(new ReleasedChallenge {
-                    Id = chall.Id,
-                    Title = chall.Title,
-                    Category = chall.Category,
-                    Description = chall.Description,
-                    Attachments = chall.Attachments,
-                    Author = chall.Author,
-                    Points = chall.Points,
-                    ReleaseDate = chall.ReleaseDate
-                });
-            }
-            return Json(apiChallenges);
+            var challenges = await _context.Challenges
+                .AsExpandable()
+                .Where(x => x.State == 2)
+                .OrderByDescending(x => x.ReleaseDate)
+                .Select(x => new
+                {
+                    x.Id,
+                    x.Title,
+                    x.Category,
+                    x.Description,
+                    x.Attachments,
+                    x.Author,
+                    Points = dynamicScoring ? DynamicScoringManager.SolvePoints.Invoke(x.Solves.Count) : x.Points,
+                    release_date = x.ReleaseDate,
+
+                })
+                .ToListAsync();
+            return Json(challenges);
         }
 
         [HttpGet("archived")]
@@ -190,18 +201,6 @@ namespace iCTF_Website.Controllers {
             public string Author { get; set; }
             public int Points { get; set; }
             public int Priority { get; set; }
-        }
-
-        class ReleasedChallenge {
-            public int Id { get; set; }
-            public string Title { get; set; }
-            public string Category { get; set; }
-            public string Description { get; set; }
-            public string Attachments { get; set; }
-            public string Author { get; set; }
-            public int Points { get; set; }
-            [JsonPropertyName("release_date")]
-            public DateTime ReleaseDate { get; set; }
         }
 
         class ArchivedChallenge {

@@ -12,6 +12,7 @@ namespace iCTF_Shared_Resources.Managers
     {
         public static async Task<Challenge> GetChallByFlag(DatabaseContext context, string flag, bool includeArchived = false)
         {
+            if (string.IsNullOrEmpty(flag)) return null;
             if (includeArchived) {
                 return await context.Challenges.FirstOrDefaultAsync(x => x.Flag == flag && (x.State == 2 || x.State == 3));
             } else {

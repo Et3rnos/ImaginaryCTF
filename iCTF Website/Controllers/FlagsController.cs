@@ -106,7 +106,8 @@ namespace iCTF_Website.Controllers {
                     Description = challenge.Description,
                     Attachments = challenge.Attachments,
                     Author = challenge.Author,
-                    Points = challenge.Points,
+                    //Hiding this for now
+                    //Points = challenge.Points,
                     ReleaseDate = challenge.ReleaseDate
                 }
             });

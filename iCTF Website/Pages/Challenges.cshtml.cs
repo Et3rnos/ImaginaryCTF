@@ -35,7 +35,6 @@ namespace iCTF_Website.Pages
 
         public async Task OnPostAsync(string flag)
         {
-			flag = flag.Trim();
             if (!_signInManager.IsSignedIn(User))
             {
                 Error = "You must log in first in order to submit a flag";
@@ -45,6 +44,7 @@ namespace iCTF_Website.Pages
             var appUser = await _userManager.GetUserAsync(User);
             await _context.Entry(appUser).Reference(x => x.User).Query().Include(x => x.Team).LoadAsync();
 
+            flag = flag?.Trim();
             var challenge = await SharedFlagManager.GetChallByFlag(_context, flag, includeArchived: true);
             if (challenge == null) {
                 _logger.LogInformation($"User \"{appUser.UserName}\" submitted a wrong flag ({flag})");
