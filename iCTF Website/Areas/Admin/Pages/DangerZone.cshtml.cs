@@ -59,5 +59,19 @@ namespace iCTF_Website.Areas.Admin.Pages
             }
             await _context.SaveChangesAsync();
         }
+
+        public async Task OnPostEndAsync()
+        {
+            var config = await _context.Configuration.FirstOrDefaultAsync();
+            if (config == null)
+            {
+                await _context.Configuration.AddAsync(new Config { IsFinished = true });
+            }
+            else
+            {
+                config.IsFinished = true;
+                await _context.SaveChangesAsync();
+            }
+        }
     }
 }

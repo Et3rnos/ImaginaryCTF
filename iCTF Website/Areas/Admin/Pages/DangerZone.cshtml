@@ -94,6 +94,30 @@
                 </div>
             </div>
 
+            <div>
+                <button class="btn btn-danger mt-2" data-bs-toggle="modal" data-bs-target="#end">End Competition</button>
+            </div>
+            <div id="end" class="modal fade" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">End Competition</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p>
+                                Are you sure you want to end this competition?
+                            </p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <form method="POST" asp-page-handler="end">
+                                <button type="submit" class="btn btn-danger">End Competition</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>

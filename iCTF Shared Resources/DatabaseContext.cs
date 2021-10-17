@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using System;
 
 namespace iCTF_Shared_Resources
@@ -27,6 +28,13 @@ namespace iCTF_Shared_Resources
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+        }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            /*optionsBuilder.ConfigureWarnings(w => {
+                w.Throw(RelationalEventId.MultipleCollectionIncludeWarning);
+            });*/
         }
     }
 }

@@ -9,6 +9,7 @@ namespace iCTF_Shared_Resources.Models
     {
         [Key]
         public int Id { get; set; }
+        #region Discord
         public ulong GuildId { get; set; }
         public ulong ChallengeReleaseChannelId { get; set; }
         public ulong ChallengeSolvesChannelId { get; set; }
@@ -24,6 +25,10 @@ namespace iCTF_Shared_Resources.Models
         public ulong TodaysRoleId { get; set; }
         public ulong ChallengePingRoleId { get; set; }
         public int ReleaseTime { get; set; }
+        #endregion
+        #region Shared
+        public bool IsFinished { get; set; }
+        #endregion
         [Timestamp]
         public byte[] RowVersion { get; set; }
     }

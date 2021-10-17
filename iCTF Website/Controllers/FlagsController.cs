@@ -49,6 +49,12 @@ namespace iCTF_Website.Controllers {
                 return StatusCode(403);
             }
 
+            var config = await _context.Configuration.FirstOrDefaultAsync();
+            if (config != null && config.IsFinished)
+            {
+                return Json(new { Success = false, Error = "The competition is already over" });
+            }
+
             var challenge = await SharedFlagManager.GetChallByFlag(_context, flag, includeArchived: true);
             if (challenge == null)
             {

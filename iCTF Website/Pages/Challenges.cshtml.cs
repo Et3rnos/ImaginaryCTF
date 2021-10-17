@@ -41,8 +41,14 @@ namespace iCTF_Website.Pages
                 return;
             }
 
+            var config = await _context.Configuration.FirstOrDefaultAsync();
+            if (config != null && config.IsFinished)
+            {
+                Error = "The competition is already over";
+                return;
+            }
+
             var appUser = await _userManager.GetUserAsync(User);
-            await _context.Entry(appUser).Reference(x => x.User).Query().Include(x => x.Team).LoadAsync();
 
             flag = flag?.Trim();
             var challenge = await SharedFlagManager.GetChallByFlag(_context, flag, includeArchived: true);
@@ -56,6 +62,8 @@ namespace iCTF_Website.Pages
                 Error = "You are trying to submit a flag for an archived challenge";
                 return;
             }
+
+            await _context.Entry(appUser).Reference(x => x.User).Query().Include(x => x.Team).LoadAsync();
 
             if (appUser.User.Team == null) {
                 await _context.Entry(appUser.User).Collection(x => x.Solves).Query().Include(x => x.Challenge).LoadAsync();

@@ -40,6 +40,12 @@ namespace iCTF_Discord_Bot.Modules
         {
             var challenge = await SharedFlagManager.GetChallByFlag(_context, flag, includeArchived: true);
             var config = await _context.Configuration.AsQueryable().FirstOrDefaultAsync();
+            if (config != null && config.IsFinished)
+            {
+                await ReplyAsync("The competition is already over.");
+                return;
+            }
+
             if (challenge == null)
             {
                 await ReplyAsync("Your flag is incorrect.");

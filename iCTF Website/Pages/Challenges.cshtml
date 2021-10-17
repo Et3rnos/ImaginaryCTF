@@ -17,6 +17,7 @@
 
 @{
     var dynamicScoring = configuration.GetValue<bool>("DynamicScoring");
+    var config = await context.Configuration.FirstOrDefaultAsync();
 
     var categories = new List<string>();
     List<ChallengeInfo> challengeInfos = new List<ChallengeInfo>();
@@ -58,16 +59,27 @@
         -->
     </div>
     <div class="row">
-        <div class="col-md-6 offset-md-3">
-            <form method="post">
-                <div class="input-group mb-3">
-                    <input name="flag" type="text" class="form-control" placeholder="ictf{s0m3_1337_f14g}">
-                    <div class="input-group-append">
-                        <button class="btn btn-outline-success" type="submit">Submit Flag</button>
-                    </div>
+        @if (config != null && config.IsFinished)
+        {
+            <div>
+                <div class="alert alert-warning">
+                    The competition is already over. You cannot submit any flags now.
                 </div>
-            </form>
-        </div>
+            </div>
+        }
+        else
+        {
+            <div class="col-md-6 offset-md-3">
+                <form method="post">
+                    <div class="input-group mb-3">
+                        <input name="flag" type="text" class="form-control" placeholder="ictf{s0m3_1337_f14g}">
+                        <div class="input-group-append">
+                            <button class="btn btn-outline-success" type="submit">Submit Flag</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        }
         @if (!string.IsNullOrEmpty(Model.Success))
         {
             <div>
