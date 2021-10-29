@@ -20,7 +20,7 @@ namespace iCTF_Website
         {
             context.Database.Migrate();
 
-            var roles = new string[] { "Administrator", "13:37 Hacker", "Booster", "Beta Tester" };
+            var roles = new string[] { "Administrator", "13:37 Hacker", "Booster", "Beta Tester", "Challenge Creator" };
 
             foreach (string role in roles)
             {

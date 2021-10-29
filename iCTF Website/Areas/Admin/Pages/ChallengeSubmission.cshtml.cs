@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace iCTF_Website.Areas.Admin.Pages
 {
-    [Authorize(Roles = "Administrator")]
+    [Authorize(Roles = "Administrator, Challenge Creator")]
     public class ChallengeSubmissionModel : PageModel
     {
         public List<string> Categories { get; set; }
@@ -75,7 +75,7 @@ namespace iCTF_Website.Areas.Admin.Pages
                 {
                     max = 0;
                 }
-                Challenge challenge = new Challenge()
+                var challenge = new Challenge()
                 {
                     Title = Input.Title.Trim(),
                     Category = Input.Category != "Other" ? Input.Category : Input.OtherCategory,
