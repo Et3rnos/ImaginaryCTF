@@ -1,13 +1,32 @@
 ﻿@page "{code:int}"
 @model ErrorModel
+
+@using System.Net;
+@using System.Text.RegularExpressions;
+
 @{
-    ViewData["Title"] = @Model.Title;
+    string title = string.Join(" ", Regex.Split(((HttpStatusCode)Model.Code).ToString(), @"(?<!^)(?=[A-Z])"));
+    ViewData["Title"] = title;
+
+    string rooNoBooliUrl;
+    string rooYayUrl;
+    if ((new Random()).Next(10) == 0)
+    {
+        rooNoBooliUrl = "https://cdn.discordapp.com/emojis/811894601333342229.png?v=1";
+        rooYayUrl = "https://cdn.discordapp.com/emojis/811895872568819743.png?v=1";
+    }
+    else
+    {
+        rooNoBooliUrl = "https://cdn.discordapp.com/emojis/778310888243200021.png?v=1";
+        rooYayUrl = "/img/rooYay.png";
+    }
 }
 <div class="container my-5">
     <h1 class="display-1 text-dark mb-0">@Model.Code</h1>
-    <img id="roo" class="mw-100 mb-3" src="@Model.RooNoBooliUrl" />
-    @if (Model.Title != Model.Code.ToString()) {
-        <h4 class="display-4 text-dark">@Model.Title</h4>
+    <img id="roo" class="mw-100 mb-3" src="@rooNoBooliUrl" />
+    @if (title != Model.Code.ToString())
+    {
+        <h4 class="display-4 text-dark">@title</h4>
     }
 </div>
-<script>var roo = document.getElementById("roo"); roo.onclick = () => roo.src = "@Model.RooYayUrl";</script>
+<script>var roo = document.getElementById("roo"); roo.onclick = () => roo.src = "@rooYayUrl";</script>

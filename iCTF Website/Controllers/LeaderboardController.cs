@@ -30,19 +30,17 @@ namespace iCTF_Website.Controllers {
         public async Task<IActionResult> CtftimeAsync()
         {
             var top = await SharedLeaderboardManager.GetTopUsersAndTeams(_context, int.MaxValue);
-            var teams = new List<CtftimeTeam>();
+            var teams = new List<dynamic>();
 
             for (int i = 0; i < top.Count; i++)
             {
-                teams.Add(new CtftimeTeam { Pos = i + 1, Team = top[i].IsTeam ? top[i].TeamName : (top[i].WebsiteUser?.UserName ?? top[i].DiscordUsername), Score = top[i].Score });
+                teams.Add(new { 
+                    Pos = i + 1,
+                    Team = top[i].IsTeam ? top[i].TeamName : (top[i].WebsiteUser?.UserName ?? top[i].DiscordUsername), 
+                    Score = top[i].Score
+                });
             }
             return Json(new { standings = teams });
-        }
-
-        class CtftimeTeam {
-            public int Pos { get; set; }
-            public string Team { get; set; }
-            public int Score { get; set; }
         }
     }
 }

@@ -9,6 +9,7 @@
   <ItemGroup>
     <PackageReference Include="LinqKit.Microsoft.EntityFrameworkCore" Version="5.0.26" />
     <PackageReference Include="MailKit" Version="2.13.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Diagnostics" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="5.0.7" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="5.0.7" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="5.0.7" />

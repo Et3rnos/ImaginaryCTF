@@ -1,4 +1,5 @@
 ﻿using Discord;
+using Discord.Rest;
 using Discord.WebSocket;
 using iCTF_Discord_Bot.Managers;
 using iCTF_Shared_Resources;
@@ -86,11 +87,13 @@ namespace iCTF_Discord_Bot.Jobs
 
             Log.Information("Posting the challenge on Discord");
             var embed = ChallengesManager.GetChallengeEmbed(chall);
+            RestUserMessage challengeMessage;
             if (config.ChallengePingRoleId != 0) {
-                await channel.SendMessageAsync($"<@&{config.ChallengePingRoleId}>", embed: embed);
+                challengeMessage = await channel.SendMessageAsync($"<@&{config.ChallengePingRoleId}>", embed: embed);
             } else {
-                await channel.SendMessageAsync(embed: embed);
+                challengeMessage = await channel.SendMessageAsync(embed: embed);
             }
+            if (channel is INewsChannel) await challengeMessage.CrosspostAsync();
 
             Log.Information("Ending Challenge Release Job");
         }

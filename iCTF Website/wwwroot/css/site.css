@@ -117,8 +117,9 @@ pre {
     font-size: 20px;
 }
 
-body{
-  font-family: 'Josefin Sans', sans-serif;
+body {
+    font-family: 'Josefin Sans', sans-serif;
+    word-break: break-word;
 }
 
 h1, h2, h3, h4, h5, h6 {

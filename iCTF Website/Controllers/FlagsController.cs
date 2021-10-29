@@ -36,18 +36,12 @@ namespace iCTF_Website.Controllers {
         [HttpPost("submit")]
         public async Task<IActionResult> SubmitAsync(string apiKey, [FromBody] SubmitData data)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest();
-            }
+            if (!ModelState.IsValid) return BadRequest();
 
             string flag = data.Flag.Trim();
 
             var user = await _userManager.Users.FirstOrDefaultAsync(x => x.ApiKey == apiKey);
-            if (user == null)
-            {
-                return StatusCode(403);
-            }
+            if (user == null) return StatusCode(403);
 
             var config = await _context.Configuration.FirstOrDefaultAsync();
             if (config != null && config.IsFinished)
@@ -104,32 +98,12 @@ namespace iCTF_Website.Controllers {
             await _context.SaveChangesAsync();
 
             return Json(new { 
-                Success = true, Challenge = new ApiChallenge
+                Success = true, Challenge = new
                 {
-                    Id = challenge.Id,
-                    Title = challenge.Title,
-                    Category = challenge.Category,
-                    Description = challenge.Description,
-                    Attachments = challenge.Attachments,
-                    Author = challenge.Author,
-                    //Hiding this for now
-                    //Points = challenge.Points,
-                    ReleaseDate = challenge.ReleaseDate
+                    challenge.Id,
+                    challenge.Title
                 }
             });
-        }
-
-        class ApiChallenge
-        {
-            public int Id { get; set; }
-            public string Title { get; set; }
-            public string Category { get; set; }
-            public string Description { get; set; }
-            public string Attachments { get; set; }
-            public string Author { get; set; }
-            public int Points { get; set; }
-            [JsonPropertyName("release_date")]
-            public DateTime ReleaseDate { get; set; }
         }
     }
 }

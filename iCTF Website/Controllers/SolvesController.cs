@@ -10,202 +10,161 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 
-namespace iCTF_Website.Controllers {
+namespace iCTF_Website.Controllers
+{
 
     [ApiController]
     [Route("/api/[controller]")]
-    public class SolvesController : Controller {
+    public class SolvesController : Controller
+    {
 
         private readonly DatabaseContext _context;
+        private readonly IConfiguration _configuration;
+        private readonly bool _dynamicScoring;
 
-        public SolvesController(DatabaseContext context)
+        public SolvesController(DatabaseContext context, IConfiguration configuration)
         {
             _context = context;
+            _configuration = configuration;
+            _dynamicScoring = configuration.GetValue<bool>("DynamicScoring");
         }
 
         [HttpGet("last/{limit}")]
-        public async Task<IActionResult> LastAsync([Range(1,100)] int limit) {
-            var solves = await _context.Solves.Include(x => x.User).ThenInclude(x => x.Solves).ThenInclude(x => x.Challenge).Include(x => x.User.WebsiteUser).Include(x => x.Team.Solves).ThenInclude(x => x.Challenge).Include(x => x.Challenge).OrderByDescending(x => x.SolvedAt).Take(limit).ToListAsync();
-            var apiSolves = solves.Select(x => new ApiSolve
-            {
-                Id = x.Id,
-                User = x.User != null ? new ApiUser
-                {
-                    Id = x.User.Id,
-                    DiscordId = x.User.DiscordId,
-                    DiscordUsername = x.User.DiscordUsername,
-                    Score = x.User.Solves.Sum(x => x.Challenge.Points),
-                    WebsiteUser = x.User.WebsiteUser != null ? new ApiWebsiteUser
-                    {
-                        Username = x.User.WebsiteUser.UserName
+        public async Task<IActionResult> LastAsync([Range(1, 100)] int limit)
+        {
+            var solves = await _context.Solves
+                .OrderByDescending(x => x.SolvedAt)
+                .Take(limit)
+                .Select(x => new {
+                    x.Id,
+                    User = x.User != null ? new {
+                        x.User.Id,
+                        discord_id = x.User.DiscordId,
+                        discord_username = x.User.DiscordUsername,
+                        WebsiteUser = x.User.WebsiteUser != null ? new {
+                            x.User.WebsiteUser.UserName
+                        } : null
                     } : null,
-                    
-                } : null,
-                Team = x.Team != null ? new ApiTeam
-                {
-                    Id = x.Team.Id,
-                    Name = x.Team.Name,
-                    Score = x.Team.Solves.Sum(x => x.Challenge.Points)
-                } : null,
-                Challenge = x.Challenge != null ? new ApiChallenge
-                {
-                    Id = x.Challenge.Id,
-                    Title = x.Challenge.Title
-                } : null,
-                SolvedAt = x.SolvedAt,
-                Announced = x.Announced
-
-            }).ToList();
-            return Json(apiSolves);
+                    Team = x.Team != null ? new {
+                        x.Team.Id,
+                        x.Team.Name,
+                    } : null,
+                    Challenge = x.Challenge != null ? new {
+                        x.Challenge.Id,
+                        x.Challenge.Title
+                    } : null,
+                    solved_at = x.SolvedAt,
+                    x.Announced
+                })
+                .ToListAsync();
+            return Json(solves);
         }
 
         [HttpGet("byuserid/{id}")]
         public async Task<IActionResult> ByUserId(int id)
         {
-            var solves = await _context.Solves.Include(x => x.User).ThenInclude(x => x.Solves).ThenInclude(x => x.Challenge).Include(x => x.User.WebsiteUser).Include(x => x.Team.Solves).ThenInclude(x => x.Challenge).Include(x => x.Challenge).OrderByDescending(x => x.SolvedAt).Where(x => x.UserId == id).ToListAsync();
-            var apiSolves = solves.Select(x => new ApiSolve
-            {
-                Id = x.Id,
-                User = x.User != null ? new ApiUser
-                {
-                    Id = x.User.Id,
-                    DiscordId = x.User.DiscordId,
-                    DiscordUsername = x.User.DiscordUsername,
-                    Score = x.User.Solves.Sum(x => x.Challenge.Points),
-                    WebsiteUser = x.User.WebsiteUser != null ? new ApiWebsiteUser
+            var solves = await _context.Solves
+                .Where(x => x.UserId == id)
+                .OrderByDescending(x => x.SolvedAt)
+                .Select(x => new {
+                    x.Id,
+                    User = x.User != null ? new
                     {
-                        Username = x.User.WebsiteUser.UserName
+                        x.User.Id,
+                        discord_id = x.User.DiscordId,
+                        discord_username = x.User.DiscordUsername,
+                        WebsiteUser = x.User.WebsiteUser != null ? new
+                        {
+                            x.User.WebsiteUser.UserName
+                        } : null
                     } : null,
-
-                } : null,
-                Team = x.Team != null ? new ApiTeam
-                {
-                    Id = x.Team.Id,
-                    Name = x.Team.Name,
-                    Score = x.Team.Solves.Sum(x => x.Challenge.Points)
-                } : null,
-                Challenge = x.Challenge != null ? new ApiChallenge
-                {
-                    Id = x.Challenge.Id,
-                    Title = x.Challenge.Title
-                } : null,
-                SolvedAt = x.SolvedAt,
-                Announced = x.Announced
-
-            }).ToList();
-            return Json(apiSolves);
+                    Team = x.Team != null ? new
+                    {
+                        x.Team.Id,
+                        x.Team.Name,
+                    } : null,
+                    Challenge = x.Challenge != null ? new
+                    {
+                        x.Challenge.Id,
+                        x.Challenge.Title
+                    } : null,
+                    solved_at = x.SolvedAt,
+                    x.Announced
+                })
+                .ToListAsync();
+            return Json(solves);
         }
 
         [HttpGet("byteamid/{id}")]
         public async Task<IActionResult> ByTeamId(int id)
         {
-            var solves = await _context.Solves.Include(x => x.User).ThenInclude(x => x.Solves).ThenInclude(x => x.Challenge).Include(x => x.User.WebsiteUser).Include(x => x.Team.Solves).ThenInclude(x => x.Challenge).Include(x => x.Challenge).OrderByDescending(x => x.SolvedAt).Where(x => x.User.Team.Id == id).ToListAsync();
-            var apiSolves = solves.Select(x => new ApiSolve
-            {
-                Id = x.Id,
-                User = x.User != null ? new ApiUser
-                {
-                    Id = x.User.Id,
-                    DiscordId = x.User.DiscordId,
-                    DiscordUsername = x.User.DiscordUsername,
-                    Score = x.User.Solves.Sum(x => x.Challenge.Points),
-                    WebsiteUser = x.User.WebsiteUser != null ? new ApiWebsiteUser
+            var solves = await _context.Solves
+                .Where(x => x.User.Team.Id == id)
+                .OrderByDescending(x => x.SolvedAt)
+                .Select(x => new {
+                    x.Id,
+                    User = x.User != null ? new
                     {
-                        Username = x.User.WebsiteUser.UserName
+                        x.User.Id,
+                        discord_id = x.User.DiscordId,
+                        discord_username = x.User.DiscordUsername,
+                        WebsiteUser = x.User.WebsiteUser != null ? new
+                        {
+                            x.User.WebsiteUser.UserName
+                        } : null
                     } : null,
-
-                } : null,
-                Team = x.Team != null ? new ApiTeam
-                {
-                    Id = x.Team.Id,
-                    Name = x.Team.Name,
-                    Score = x.Team.Solves.Sum(x => x.Challenge.Points)
-                } : null,
-                Challenge = x.Challenge != null ? new ApiChallenge
-                {
-                    Id = x.Challenge.Id,
-                    Title = x.Challenge.Title
-                } : null,
-                SolvedAt = x.SolvedAt,
-                Announced = x.Announced
-
-            }).ToList();
-            return Json(apiSolves);
+                    Team = x.Team != null ? new
+                    {
+                        x.Team.Id,
+                        x.Team.Name,
+                    } : null,
+                    Challenge = x.Challenge != null ? new
+                    {
+                        x.Challenge.Id,
+                        x.Challenge.Title
+                    } : null,
+                    solved_at = x.SolvedAt,
+                    x.Announced
+                })
+                .ToListAsync();
+            return Json(solves);
         }
 
         [HttpGet("bydiscordid/{id}")]
         public async Task<IActionResult> ByDiscordId(ulong id)
         {
-            var solves = await _context.Solves.Include(x => x.User).ThenInclude(x => x.Solves).ThenInclude(x => x.Challenge).Include(x => x.User.WebsiteUser).Include(x => x.Team.Solves).ThenInclude(x => x.Challenge).Include(x => x.Challenge).OrderByDescending(x => x.SolvedAt).Where(x => x.User.DiscordId == id).ToListAsync();
-            var apiSolves = solves.Select(x => new ApiSolve
-            {
-                Id = x.Id,
-                User = x.User != null ? new ApiUser
-                {
-                    Id = x.User.Id,
-                    DiscordId = x.User.DiscordId,
-                    DiscordUsername = x.User.DiscordUsername,
-                    Score = x.User.Solves.Sum(x => x.Challenge.Points),
-                    WebsiteUser = x.User.WebsiteUser != null ? new ApiWebsiteUser
+            var solves = await _context.Solves
+                .Where(x => id != 0 && x.User.DiscordId == id)
+                .OrderByDescending(x => x.SolvedAt)
+                .Select(x => new {
+                    x.Id,
+                    User = x.User != null ? new
                     {
-                        Username = x.User.WebsiteUser.UserName
+                        x.User.Id,
+                        discord_id = x.User.DiscordId,
+                        discord_username = x.User.DiscordUsername,
+                        WebsiteUser = x.User.WebsiteUser != null ? new
+                        {
+                            x.User.WebsiteUser.UserName
+                        } : null
                     } : null,
-
-                } : null,
-                Team = x.Team != null ? new ApiTeam
-                {
-                    Id = x.Team.Id,
-                    Name = x.Team.Name,
-                    Score = x.Team.Solves.Sum(x => x.Challenge.Points)
-                } : null,
-                Challenge = x.Challenge != null ? new ApiChallenge
-                {
-                    Id = x.Challenge.Id,
-                    Title = x.Challenge.Title
-                } : null,
-                SolvedAt = x.SolvedAt,
-                Announced = x.Announced
-
-            }).ToList();
-            return Json(apiSolves);
-        }
-
-        class ApiSolve
-        {
-            public int Id { get; set; }
-            public ApiUser User { get; set; }
-            public ApiTeam Team { get; set; }
-            public ApiChallenge Challenge { get; set; }
-            public DateTime SolvedAt { get; set; }
-            public bool Announced { get; set; }
-        }
-
-        class ApiUser
-        {
-            public int Id { get; set; }
-            public ulong DiscordId { get; set; }
-            public string DiscordUsername { get; set; }
-            public int Score { get; set; }
-            public ApiWebsiteUser WebsiteUser {get; set;}
-        }
-
-        class ApiWebsiteUser
-        {
-            public string Username { get; set; }
-        }
-
-        class ApiTeam
-        {
-            public int Id { get; set; }
-            public string Name { get; set; }
-            public int Score { get; set; }
-        }
-
-        class ApiChallenge
-        {
-            public int Id { get; set; }
-            public string Title { get; set; }
+                    Team = x.Team != null ? new
+                    {
+                        x.Team.Id,
+                        x.Team.Name,
+                    } : null,
+                    Challenge = x.Challenge != null ? new
+                    {
+                        x.Challenge.Id,
+                        x.Challenge.Title
+                    } : null,
+                    solved_at = x.SolvedAt,
+                    x.Announced
+                })
+                .ToListAsync();
+            return Json(solves);
         }
     }
 }

@@ -70,7 +70,7 @@ namespace iCTF_Website
             DatabaseInitializer.SeedUsers(context, userManager);
             //insecure_password_change_asap:AQAAAAEAACcQAAAAEO799gEVUKL13sgJGu3SXOr7OV9GQjF0jxI6I6fVda2qXF6Q0VQZ/668wOmNmSn7ig==
 
-            if (env.IsDevelopment())
+            if (!env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
                 app.UseMigrationsEndPoint();

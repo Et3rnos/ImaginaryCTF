@@ -24,14 +24,14 @@ namespace iCTF_Website.Controllers {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IConfiguration _configuration;
 
-        private bool dynamicScoring;
+        private readonly bool _dynamicScoring;
 
         public ChallengesController(DatabaseContext context, UserManager<ApplicationUser> userManager, IConfiguration configuration)
         {
             _context = context;
             _userManager = userManager;
             _configuration = configuration;
-            dynamicScoring = _configuration.GetValue<bool>("DynamicScoring");
+            _dynamicScoring = _configuration.GetValue<bool>("DynamicScoring");
         }
 
         [HttpPost("submit")]
@@ -39,15 +39,10 @@ namespace iCTF_Website.Controllers {
         public async Task<IActionResult> SubmitAsync([FromBody] SubmitModel input)
         {
             int max;
-            try
-            {
-                max = await _context.Challenges.MaxAsync(x => x.Priority);
-            }
-            catch
-            {
-                max = 0;
-            }
-            Challenge challenge = new Challenge()
+            try { max = await _context.Challenges.MaxAsync(x => x.Priority); }
+            catch { max = 0; }
+
+            var challenge = new Challenge()
             {
                 Title = input.Title.Trim(),
                 Category = input.Category.Trim(),
@@ -56,7 +51,7 @@ namespace iCTF_Website.Controllers {
                 Flag = input.Flag.Trim(),
                 Author = input.Author.Trim(),
                 Points = input.Points,
-                Writeup = input.Writeup.Trim(),
+                Writeup = input.Writeup?.Trim(),
                 State = 0,
                 Priority = max + 1
             };
@@ -69,49 +64,45 @@ namespace iCTF_Website.Controllers {
         [RequireRoles("Administrator")]
         public async Task<IActionResult> UnapprovedAsync()
         {
-            var challenges = await _context.Challenges.Where(x => x.State == 0).ToListAsync();
-            var apiChallenges = new List<UnapprovedChallenge>();
-            foreach (var chall in challenges)
-            {
-                apiChallenges.Add(new UnapprovedChallenge
+            var challenges = await _context.Challenges
+                .Where(x => x.State == 0)
+                .Select(x => new
                 {
-                    Id = chall.Id,
-                    Title = chall.Title,
-                    Category = chall.Category,
-                    Description = chall.Description,
-                    Attachments = chall.Attachments,
-                    Writeup = chall.Writeup,
-                    Flag = chall.Flag,
-                    Author = chall.Author,
-                    Points = chall.Points
-                });
-            }
-            return Json(apiChallenges);
+                    x.Id,
+                    x.Title,
+                    x.Category,
+                    x.Description,
+                    x.Attachments,
+                    x.Writeup,
+                    x.Flag,
+                    x.Author,
+                    x.Points
+                })
+                .ToListAsync();
+            return Json(challenges);
         }
 
         [HttpGet("approved")]
         [RequireRoles("Administrator")]
         public async Task<IActionResult> ApprovedAsync()
         {
-            var challenges = await _context.Challenges.Where(x => x.State == 1).ToListAsync();
-            var apiChallenges = new List<ApprovedChallenge>();
-            foreach (var chall in challenges)
-            {
-                apiChallenges.Add(new ApprovedChallenge
+            var challenges = await _context.Challenges
+                .Where(x => x.State == 1)
+                .Select(x => new
                 {
-                    Id = chall.Id,
-                    Title = chall.Title,
-                    Category = chall.Category,
-                    Description = chall.Description,
-                    Attachments = chall.Attachments,
-                    Writeup = chall.Writeup,
-                    Flag = chall.Flag,
-                    Author = chall.Author,
-                    Points = chall.Points,
-                    Priority = chall.Priority
-                });
-            }
-            return Json(apiChallenges);
+                    x.Id,
+                    x.Title,
+                    x.Category,
+                    x.Description,
+                    x.Attachments,
+                    x.Writeup,
+                    x.Flag,
+                    x.Author,
+                    x.Points,
+                    x.Priority
+                })
+                .ToListAsync();
+            return Json(challenges);
         }
 
         [HttpGet("released")]
@@ -128,7 +119,8 @@ namespace iCTF_Website.Controllers {
                     x.Description,
                     x.Attachments,
                     x.Author,
-                    Points = dynamicScoring ? DynamicScoringManager.SolvePoints.Invoke(x.Solves.Count) : x.Points,
+                    Points = _dynamicScoring ? DynamicScoringManager.SolvePoints.Invoke(x.Solves.Count) : x.Points,
+                    solves_count = x.Solves.Count,
                     release_date = x.ReleaseDate,
 
                 })
@@ -138,23 +130,24 @@ namespace iCTF_Website.Controllers {
 
         [HttpGet("archived")]
         public async Task<IActionResult> ArchivedAsync() {
-            var challenges = await _context.Challenges.Where(x => x.State == 3).OrderByDescending(x => x.ReleaseDate).ToListAsync();
-            var apiChallenges = new List<ArchivedChallenge>();
-            foreach (var chall in challenges) {
-                apiChallenges.Add(new ArchivedChallenge {
-                    Id = chall.Id,
-                    Title = chall.Title,
-                    Category = chall.Category,
-                    Description = chall.Description,
-                    Attachments = chall.Attachments,
-                    Writeup = chall.Writeup,
-                    Flag = chall.Flag,
-                    Author = chall.Author,
-                    Points = chall.Points,
-                    ReleaseDate = chall.ReleaseDate
-                });
-            }
-            return Json(apiChallenges);
+            var challenges = await _context.Challenges
+                .Where(x => x.State == 3)
+                .OrderByDescending(x => x.ReleaseDate)
+                .Select(x => new
+                {
+                    x.Id,
+                    x.Title,
+                    x.Category,
+                    x.Description,
+                    x.Attachments,
+                    x.Writeup,
+                    x.Flag,
+                    x.Author,
+                    x.Points,
+                    release_date = x.ReleaseDate
+                })
+                .ToListAsync();
+            return Json(challenges);
         }
 
         public class SubmitModel
@@ -174,47 +167,6 @@ namespace iCTF_Website.Controllers {
             public string Author { get; set; }
             [Required]
             public int Points { get; set; }
-        }
-
-        class UnapprovedChallenge
-        {
-            public int Id { get; set; }
-            public string Title { get; set; }
-            public string Category { get; set; }
-            public string Description { get; set; }
-            public string Attachments { get; set; }
-            public string Writeup { get; set; }
-            public string Flag { get; set; }
-            public string Author { get; set; }
-            public int Points { get; set; }
-        }
-
-        class ApprovedChallenge
-        {
-            public int Id { get; set; }
-            public string Title { get; set; }
-            public string Category { get; set; }
-            public string Description { get; set; }
-            public string Attachments { get; set; }
-            public string Writeup { get; set; }
-            public string Flag { get; set; }
-            public string Author { get; set; }
-            public int Points { get; set; }
-            public int Priority { get; set; }
-        }
-
-        class ArchivedChallenge {
-            public int Id { get; set; }
-            public string Title { get; set; }
-            public string Category { get; set; }
-            public string Description { get; set; }
-            public string Attachments { get; set; }
-            public string Writeup { get; set; }
-            public string Flag { get; set; }
-            public string Author { get; set; }
-            public int Points { get; set; }
-            [JsonPropertyName("release_date")]
-            public DateTime ReleaseDate { get; set; }
         }
     }
 }
