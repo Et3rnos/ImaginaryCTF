@@ -83,7 +83,6 @@ namespace iCTF_Website
 
             app.UseStatusCodePagesWithReExecute("/Error/{0}");
 
-            app.UseHttpsRedirection();
             app.UseStaticFiles();
 
             app.UseRouting();
