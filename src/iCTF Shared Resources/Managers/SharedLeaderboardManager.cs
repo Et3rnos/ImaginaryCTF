@@ -51,19 +51,7 @@ namespace iCTF_Shared_Resources.Managers
             return users.Union(teams).OrderByDescending(x => x.Score).ThenBy(x => x.LastUpdated).Take(max).ToList();
         }
 
-        public static async Task<int> GetPosition(DatabaseContext context, Team team, bool dynamicScoring = false)
-        {
-            int score = dynamicScoring ? team.Solves.Sum(x => DynamicScoringManager.SolvePoints.Invoke(x.Challenge.Solves.Count)) : team.Solves.Sum(x => x.Challenge.Points);
-            return await GetPosition(context, score, team.LastUpdated, dynamicScoring);
-        }
-
-        public static async Task<int> GetPosition(DatabaseContext context, User user, bool dynamicScoring = false)
-        {
-            int score = dynamicScoring ? user.Solves.Sum(x => DynamicScoringManager.SolvePoints.Invoke(x.Challenge.Solves.Count)) :user.Solves.Sum(x => x.Challenge.Points);
-            return await GetPosition(context, score, user.LastUpdated, dynamicScoring);
-        }
-
-        private static async Task<int> GetPosition(DatabaseContext context, int score, DateTime lastUpdated, bool dynamicScoring = false)
+        public static async Task<int> GetPosition(DatabaseContext context, int score, DateTime lastUpdated, bool dynamicScoring = false)
         {
             int teamsCount = await context.Teams
                 .AsExpandable()

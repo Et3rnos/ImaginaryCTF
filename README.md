@@ -2,11 +2,9 @@
 
 ImaginaryCTF is a platform that brings the beauty of CTF Competitions to discord, releasing a challenge every day.
 
-**Current Version:** 0.1.1
+**Live Website:** [https://imaginaryctf.org](https://imaginaryctf.org)
 
-**Website Live Demo:** [https://imaginaryctf.org](https://imaginaryctf.org)
-
-**Discord Bot Live Demo:** [https://discord.gg/vReKWNxPuE](https://discord.gg/vReKWNxPuE)
+**Live Discord Bot:** [https://discord.gg/vReKWNxPuE](https://discord.gg/vReKWNxPuE)
 
 ## Frequently Asked Questions
 
@@ -28,11 +26,7 @@ If you are planning to use the full version of this app you will need access to:
 
 ## Customization
 
-General configuration is located at the following paths:
-
-- [iCTF Shared Resources/appsettings.json](iCTF%20Shared%20Resources/appsettings.json)
-- [iCTF Discord Bot/appsettings.json](iCTF%20Discord%20Bot/appsettings.json)
-- [iCTF Website/appsettings.json](iCTF%20Website/appsettings.json)
+General configuration is located at : [appsettings.json](appsettings.json)
 
 If you do not know how to change the platform to fit your needs or do not want to do that, please consider supporting me, as supporters can ask me to do that and more advanced changes to the platform. Those changes include but are not restricted to:
 
@@ -43,7 +37,7 @@ If you do not know how to change the platform to fit your needs or do not want t
 
 ## Installation
 
-#### Install .NET Core SDK 5.0
+#### Install .NET Core SDK 6.0
 
 Please visit [https://docs.microsoft.com/en-us/dotnet/core/install/linux-ubuntu](https://docs.microsoft.com/en-us/dotnet/core/install/linux-ubuntu) for instructions on how to install .NET Core SDK 5.0 in your Ubuntu distribution.
 
@@ -63,7 +57,7 @@ Please view [Customization Section](#Customization)
 dotnet publish -c release
 ```
 
-NOTE: published apps are usually under `[project_folder]/bin/Release/net5.0/publish/` directories.
+NOTE: published apps are usually under `[project_folder]/bin/Release/net6.0/publish/` directories.
 
 #### Execute both apps
 

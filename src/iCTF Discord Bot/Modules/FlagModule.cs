@@ -12,6 +12,7 @@ using iCTF_Shared_Resources.Models;
 using iCTF_Shared_Resources.Managers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace iCTF_Discord_Bot.Modules
 {
@@ -22,6 +23,7 @@ namespace iCTF_Discord_Bot.Modules
         private readonly CommandService _commands;
         private readonly DatabaseContext _context;
         private readonly IServiceScope _scope;
+        private readonly IConfigurationRoot _configuration;
 
         public FlagModule(DiscordSocketClient client, CommandService commands, IServiceScopeFactory scopeFactory)
         {
@@ -29,6 +31,7 @@ namespace iCTF_Discord_Bot.Modules
             _commands = commands;
             _scope = scopeFactory.CreateScope();
             _context = _scope.ServiceProvider.GetService<DatabaseContext>();
+            _configuration = _scope.ServiceProvider.GetService<IConfigurationRoot>();
         }
 
         ~FlagModule() { _scope.Dispose(); }
@@ -128,9 +131,10 @@ namespace iCTF_Discord_Bot.Modules
             await _context.SaveChangesAsync();
             await ReplyAsync($"Congratulations! You solved **{challenge.Title}** challenge!");
 
-            await SolvesManager.AnnounceWebsiteSolves(_client, _context);
+            bool dynamicScoring = _configuration.GetValue<bool>("DynamicScoring");
+            await SolvesManager.AnnounceWebsiteSolves(_client, _context, dynamicScoring);
             await SolvesManager.AnnounceSolve(_client, _context, challenge, user);
-            await LeaderboardManager.UpdateLeaderboard(_client, _context);
+            await LeaderboardManager.UpdateLeaderboard(_client, _context, dynamicScoring);
             await RolesManager.UpdateRoles(_client, _context);
         }
 

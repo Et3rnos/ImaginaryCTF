@@ -26,7 +26,7 @@ namespace iCTF_Discord_Bot
             await channel.SendMessageAsync($"<@{user.DiscordId}> solved **{challenge.Title}** challenge!");
         }
 
-        public static async Task AnnounceWebsiteSolves(DiscordSocketClient client, DatabaseContext context)
+        public static async Task AnnounceWebsiteSolves(DiscordSocketClient client, DatabaseContext context, bool dynamicScoring = false)
         {
             var solves = await context.Solves.Include(x => x.User.WebsiteUser).Include(x => x.Challenge).Include(x => x.Team).ThenInclude(x => x.Members).Where(x => x.Announced == false).ToListAsync();
             if (solves.Count == 0) {
@@ -74,7 +74,7 @@ namespace iCTF_Discord_Bot
             }
             await context.SaveChangesAsync();
             await RolesManager.UpdateRoles(client, context);
-            await LeaderboardManager.UpdateLeaderboard(client, context);
+            await LeaderboardManager.UpdateLeaderboard(client, context, dynamicScoring);
         }
     }
 }

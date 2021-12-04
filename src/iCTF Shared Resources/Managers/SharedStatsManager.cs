@@ -24,7 +24,6 @@ namespace iCTF_Shared_Resources.Managers
 
             int teamsCount = await context.Teams.Where(x => x.Solves.Any()).CountAsync();
             int playersCount = await context.Users.Where(x => x.Solves.Any() && x.Team == null).CountAsync();
-            int position = await SharedLeaderboardManager.GetPosition(context, user, dynamicScoring);
 
             var challengesInfo = await context.Challenges.Where(x => x.State == 2).OrderByDescending(x => x.ReleaseDate).Select(x => new ChallengeInfo { Challenge = x, SolvesCount = x.Solves.Count }).ToListAsync();
 
@@ -33,6 +32,8 @@ namespace iCTF_Shared_Resources.Managers
                 score = solvedChallenges.Sum(x => DynamicScoringManager.GetPointsFromSolvesCount(x.SolvesCount));
             else
                 score = solvedChallenges.Sum(x => x.Challenge.Points);
+
+            int position = await SharedLeaderboardManager.GetPosition(context, score, user.LastUpdated, dynamicScoring);
 
             var stats = new Stats {
                 Position = position,
@@ -56,7 +57,6 @@ namespace iCTF_Shared_Resources.Managers
 
             int teamsCount = await context.Teams.Where(x => x.Solves.Any()).CountAsync();
             int playersCount = await context.Users.Where(x => x.Solves.Any() && x.Team == null).CountAsync();
-            int position = await SharedLeaderboardManager.GetPosition(context, team, dynamicScoring);
 
             var challengesInfo = await context.Challenges.Where(x => x.State == 2).OrderByDescending(x => x.ReleaseDate).Select(x => new ChallengeInfo { Challenge = x, SolvesCount = x.Solves.Count }).ToListAsync();
 
@@ -65,6 +65,8 @@ namespace iCTF_Shared_Resources.Managers
                 score = solvedChallenges.Sum(x => DynamicScoringManager.GetPointsFromSolvesCount(x.SolvesCount));
             else
                 score = solvedChallenges.Sum(x => x.Challenge.Points);
+
+            int position = await SharedLeaderboardManager.GetPosition(context, score, team.LastUpdated, dynamicScoring);
 
             var stats = new Stats {
                 Position = position,
