@@ -70,8 +70,8 @@ namespace iCTF_Website.Areas.Admin.Pages
             else
             {
                 config.IsFinished = true;
-                await _context.SaveChangesAsync();
             }
+            await _context.SaveChangesAsync();
         }
     }
 }
