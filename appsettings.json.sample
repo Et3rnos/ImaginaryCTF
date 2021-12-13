@@ -1,0 +1,44 @@
+{
+  //General
+  "ConnectionString": "server=localhost;port=3306;database=ictf;user=ictf;password=ictf",
+  "DynamicScoring": true,
+
+  //Website
+  "ShowWriteupsAndFlags": false,
+  "DiscordClientId": "",
+  "DiscordClientSecret": "",
+  "DiscordRedirectUrl": "https://domain/Account/DiscordAccount",
+  "RecaptchaV2SiteKey": "",
+  "RecaptchaV2SecretKey": "",
+  "EmailSettings": {
+    "SmtpDomain": "smtp.gmail.com",
+    "SmtpPort": 587,
+    "Email": "",
+    "Password": ""
+  },
+
+  //Discord Bot
+  "Token": "",
+  "FDownlCoupon": "",
+
+  //Logging
+  "Serilog": {
+    "MinimumLevel": {
+      "Default": "Information",
+      "Override": {
+        "Microsoft": "Warning",
+        "Quartz": "Warning"
+      }
+    },
+    "WriteTo": [
+      "Console",
+      {
+        "Name": "File",
+        "Args": {
+          "path": "logs/log.txt",
+          "rollingInterval": "Day"
+        }
+      }
+    ]
+  }
+}

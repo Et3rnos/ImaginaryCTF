@@ -39,7 +39,9 @@ If you do not know how to change the platform to fit your needs or do not want t
 
 #### Install .NET Core SDK 6.0
 
-Please visit [https://docs.microsoft.com/en-us/dotnet/core/install/linux-ubuntu](https://docs.microsoft.com/en-us/dotnet/core/install/linux-ubuntu) for instructions on how to install .NET Core SDK 5.0 in your Ubuntu distribution.
+Using Ubuntu 20.04? Just run `bash install-ubuntu-20.04.sh`. Otherwise:
+
+Please visit [https://docs.microsoft.com/en-us/dotnet/core/install/linux-ubuntu](https://docs.microsoft.com/en-us/dotnet/core/install/linux-ubuntu) for instructions on how to install .NET Core SDK 6.0 in your Ubuntu distribution.
 
 #### Clone ImaginaryCTF
 
