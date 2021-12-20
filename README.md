@@ -26,7 +26,7 @@ If you are planning to use the full version of this app you will need access to:
 
 ## Customization
 
-General configuration is located at : [appsettings.json](appsettings.json)
+An example of a configuration file is located at : [appsettings.json.sample](appsettings.json.sample)
 
 If you do not know how to change the platform to fit your needs or do not want to do that, please consider supporting me, as supporters can ask me to do that and more advanced changes to the platform. Those changes include but are not restricted to:
 
@@ -45,7 +45,7 @@ git clone https://github.com/Et3rnos/ImaginaryCTF
 
 #### Install .NET Core SDK 6.0
 
-Using Ubuntu 20.04? Just run `bash install-ubuntu-20.04.sh`. Otherwise:
+Using Ubuntu 20.04? Just run `sudo bash install-dotnet.sh`. Otherwise:
 
 Please visit [https://docs.microsoft.com/en-us/dotnet/core/install/linux-ubuntu](https://docs.microsoft.com/en-us/dotnet/core/install/linux-ubuntu) for instructions on how to install .NET Core SDK 6.0 in your Ubuntu distribution.
 
@@ -56,12 +56,14 @@ Please view [Customization Section](#Customization)
 #### Publish it
 
 ```
-dotnet publish -c release
+sudo bash build.sh
 ```
 
-NOTE: published apps are usually under `[project_folder]/bin/Release/net6.0/publish/` directories.
+NOTE: published apps are usually under `src/[project_folder]/bin/Release/net6.0/publish/` directories.
 
 #### Execute both apps
+
+<!-- [TODO] Add scripts to auto generate systemd service files  -->
 
 ```
 dotnet "path_to_the_published_discord_bot.dll" &
@@ -79,5 +81,3 @@ The easier way to contact me is through Discord. My username is Et3rnos#6556.
 ## Support Me
 
 You can support me either via Patreon: [https://www.patreon.com/et3rnos](https://www.patreon.com/et3rnos)
-
-Or via Paypal: [https://www.paypal.com/donate?hosted_button_id=JSM77LBGLJ3FG](https://www.paypal.com/donate?hosted_button_id=JSM77LBGLJ3FG)
