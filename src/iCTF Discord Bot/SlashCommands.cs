@@ -51,7 +51,7 @@ namespace iCTF_Discord_Bot
             var statsCommand = new SlashCommandBuilder();
             statsCommand.WithName("stats");
             statsCommand.WithDescription("Prints the player statistics");
-            statsCommand.AddOption("user", ApplicationCommandOptionType.User, "the user to print the stats", required: false);
+            statsCommand.AddOption("user", ApplicationCommandOptionType.User, "the user to print the stats", isRequired: false);
             await client.Rest.CreateGlobalCommand(statsCommand.Build());
 
             var leaderboardCommand = new SlashCommandBuilder();
@@ -67,7 +67,7 @@ namespace iCTF_Discord_Bot
             var helpCommand = new SlashCommandBuilder();
             helpCommand.WithName("help");
             helpCommand.WithDescription("Prints all available commands in a category");
-            helpCommand.AddOption("category", ApplicationCommandOptionType.String, "the category to view its commands", required: false);
+            helpCommand.AddOption("category", ApplicationCommandOptionType.String, "the category to view its commands", isRequired: false);
             await client.Rest.CreateGlobalCommand(helpCommand.Build());
         }
     }

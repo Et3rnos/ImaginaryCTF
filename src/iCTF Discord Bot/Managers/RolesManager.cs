@@ -10,6 +10,7 @@ using iCTF_Discord_Bot.Managers;
 using iCTF_Shared_Resources;
 using iCTF_Shared_Resources.Managers;
 using iCTF_Shared_Resources.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace iCTF_Discord_Bot
 {

@@ -10,6 +10,7 @@ using iCTF_Discord_Bot.Managers;
 using iCTF_Shared_Resources;
 using iCTF_Shared_Resources.Managers;
 using iCTF_Shared_Resources.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace iCTF_Discord_Bot
 {
@@ -45,7 +46,7 @@ namespace iCTF_Discord_Bot
                 await ((IUserMessage)message).ModifyAsync(x => x.Embed = embedBuilder.Build());
             } else {
                 var builder = new ComponentBuilder().WithButton("Full Leaderboard", style: ButtonStyle.Link, url: "https://imaginaryctf.org/leaderboard");
-                await channel.SendMessageAsync(embed: embedBuilder.Build(), component: builder.Build());
+                await channel.SendMessageAsync(embed: embedBuilder.Build(), components: builder.Build());
             }
         }
     }

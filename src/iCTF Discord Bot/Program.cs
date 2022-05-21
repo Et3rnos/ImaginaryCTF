@@ -30,8 +30,7 @@ namespace iCTF_Discord_Bot
         private Program()
         {
             _client = new DiscordSocketClient(new DiscordSocketConfig {
-                GatewayIntents = GatewayIntents.All,
-                AlwaysAcknowledgeInteractions = false
+                GatewayIntents = GatewayIntents.All
             });
             _commands = new CommandService(new CommandServiceConfig {
                 CaseSensitiveCommands = false,

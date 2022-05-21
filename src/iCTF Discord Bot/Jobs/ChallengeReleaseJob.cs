@@ -61,7 +61,8 @@ namespace iCTF_Discord_Bot.Jobs
                 var todaysChannel = client.GetGuild(config.GuildId).GetTextChannel(config.TodaysChannelId);
                 var messages = await todaysChannel.GetMessagesAsync(int.MaxValue).FlattenAsync();
                 messages = messages.Where(x => (DateTimeOffset.UtcNow - x.Timestamp).TotalDays <= 14);
-                if (messages.Any()) {
+                if (messages.Any())
+                {
                     await todaysChannel.DeleteMessagesAsync(messages);
                 }
 

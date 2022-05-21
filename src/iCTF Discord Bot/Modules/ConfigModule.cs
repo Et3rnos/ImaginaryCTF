@@ -10,6 +10,7 @@ using iCTF_Discord_Bot.Managers;
 using iCTF_Shared_Resources;
 using iCTF_Shared_Resources.Models;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.EntityFrameworkCore;
 
 namespace iCTF_Discord_Bot.Modules
 {
@@ -88,6 +89,11 @@ namespace iCTF_Discord_Bot.Modules
                 embed.Description += $"**Logs Channel:** None\n";
             else
                 embed.Description += $"**Logs Channel:** <#{config.LogsChannelId}>\n";
+
+            if (config.ServerStatusChannelId == 0)
+                embed.Description += $"**Server Status's Channel:** None\n";
+            else
+                embed.Description += $"**Server Status's Channel**: <#{config.ServerStatusChannelId}>\n";
 
             if (config.BoardChannelId == 0)
                 embed.Description += $"**Board's Channel:** None\n";
@@ -234,6 +240,31 @@ namespace iCTF_Discord_Bot.Modules
             await _context.SaveChangesAsync();
 
             await ReplyAsync(embed: new EmbedBuilder().WithDescription($"Logs channel set to: <#{channel.Id}>").Build());
+        }
+
+        [Command("setserverstatuschannel")]
+        [RequireContext(ContextType.Guild)]
+        [RequireUserPermission(GuildPermission.ManageGuild, Group = "Permission")]
+        [RequireOwner(Group = "Permission")]
+        [Summary("Sets the server status channel")]
+        public async Task SetServerStatusChannel(IChannel channel = null)
+        {
+            var config = await _context.Configuration.FirstOrDefaultAsync();
+            if (config == null)
+            {
+                await Link();
+                config = await _context.Configuration.FirstOrDefaultAsync();
+            }
+
+            if (channel == null)
+            {
+                channel = Context.Channel;
+            }
+
+            config.ServerStatusChannelId = channel.Id;
+            await _context.SaveChangesAsync();
+
+            await ReplyAsync(embed: new EmbedBuilder().WithDescription($"Server Status channel set to: <#{channel.Id}>").Build());
         }
 
         [Command("setboardchannel")]

@@ -3,6 +3,7 @@ using Discord.WebSocket;
 using iCTF_Discord_Bot.Managers;
 using iCTF_Shared_Resources;
 using iCTF_Shared_Resources.Models;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Quartz;
 using System;

@@ -21,13 +21,13 @@ namespace iCTF_Discord_Bot.Logic
         public static async Task LeaderboardSlashAsync(SocketSlashCommand command, DatabaseContext dbContext, IConfigurationRoot configuration)
         {
             var message = await GetLeaderboardMessageAsync(dbContext, configuration);
-            await command.RespondAsync(embed: message.Embed, component: message.MessageComponent, ephemeral: message.Ephemeral);
+            await command.RespondAsync(embed: message.Embed, components: message.MessageComponent, ephemeral: message.Ephemeral);
         }
 
         public static async Task LeaderboardCommandAsync(SocketCommandContext context, DatabaseContext dbContext, IConfigurationRoot configuration)
         {
             var message = await GetLeaderboardMessageAsync(dbContext, configuration);
-            await context.Channel.SendMessageAsync(embed: message.Embed, component: message.MessageComponent);
+            await context.Channel.SendMessageAsync(embed: message.Embed, components: message.MessageComponent);
         }
 
         private class Message

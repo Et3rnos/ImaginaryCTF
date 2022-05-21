@@ -78,15 +78,25 @@ namespace iCTF_Discord_Bot
             _scheduler.ScheduleJob(job2, trigger2);
 
             ITrigger trigger3 = TriggerBuilder.Create()
-                .WithIdentity("warning_no_approved_challenges")
+                .WithIdentity("warning_no_approved_challenges_trigger")
                 .StartAt(warningTime)
                 .WithSimpleSchedule(x => x.RepeatForever().WithIntervalInHours(24))
                 .Build();
             IJobDetail job3 = JobBuilder.Create<WarnNoApprovedChallsJob>()
-                .WithIdentity("warning_no_approved_challenges", "main_group")
+                .WithIdentity("warning_no_approved_challenges_job", "main_group")
                 .Build();
 
             _scheduler.ScheduleJob(job3, trigger3);
+
+            ITrigger trigger4 = TriggerBuilder.Create()
+                .WithIdentity("update_server_status_trigger")
+                .WithSimpleSchedule(x => x.RepeatForever().WithIntervalInMinutes(1))
+                .Build();
+            IJobDetail job4 = JobBuilder.Create<UpdateServerStatusJob>()
+                .WithIdentity("update_server_status_job", "main_group")
+                .Build();
+
+            _scheduler.ScheduleJob(job4, trigger4);
 
             _scheduler.Start();
         }
