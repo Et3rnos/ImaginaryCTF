@@ -18,6 +18,7 @@ namespace iCTF_Website
     {
         public static void SeedUsers(DatabaseContext context, UserManager<ApplicationUser> userManager)
         {
+            //Log.Warning(context.Challenges.Where(x => x.State == 2).Include(x => x.Solves.OrderByDescending(x => x.SolvedAt).Take(1)).ThenInclude(x => x.User).ThenInclude(x => x.Team).ToQueryString());
             context.Database.Migrate();
 
             var roles = new string[] { "Administrator", "13:37 Hacker", "Booster", "Beta Tester", "Challenge Creator" };

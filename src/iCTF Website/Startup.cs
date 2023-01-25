@@ -34,7 +34,7 @@ namespace iCTF_Website
 
             services.AddDbContext<DatabaseContext>(options => {
                 options.UseMySql(Configuration.GetValue<string>("ConnectionString"),
-                new MySqlServerVersion(new Version(5, 7)));
+                new MySqlServerVersion(ServerVersion.AutoDetect(Configuration.GetValue<string>("ConnectionString"))));
             });
 
             services.AddDatabaseDeveloperPageExceptionFilter();
