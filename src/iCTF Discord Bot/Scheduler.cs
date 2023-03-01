@@ -48,9 +48,7 @@ namespace iCTF_Discord_Bot
             warningTime = warningTime > DateTime.UtcNow ? warningTime : warningTime.AddDays(1);
             warningTime = DateTime.SpecifyKind(warningTime, DateTimeKind.Utc);
 
-            if (_scheduler != null) {
-                _scheduler.Shutdown();
-            }
+            _scheduler?.Shutdown();
 
             ISchedulerFactory schedulerFactory = new StdSchedulerFactory();
             _scheduler = schedulerFactory.GetScheduler().GetAwaiter().GetResult();

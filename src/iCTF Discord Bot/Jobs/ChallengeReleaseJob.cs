@@ -47,31 +47,22 @@ namespace iCTF_Discord_Bot.Jobs
                 return;
             }
 
-            if (config.TodaysChannelId != 0 && config.TodaysRoleId != 0)
+            var challengeChannelsCategory = client.GetGuild(config.GuildId).CategoryChannels.FirstOrDefault(x => x.Name.ToLower() == "challenge channels");
+            if (challengeChannelsCategory != null)
             {
-                Log.Information("Deleting and re-creating Today's Channel role");
-                var oldRole = client.GetGuild(config.GuildId).GetRole(config.TodaysRoleId);
-                var newRole = await client.GetGuild(config.GuildId).CreateRoleAsync(oldRole.Name, oldRole.Permissions, oldRole.Color, oldRole.IsHoisted, oldRole.IsMentionable);
-                await client.GetGuild(config.GuildId).GetTextChannel(config.TodaysChannelId).AddPermissionOverwriteAsync(newRole, new OverwritePermissions(viewChannel: PermValue.Allow));
-                await oldRole.DeleteAsync();
-                config.TodaysRoleId = newRole.Id;
-                await dbContext.SaveChangesAsync();
+                var challengeRole = await client.GetGuild(config.GuildId).CreateRoleAsync("solved-" + chall.Title);
+                var channelPermissions = new List<Overwrite> { 
+                    new Overwrite(challengeRole.Id, PermissionTarget.Role, new OverwritePermissions(viewChannel: PermValue.Allow)),
+                    new Overwrite(client.GetGuild(config.GuildId).EveryoneRole.Id, PermissionTarget.Role, new OverwritePermissions(viewChannel: PermValue.Deny))
+                };
+                var challengeChannel = await client.GetGuild(config.GuildId).CreateTextChannelAsync(chall.Title, tcp => { tcp.CategoryId = challengeChannelsCategory.Id; tcp.PermissionOverwrites = channelPermissions; });
 
-                Log.Information("Purging Today's Channel");
-                var todaysChannel = client.GetGuild(config.GuildId).GetTextChannel(config.TodaysChannelId);
-                var messages = await todaysChannel.GetMessagesAsync(int.MaxValue).FlattenAsync();
-                messages = messages.Where(x => (DateTimeOffset.UtcNow - x.Timestamp).TotalDays <= 14);
-                if (messages.Any())
+                if (!string.IsNullOrEmpty(chall.Writeup))
                 {
-                    await todaysChannel.DeleteMessagesAsync(messages);
-                }
-
-                Log.Information("Posting the challenge writeup on today's channel");
-                if (!string.IsNullOrEmpty(chall.Writeup)) {
                     var writeupEmbed = new CustomEmbedBuilder();
                     writeupEmbed.WithTitle("Intended Solution");
                     writeupEmbed.WithDescription(chall.Writeup);
-                    var message = await todaysChannel.SendMessageAsync(embed: writeupEmbed.Build());
+                    var message = await challengeChannel.SendMessageAsync(embed: writeupEmbed.Build());
                     await message.PinAsync();
                 }
             }

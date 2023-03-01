@@ -40,7 +40,7 @@ namespace iCTF_Discord_Bot
 
             foreach (var solve in solves)
             {
-                if (config.TodaysRoleId != 0 && solve.User.DiscordId != 0)
+                if (solve.User.DiscordId != 0)
                 {
                     var lastChall = await context.Challenges.AsAsyncEnumerable().Where(x => x.State == 2).OrderByDescending(x => x.ReleaseDate).FirstOrDefaultAsync();
                     if (lastChall == solve.Challenge)
@@ -53,8 +53,9 @@ namespace iCTF_Discord_Bot
                                 var guildUser = client.GetGuild(config.GuildId).GetUser(member.DiscordId);
                                 if (guildUser != null)
                                 {
-                                    var role = client.GetGuild(config.GuildId).GetRole(config.TodaysRoleId);
-                                    await guildUser.AddRoleAsync(role);
+                                    var role = client.GetGuild(config.GuildId).Roles.FirstOrDefault(x => x.Name == "solved-" + solve.Challenge.Title);
+                                    if (role != null)
+                                        await guildUser.AddRoleAsync(role);
                                 }
                             }
                         }
@@ -63,8 +64,9 @@ namespace iCTF_Discord_Bot
                             var guildUser = client.GetGuild(config.GuildId).GetUser(solve.User.DiscordId);
                             if (guildUser != null)
                             {
-                                var role = client.GetGuild(config.GuildId).GetRole(config.TodaysRoleId);
-                                await guildUser.AddRoleAsync(role);
+                                var role = client.GetGuild(config.GuildId).Roles.FirstOrDefault(x => x.Name == "solved-" + solve.Challenge.Title);
+                                if (role != null)
+                                    await guildUser.AddRoleAsync(role);
                             }
                         }
                     }

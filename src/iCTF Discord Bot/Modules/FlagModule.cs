@@ -79,7 +79,7 @@ namespace iCTF_Discord_Bot.Modules
                 return;
             }
 			
-            if (config != null && config.GuildId != 0 && config.TodaysRoleId != 0)
+            if (config != null && config.GuildId != 0)
             {
                 var lastChall = await _context.Challenges.AsQueryable().OrderByDescending(x => x.ReleaseDate).FirstOrDefaultAsync(x => x.State == 2);
                 if (lastChall == challenge)
@@ -92,8 +92,9 @@ namespace iCTF_Discord_Bot.Modules
                             var guildUser = _client.GetGuild(config.GuildId).GetUser(member.DiscordId);
                             if (guildUser != null)
                             {
-                                var role = _client.GetGuild(config.GuildId).GetRole(config.TodaysRoleId);
-                                await guildUser.AddRoleAsync(role);
+                                var role = _client.GetGuild(config.GuildId).Roles.FirstOrDefault(x => x.Name == "solved-" + challenge.Title);
+                                if (role != null)
+                                    await guildUser.AddRoleAsync(role);
                             }
                         }
                     }
@@ -102,8 +103,9 @@ namespace iCTF_Discord_Bot.Modules
                         var guildUser = _client.GetGuild(config.GuildId).GetUser(Context.User.Id);
                         if (guildUser != null)
                         {
-                            var role = _client.GetGuild(config.GuildId).GetRole(config.TodaysRoleId);
-                            await guildUser.AddRoleAsync(role);
+                            var role = _client.GetGuild(config.GuildId).Roles.FirstOrDefault(x => x.Name == "solved-" + challenge.Title);
+                            if (role != null)
+                                await guildUser.AddRoleAsync(role);
                         }
                     }
                 }
