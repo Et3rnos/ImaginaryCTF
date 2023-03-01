@@ -92,7 +92,7 @@ namespace iCTF_Discord_Bot.Modules
                             var guildUser = _client.GetGuild(config.GuildId).GetUser(member.DiscordId);
                             if (guildUser != null)
                             {
-                                var role = _client.GetGuild(config.GuildId).Roles.FirstOrDefault(x => x.Name == "solved-" + challenge.Title);
+                                var role = _client.GetGuild(config.GuildId).Roles.FirstOrDefault(x => x.Name == "Solved " + challenge.Title);
                                 if (role != null)
                                     await guildUser.AddRoleAsync(role);
                             }
@@ -103,7 +103,7 @@ namespace iCTF_Discord_Bot.Modules
                         var guildUser = _client.GetGuild(config.GuildId).GetUser(Context.User.Id);
                         if (guildUser != null)
                         {
-                            var role = _client.GetGuild(config.GuildId).Roles.FirstOrDefault(x => x.Name == "solved-" + challenge.Title);
+                            var role = _client.GetGuild(config.GuildId).Roles.FirstOrDefault(x => x.Name == "Solved " + challenge.Title);
                             if (role != null)
                                 await guildUser.AddRoleAsync(role);
                         }

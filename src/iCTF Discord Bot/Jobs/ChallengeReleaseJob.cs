@@ -50,11 +50,13 @@ namespace iCTF_Discord_Bot.Jobs
             var challengeChannelsCategory = client.GetGuild(config.GuildId).CategoryChannels.FirstOrDefault(x => x.Name.ToLower() == "challenge channels");
             if (challengeChannelsCategory != null)
             {
-                var challengeRole = await client.GetGuild(config.GuildId).CreateRoleAsync("solved-" + chall.Title);
+                var challengeRole = await client.GetGuild(config.GuildId).CreateRoleAsync("Solved " + chall.Title);
                 var channelPermissions = new List<Overwrite> { 
                     new Overwrite(challengeRole.Id, PermissionTarget.Role, new OverwritePermissions(viewChannel: PermValue.Allow)),
                     new Overwrite(client.GetGuild(config.GuildId).EveryoneRole.Id, PermissionTarget.Role, new OverwritePermissions(viewChannel: PermValue.Deny))
                 };
+                if (config.BoardRoleId != 0)
+                    channelPermissions.Add(new Overwrite(config.BoardRoleId, PermissionTarget.Role, new OverwritePermissions(viewChannel: PermValue.Allow)));
                 var challengeChannel = await client.GetGuild(config.GuildId).CreateTextChannelAsync(chall.Title, tcp => { tcp.CategoryId = challengeChannelsCategory.Id; tcp.PermissionOverwrites = channelPermissions; });
 
                 if (!string.IsNullOrEmpty(chall.Writeup))
