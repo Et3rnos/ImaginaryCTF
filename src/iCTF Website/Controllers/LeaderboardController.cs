@@ -5,6 +5,7 @@ using iCTF_Website.Attributes;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -19,17 +20,20 @@ namespace iCTF_Website.Controllers {
     public class LeaderboardController : Controller {
 
         private readonly DatabaseContext _context;
+        private readonly IConfiguration _configuration;
 
-        public LeaderboardController(DatabaseContext context)
+        public LeaderboardController(DatabaseContext context, IConfiguration configuration)
         {
             _context = context;
+            _configuration = configuration;
         }
 
         [HttpGet("ctftime")]
         [RequireRoles("Administrator")]
         public async Task<IActionResult> CtftimeAsync()
         {
-            var top = await SharedLeaderboardManager.GetTopUsersAndTeams(_context, int.MaxValue);
+            bool dynamicScoring = _configuration.GetValue<bool>("DynamicScoring");
+            var top = await SharedLeaderboardManager.GetTopUsersAndTeams(_context, int.MaxValue, dynamicScoring);
             var teams = new List<dynamic>();
 
             for (int i = 0; i < top.Count; i++)
