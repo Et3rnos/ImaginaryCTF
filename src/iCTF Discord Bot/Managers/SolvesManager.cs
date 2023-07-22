@@ -19,21 +19,24 @@ namespace iCTF_Discord_Bot
         public static async Task AnnounceSolve(DiscordSocketClient client, DatabaseContext context, Challenge challenge, User user)
         {
             var config = await context.Configuration.AsQueryable().FirstOrDefaultAsync();
-            if (config == null || config.GuildId == 0 || config.ChallengeSolvesChannelId == 0) {
+            if (config == null || config.GuildId == 0 || config.ChallengeSolvesChannelId == 0)
+            {
                 return;
             }
-            var channel =  client.GetGuild(config.GuildId).GetTextChannel(config.ChallengeSolvesChannelId);
+            var channel = client.GetGuild(config.GuildId).GetTextChannel(config.ChallengeSolvesChannelId);
             await channel.SendMessageAsync($"<@{user.DiscordId}> solved **{challenge.Title}** challenge!");
         }
 
         public static async Task AnnounceWebsiteSolves(DiscordSocketClient client, DatabaseContext context, bool dynamicScoring = false)
         {
             var solves = await context.Solves.Include(x => x.User.WebsiteUser).Include(x => x.Challenge).Include(x => x.Team).ThenInclude(x => x.Members).Where(x => x.Announced == false).ToListAsync();
-            if (solves.Count == 0) {
+            if (solves.Count == 0)
+            {
                 return;
             }
             var config = await context.Configuration.AsQueryable().FirstOrDefaultAsync();
-            if (config == null || config.GuildId == 0 || config.ChallengeSolvesChannelId == 0) {
+            if (config == null || config.GuildId == 0 || config.ChallengeSolvesChannelId == 0)
+            {
                 return;
             }
             var channel = client.GetGuild(config.GuildId).GetTextChannel(config.ChallengeSolvesChannelId);
@@ -42,32 +45,28 @@ namespace iCTF_Discord_Bot
             {
                 if (solve.User.DiscordId != 0)
                 {
-                    var lastChall = await context.Challenges.AsAsyncEnumerable().Where(x => x.State == 2).OrderByDescending(x => x.ReleaseDate).FirstOrDefaultAsync();
-                    if (lastChall == solve.Challenge)
+                    if (solve.Team != null)
                     {
-                        if (solve.Team != null)
+                        foreach (var member in solve.Team.Members)
                         {
-                            foreach (var member in solve.Team.Members)
-                            {
-                                if (member.DiscordId == 0) continue;
-                                var guildUser = client.GetGuild(config.GuildId).GetUser(member.DiscordId);
-                                if (guildUser != null)
-                                {
-                                    var role = client.GetGuild(config.GuildId).Roles.FirstOrDefault(x => x.Name == "Solved " + solve.Challenge.Title);
-                                    if (role != null)
-                                        await guildUser.AddRoleAsync(role);
-                                }
-                            }
-                        }
-                        else
-                        {
-                            var guildUser = client.GetGuild(config.GuildId).GetUser(solve.User.DiscordId);
+                            if (member.DiscordId == 0) continue;
+                            var guildUser = client.GetGuild(config.GuildId).GetUser(member.DiscordId);
                             if (guildUser != null)
                             {
                                 var role = client.GetGuild(config.GuildId).Roles.FirstOrDefault(x => x.Name == "Solved " + solve.Challenge.Title);
                                 if (role != null)
                                     await guildUser.AddRoleAsync(role);
                             }
+                        }
+                    }
+                    else
+                    {
+                        var guildUser = client.GetGuild(config.GuildId).GetUser(solve.User.DiscordId);
+                        if (guildUser != null)
+                        {
+                            var role = client.GetGuild(config.GuildId).Roles.FirstOrDefault(x => x.Name == "Solved " + solve.Challenge.Title);
+                            if (role != null)
+                                await guildUser.AddRoleAsync(role);
                         }
                     }
                 }

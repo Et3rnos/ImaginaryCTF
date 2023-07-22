@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.ComponentModel.DataAnnotations;
+using iCTF_Website.Helpers;
+using Serilog;
 
 namespace iCTF_Website.Areas.Account.Pages
 {
@@ -17,7 +19,7 @@ namespace iCTF_Website.Areas.Account.Pages
     {
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public int UserId { get; set; }
+        public ApplicationUser ApplicationUser { get; set; }
 
         public IndexModel(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
         {
@@ -26,8 +28,12 @@ namespace iCTF_Website.Areas.Account.Pages
 
         public async Task OnGetAsync()
         {
-            var user = await _userManager.GetUserAsync(User);
-            UserId = user.UserId;
+            ApplicationUser = await _userManager.GetUserAsync(User);
+            if (string.IsNullOrEmpty(ApplicationUser.VerificationToken))
+            {
+                ApplicationUser.VerificationToken = RandomHelper.GenerateRandomString();
+                var result = await _userManager.UpdateAsync(ApplicationUser);
+            }
         }
     }
 }

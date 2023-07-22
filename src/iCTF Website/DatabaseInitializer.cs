@@ -35,7 +35,7 @@ namespace iCTF_Website
 
             if (userManager.FindByNameAsync("admin").Result == null) {
                 var player = new User();
-                context.Users.Add(player);
+                context.Players.Add(player);
                 context.SaveChanges();
 
                 var user = new ApplicationUser {

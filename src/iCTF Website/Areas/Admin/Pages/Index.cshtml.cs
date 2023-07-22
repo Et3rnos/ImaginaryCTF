@@ -31,7 +31,7 @@ namespace iCTF_Website.Areas.Admin.Pages
         public async Task OnGetAsync()
         {
             WebsiteUsersCount = await _userManager.Users.CountAsync();
-            UsersCount = await _context.Users.CountAsync();
+            UsersCount = await _context.Players.CountAsync();
             TeamsCount = await _context.Teams.CountAsync();
         }
     }

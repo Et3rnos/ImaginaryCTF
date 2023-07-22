@@ -99,7 +99,7 @@ namespace iCTF_Website.Pages
             var existentUser = await _userManager.FindByEmailAsync(Input.Email);
             if (existentUser != null && !existentUser.EmailConfirmed) await _userManager.DeleteAsync(existentUser);
 
-            var user = new ApplicationUser { UserName = Input.Username, Email = Input.Email, User = new User(), ApiKey = RandomHelper.GenerateRandomString() };
+            var user = new ApplicationUser { UserName = Input.Username, Email = Input.Email, User = new User(), ApiKey = RandomHelper.GenerateRandomString(), VerificationToken = RandomHelper.GenerateRandomString() };
             var result = await _userManager.CreateAsync(user, Input.Password);
             if (result.Succeeded)
             {

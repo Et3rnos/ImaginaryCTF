@@ -34,7 +34,8 @@ namespace iCTF_Discord_Bot.Jobs
 
             if (weShouldGoWork)
             {
-                await client.GetGuild(config.GuildId).GetTextChannel(config.BoardChannelId).SendMessageAsync($"Hey <@&{config.BoardRoleId}>! There are no approved challenges! Go work, you have one hour!");
+                var timeOfRelease = DateTimeOffset.Now.AddHours(1).ToUnixTimeSeconds();
+                await client.GetGuild(config.GuildId).GetTextChannel(config.BoardChannelId).SendMessageAsync($"Hey <@&{config.BoardRoleId}>! There are no approved challenges! The next challenge will be released <t:{timeOfRelease}:R>");
             }
         }
     }

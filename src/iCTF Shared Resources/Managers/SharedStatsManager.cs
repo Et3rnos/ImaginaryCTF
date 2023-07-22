@@ -23,7 +23,7 @@ namespace iCTF_Shared_Resources.Managers
             var solvedChallenges = await context.Solves.Where(x => x.User == user).Select(x => new ChallengeInfo { Challenge = x.Challenge, SolvesCount = x.Challenge.Solves.Count }).ToListAsync();
 
             int teamsCount = await context.Teams.Where(x => x.Solves.Any()).CountAsync();
-            int playersCount = await context.Users.Where(x => x.Solves.Any() && x.Team == null).CountAsync();
+            int playersCount = await context.Players.Where(x => x.Solves.Any() && x.Team == null).CountAsync();
 
             var challengesInfo = await context.Challenges.Where(x => x.State == 2).OrderByDescending(x => x.ReleaseDate).Select(x => new ChallengeInfo { Challenge = x, SolvesCount = x.Solves.Count }).ToListAsync();
 
@@ -56,7 +56,7 @@ namespace iCTF_Shared_Resources.Managers
             var solvedChallenges = await context.Solves.Where(x => x.Team == team).Select(x => new ChallengeInfo { Challenge = x.Challenge, SolvesCount = x.Challenge.Solves.Count }).ToListAsync();
 
             int teamsCount = await context.Teams.Where(x => x.Solves.Any()).CountAsync();
-            int playersCount = await context.Users.Where(x => x.Solves.Any() && x.Team == null).CountAsync();
+            int playersCount = await context.Players.Where(x => x.Solves.Any() && x.Team == null).CountAsync();
 
             var challengesInfo = await context.Challenges.Where(x => x.State == 2).OrderByDescending(x => x.ReleaseDate).Select(x => new ChallengeInfo { Challenge = x, SolvesCount = x.Solves.Count }).ToListAsync();
 

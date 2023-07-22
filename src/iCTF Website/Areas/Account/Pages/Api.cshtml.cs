@@ -106,6 +106,12 @@ namespace iCTF_Website.Areas.Account.Pages
                     RequiresApiKey = true,
                     AllowedRoles = new List<string> { "Administrator" }
                 },
+                new Endpoint {
+                    Name = "User Verification",
+                    Path = "/api/user/verify",
+                    Method = "POST",
+                    Parameters = new List<string> { "token" }
+                },
             };
         }
 

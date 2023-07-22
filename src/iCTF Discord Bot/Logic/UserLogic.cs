@@ -38,7 +38,7 @@ namespace iCTF_Discord_Bot.Logic
 
         private static async Task<User> GetPlayerFromUserAsync(DatabaseContext dbContext, IUser user)
         {
-            return await dbContext.Users.AsQueryable()
+            return await dbContext.Players.AsQueryable()
                 .Include(x => x.Solves).ThenInclude(x => x.Challenge)
                 .Include(x => x.WebsiteUser)
                 .Include(x => x.Team).ThenInclude(x => x.Solves).ThenInclude(x => x.Challenge)

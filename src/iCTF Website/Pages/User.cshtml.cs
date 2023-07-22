@@ -36,7 +36,7 @@ namespace iCTF_Website.Pages
 
         public async Task<IActionResult> OnGetAsync(int id)
         {
-            Player = await _context.Users.Include(x => x.WebsiteUser).Include(x => x.Solves).ThenInclude(x => x.Challenge).Include(x => x.Team).FirstOrDefaultAsync(x => x.Id == id);
+            Player = await _context.Players.Include(x => x.WebsiteUser).Include(x => x.Solves).ThenInclude(x => x.Challenge).Include(x => x.Team).FirstOrDefaultAsync(x => x.Id == id);
             if (Player == null) return NotFound();
 
             AppUser = Player.WebsiteUser;

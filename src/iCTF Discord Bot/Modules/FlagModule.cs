@@ -60,9 +60,11 @@ namespace iCTF_Discord_Bot.Modules
                 return;
             }
 
-            if (challenge.State == 3) {
+            if (challenge.State == 3)
+            {
                 await ReplyAsync("You are trying to submit a flag for an archived challenge.");
-                if (config != null && config.GuildId != 0 && config.LogsChannelId != 0) {
+                if (config != null && config.GuildId != 0 && config.LogsChannelId != 0)
+                {
                     var logsChannel = _client.GetGuild(config.GuildId).GetTextChannel(config.LogsChannelId);
                     await logsChannel.SendMessageAsync($"<@{Context.User.Id}> submitted a flag for an archived challenge: **{Format.Sanitize(flag).Replace("@", "@\u200B")}**");
                 }
@@ -78,35 +80,31 @@ namespace iCTF_Discord_Bot.Modules
                 await ReplyAsync("You already solved that challenge!");
                 return;
             }
-			
+
             if (config != null && config.GuildId != 0)
             {
-                var lastChall = await _context.Challenges.AsQueryable().OrderByDescending(x => x.ReleaseDate).FirstOrDefaultAsync(x => x.State == 2);
-                if (lastChall == challenge)
+                if (isTeam)
                 {
-                    if (isTeam)
+                    foreach (var member in user.Team.Members)
                     {
-                        foreach (var member in user.Team.Members)
-                        {
-                            if (member.DiscordId == 0) continue;
-                            var guildUser = _client.GetGuild(config.GuildId).GetUser(member.DiscordId);
-                            if (guildUser != null)
-                            {
-                                var role = _client.GetGuild(config.GuildId).Roles.FirstOrDefault(x => x.Name == "Solved " + challenge.Title);
-                                if (role != null)
-                                    await guildUser.AddRoleAsync(role);
-                            }
-                        }
-                    }
-                    else
-                    {
-                        var guildUser = _client.GetGuild(config.GuildId).GetUser(Context.User.Id);
+                        if (member.DiscordId == 0) continue;
+                        var guildUser = _client.GetGuild(config.GuildId).GetUser(member.DiscordId);
                         if (guildUser != null)
                         {
                             var role = _client.GetGuild(config.GuildId).Roles.FirstOrDefault(x => x.Name == "Solved " + challenge.Title);
                             if (role != null)
                                 await guildUser.AddRoleAsync(role);
                         }
+                    }
+                }
+                else
+                {
+                    var guildUser = _client.GetGuild(config.GuildId).GetUser(Context.User.Id);
+                    if (guildUser != null)
+                    {
+                        var role = _client.GetGuild(config.GuildId).Roles.FirstOrDefault(x => x.Name == "Solved " + challenge.Title);
+                        if (role != null)
+                            await guildUser.AddRoleAsync(role);
                     }
                 }
             }

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using iCTF_Shared_Resources;
 
@@ -10,9 +11,11 @@ using iCTF_Shared_Resources;
 namespace iCTFSharedResources.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20230515151645_VerificationToken")]
+    partial class VerificationToken
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -269,7 +272,7 @@ namespace iCTFSharedResources.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Challenges", (string)null);
+                    b.ToTable("Challenges");
                 });
 
             modelBuilder.Entity("iCTF_Shared_Resources.Models.Config", b =>
@@ -336,7 +339,7 @@ namespace iCTFSharedResources.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Configuration", (string)null);
+                    b.ToTable("Configuration");
                 });
 
             modelBuilder.Entity("iCTF_Shared_Resources.Models.Redirect", b =>
@@ -353,7 +356,7 @@ namespace iCTFSharedResources.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Redirects", (string)null);
+                    b.ToTable("Redirects");
                 });
 
             modelBuilder.Entity("iCTF_Shared_Resources.Models.Solve", b =>
@@ -385,7 +388,7 @@ namespace iCTFSharedResources.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Solves", (string)null);
+                    b.ToTable("Solves");
                 });
 
             modelBuilder.Entity("iCTF_Shared_Resources.Models.Team", b =>
@@ -410,7 +413,7 @@ namespace iCTFSharedResources.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Teams", (string)null);
+                    b.ToTable("Teams");
                 });
 
             modelBuilder.Entity("iCTF_Shared_Resources.Models.User", b =>
@@ -440,7 +443,7 @@ namespace iCTFSharedResources.Migrations
 
                     b.HasIndex("TeamId");
 
-                    b.ToTable("Users", (string)null);
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

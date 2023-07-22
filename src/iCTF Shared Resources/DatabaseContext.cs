@@ -12,9 +12,7 @@ namespace iCTF_Shared_Resources
         public DbSet<Config> Configuration { get; set; }
         public DbSet<Challenge> Challenges { get; set; }
 
-        #pragma warning disable CS0114
-        public DbSet<User> Users { get; set; }
-        #pragma warning restore CS0114
+        public DbSet<User> Players { get; set; }
 
         public DbSet<Team> Teams { get; set; }
         public DbSet<Solve> Solves { get; set; }

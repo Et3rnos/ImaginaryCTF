@@ -49,7 +49,7 @@ namespace iCTF_Website.Areas.Admin.Pages
         public async Task OnPostResetAsync()
         {
             _context.Solves.RemoveRange(await _context.Solves.ToListAsync());
-            foreach (var user in await _context.Users.Include(x => x.Solves).ToListAsync())
+            foreach (var user in await _context.Players.Include(x => x.Solves).ToListAsync())
             {
                 user.Solves.Clear();
             }

@@ -13,7 +13,7 @@ namespace iCTF_Shared_Resources.Managers
     {
         public static async Task<List<UserTeamUnion>> GetTopUsersAndTeams(DatabaseContext context, int max = 10, bool dynamicScoring = false)
         {
-            var users = await context.Users
+            var users = await context.Players
                 .AsExpandable()
                 .Where(x => x.Solves.Any() && x.Team == null)
                 .Select(x => new UserTeamUnion
@@ -60,7 +60,7 @@ namespace iCTF_Shared_Resources.Managers
                     ((dynamicScoring ? x.Solves.Sum(x => DynamicScoringManager.SolvePoints.Invoke(x.Challenge.Solves.Count)) : x.Solves.Sum(x => x.Challenge.Points)) > score) ||
                     ((dynamicScoring ? x.Solves.Sum(x => DynamicScoringManager.SolvePoints.Invoke(x.Challenge.Solves.Count)) : x.Solves.Sum(x => x.Challenge.Points)) == score && x.LastUpdated < lastUpdated)
                 ).CountAsync();
-            int playersCount = await context.Users
+            int playersCount = await context.Players
                 .AsExpandable()
                 .Where(x => x.Solves.Any())
                 .Where(x =>

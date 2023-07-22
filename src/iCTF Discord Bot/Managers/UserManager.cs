@@ -14,7 +14,7 @@ namespace iCTF_Discord_Bot.Managers
     {
         public static async Task<User> GetOrCreateUser(DatabaseContext context, ulong discordId, string username)
         {
-            var user = await context.Users.Include(x => x.Solves).ThenInclude(x => x.Challenge).Include(x => x.WebsiteUser).Include(x => x.Team.Members).Include(x => x.Team.Solves).ThenInclude(x => x.Challenge).Where(x => x.DiscordId == discordId).FirstOrDefaultAsync();
+            var user = await context.Players.Include(x => x.Solves).ThenInclude(x => x.Challenge).Include(x => x.WebsiteUser).Include(x => x.Team.Members).Include(x => x.Team.Solves).ThenInclude(x => x.Challenge).Where(x => x.DiscordId == discordId).FirstOrDefaultAsync();
             if (user == null)
             {
                 user = new User
@@ -23,7 +23,7 @@ namespace iCTF_Discord_Bot.Managers
                     DiscordUsername = username,
                     LastUpdated = DateTime.UtcNow
                 };
-                await context.Users.AddAsync(user);
+                await context.Players.AddAsync(user);
                 await context.SaveChangesAsync();
             }
             return user;
