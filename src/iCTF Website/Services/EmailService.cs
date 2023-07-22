@@ -31,7 +31,7 @@ namespace iCTF_Website.Services
 
         public void Send(string to, string subject, string html)
         {
-            var email = getMessage(to, _settings.Email, subject, html);
+            var email = GetMessage(to, _settings.Email, subject, html);
 
             using var smtp = new SmtpClient();
             smtp.Connect(_settings.SmtpDomain, _settings.SmtpPort, SecureSocketOptions.StartTls);
@@ -42,7 +42,7 @@ namespace iCTF_Website.Services
 
         public async Task SendAsync(string to, string subject, string html)
         {
-            var email = getMessage(to, _settings.Email, subject, html);
+            var email = GetMessage(to, _settings.Email, subject, html);
 
             using var smtp = new SmtpClient();
             await smtp.ConnectAsync(_settings.SmtpDomain, _settings.SmtpPort, SecureSocketOptions.StartTls);
@@ -51,7 +51,7 @@ namespace iCTF_Website.Services
             await smtp.DisconnectAsync(true);
         }
 
-        private MimeMessage getMessage(string to, string from, string subject, string html)
+        private MimeMessage GetMessage(string to, string from, string subject, string html)
         {
             // create message
             var email = new MimeMessage();
