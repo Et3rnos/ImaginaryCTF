@@ -1,4 +1,5 @@
-﻿using iCTF_Shared_Resources;
+﻿using AsyncKeyedLock;
+using iCTF_Shared_Resources;
 using iCTF_Shared_Resources.Managers;
 using iCTF_Shared_Resources.Models;
 using iCTF_Website.Attributes;
@@ -20,11 +21,13 @@ namespace iCTF_Website.Controllers {
 
         private readonly DatabaseContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly AsyncKeyedLocker<string> _asyncLocker;
 
-        public FlagsController(DatabaseContext context, UserManager<ApplicationUser> userManager)
+        public FlagsController(DatabaseContext context, UserManager<ApplicationUser> userManager, AsyncKeyedLocker<string> asyncLocker)
         {
             _context = context;
             _userManager = userManager;
+            _asyncLocker = asyncLocker;
         }
 
         public class SubmitData
@@ -37,6 +40,8 @@ namespace iCTF_Website.Controllers {
         public async Task<IActionResult> SubmitAsync(string apiKey, [FromBody] SubmitData data)
         {
             if (!ModelState.IsValid) return BadRequest();
+
+            using var asyncLock = await _asyncLocker.LockAsync("flag-submission");
 
             string flag = data.Flag.Trim();
 

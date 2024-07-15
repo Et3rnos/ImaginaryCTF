@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using iCTF_Shared_Resources.Managers;
 using Microsoft.Extensions.Logging;
+using AsyncKeyedLock;
 
 namespace iCTF_Website.Pages
 {
@@ -22,13 +23,15 @@ namespace iCTF_Website.Pages
         private readonly DatabaseContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly AsyncKeyedLocker<string> _asyncLocker;
 
-        public ChallengesModel(ILogger<ChallengesModel> logger, DatabaseContext context, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
+        public ChallengesModel(ILogger<ChallengesModel> logger, DatabaseContext context, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, AsyncKeyedLocker<string> asyncLocker)
         {
             _logger = logger;
             _context = context;
             _userManager = userManager;
             _signInManager = signInManager;
+            _asyncLocker = asyncLocker;
         }
 
         public void OnGet() { }
@@ -48,13 +51,15 @@ namespace iCTF_Website.Pages
                 return;
             }
 
+            using var asyncLock = await _asyncLocker.LockAsync("flag-submission");
+
             var appUser = await _userManager.GetUserAsync(User);
 
             flag = flag?.Trim();
             var challenge = await SharedFlagManager.GetChallByFlag(_context, flag, includeArchived: true);
             if (challenge == null) {
                 _logger.LogInformation($"User \"{appUser.UserName}\" submitted a wrong flag ({flag})");
-                Error = "Your flag is incorrect";
+                Error = "Your flag is incorrect!";
                 return;
             }
 
@@ -73,7 +78,7 @@ namespace iCTF_Website.Pages
 
             if ((appUser.User.Team == null && appUser.User.Solves.Select(x => x.Challenge).Contains(challenge)) || (appUser.User.Team != null && appUser.User.Team.Solves.Select(x => x.Challenge).Contains(challenge)))
             {
-                Error = "You already solved that challenge";
+                Error = "You already solved this challenge!";
                 return;
             }
 

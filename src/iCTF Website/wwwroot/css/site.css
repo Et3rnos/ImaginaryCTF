@@ -70,7 +70,7 @@ pre {
 }
 
 .logo-img {
-    border-radius: 10px;
+    border-radius: 50%;
 }
 
 .rounded-button {
@@ -112,18 +112,55 @@ pre {
     border-color: rgba(255,255,255,.75);
 }
 
+.inline-navbar-text {
+    line-height: 50px;
+}
+
 .logo-text {
     line-height: 50px;
     font-size: 20px;
 }
 
 body {
-    font-family: 'Josefin Sans', sans-serif;
+    font-family: 'Inter', sans-serif;
     word-break: break-word;
 }
 
 h1, h2, h3, h4, h5, h6 {
   font-family: 'Montserrat', sans-serif;
+}
+
+.montserrat {
+  font-family: 'Montserrat', sans-serif;
+}
+
+.montserrat h1, .montserrat h2, .montserrat h3, .montserrat h4, .montserrat h5, .montserrat h6 {
+  font-family: 'Montserrat', sans-serif;
+}
+
+.josefin {
+  font-family: 'Josefin Sans', sans-serif;
+}
+
+.josefin h1, .josefin h2, .josefin h3, .josefin h4, .josefin h5, .josefin h6 {
+  font-family: 'Josefin Sans', sans-serif;
+}
+
+.inter h1, .inter h2, .inter h3, .inter h4, .inter h5, .inter h6 {
+  font-family: 'Inter', sans-serif;
+}
+
+input::-webkit-input-placeholder {
+    color: black !important; /*Change the placeholder color*/
+    opacity: 0.4 !important; /*Change the opacity between 0 and 1*/
+}
+
+input:focus {
+    box-shadow: none !important;
+}
+
+.inter {
+    font-family: 'Inter', sans-serif;
 }
 
 .pe-enabled{

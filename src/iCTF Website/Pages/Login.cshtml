@@ -5,40 +5,43 @@
     ViewData["Title"] = "Login";
 }
 
-<div class="container text-center my-3">
-    <h1 class="mt-3">Login</h1>
+
+<div class="container text-start my-4 inter">
+    <h3 class="mt-3">Login to your account</h3>
+    <p>Login to your account to participate in this competition.</p>
+    <hr />
     <div class="row">
-        <div class="col-10 offset-1 col-sm-8 offset-sm-2 col-md-6 offset-md-3 col-lg-4 offset-lg-4">
-            <form method="post">
+        <div class="col-lg-4">
+            <form asp-route-returnUrl="@Model.ReturnUrl" method="post" id="register-form">
                 <div asp-validation-summary="All" class="text-danger"></div>
-                <div class="form-group mb-2">
-                    <label asp-for="Input.Username"></label>
-                    <input asp-for="Input.Username" class="form-control" />
-                    <span asp-validation-for="Input.Username" class="text-danger"></span>
+                <div class="form-group mb-3">
+                    <label asp-for="Input.Username" class="mb-1"></label>
+                    <input asp-for="Input.Username" class="form-control" placeholder="Enter your username" />
                 </div>
-                <div class="form-group mb-2">
-                    <label asp-for="Input.Password"></label>
-                    <input asp-for="Input.Password" class="form-control" />
-                    <span asp-validation-for="Input.Password" class="text-danger"></span>
+                <div class="form-group mb-4">
+                    <label asp-for="Input.Password" class="mb-1"></label>
+                    <input asp-for="Input.Password" class="form-control" placeholder="Enter your password" />
                 </div>
-                <div class="form-group mb-2">
-                    <div class="checkbox">
-                        <label asp-for="Input.RememberMe">
-                            <input asp-for="Input.RememberMe" />
-                            @Html.DisplayNameFor(m => m.Input.RememberMe)
-                        </label>
-                    </div>
-                </div>
-                <div class="form-group mb-2">
-                    <button type="submit" class="btn btn-primary">Log in</button>
-                </div>
-                <div class="form-group">
-                    <p>
-                        <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl">Register as a new user</a><br />
-                        <a asp-page="./ForgotPassword">Forgot your password?</a>
-                    </p>
+                <button type="submit" class="btn btn-dark w-100 p-3">
+                    LOGIN
+                    <i class="fa-solid fa-angles-right"></i>
+                </button>
+                <div class="mt-3 small">
+                    <a asp-page="ForgotPassword" style="text-underline-offset: 8px">Forgot your password?</a>
                 </div>
             </form>
+        </div>
+        <div class="col-lg-8 d-flex">
+            <div class="m-auto text-center">
+                <div>
+                    <img src="/img/rooYay.png" />
+                </div>
+                <p class="mt-3">
+                    The ImaginaryCTF team is excited to have you on board!
+                    <br />
+                    Login to your account to start competing!
+                </p>
+            </div>
         </div>
     </div>
 </div>

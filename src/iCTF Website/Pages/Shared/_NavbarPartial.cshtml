@@ -2,15 +2,68 @@
 @inject SignInManager<ApplicationUser> SignInManager
 @inject UserManager<ApplicationUser> UserManager
 
-<nav class="navbar navbar-dark sticky-top p-0 text-center">
+<nav class="navbar navbar-dark sticky-top p-0 text-center josefin">
     <div class="w-100 bg-logo p-2">
         <a class="text-decoration-none" href="/">
-            <div class="navbar-brand float-start ms-2">
-                <img src="/img/logo.png" height="40" class="d-inline-block align-middle logo-img" alt="iCTF">
+            <div class="navbar-brand float-start ms-3">
+                <img src="/img/logo.png" style="filter: invert(1); margin-top: 3px" height="30" class="d-inline-block align-middle logo-img" alt="iCTF">
             </div>
-            <span class="logo-text text-white">ImaginaryCTF</span>
+            <span class="logo-text text-white float-start">ImaginaryCTF</span>
         </a>
-        <button class="navbar-toggler sidenav-toggler float-end m-1" type="button">
+        <div class="float-end me-4">
+            <div class="hstack gap-4">
+                <a class="inline-navbar-text text-white float-start text-decoration-none" asp-page="Challenges">
+                    <i class="fa-solid fa-trophy me-1"></i>
+                    Challenges
+                </a>
+                <span>/</span>
+                <a class="inline-navbar-text text-white float-start text-decoration-none" asp-page="Leaderboard">
+                    <i class="fa-solid fa-crown me-1"></i>
+                    Leaderboard
+                </a>
+                <span>/</span>
+                <a class="inline-navbar-text text-white float-start text-decoration-none" asp-page="ArchivedChallenges">
+                    <i class="fa-solid fa-archive me-1"></i>
+                    Archive
+                </a>
+                <span>/</span>
+                @if (SignInManager.IsSignedIn(User))
+                {
+                    @if (User.IsInRole("Administrator"))
+                    {
+                        <a class="inline-navbar-text text-white float-start text-decoration-none" asp-area="Admin" asp-page="Index">
+                            <i class="fa-solid fa-tools me-1"></i>
+                            Admin Panel
+                        </a>
+                        <span>/</span>
+                    }
+                    <a class="inline-navbar-text text-white float-start text-decoration-none" asp-area="Account" asp-page="Index">
+                        <i class="fa-solid fa-user me-1"></i>
+                        Account
+                    </a>
+                    <span>/</span>
+                    <form asp-page="Logout" asp-route-returnUrl="@Url.Page("/", new { area = "" })" class="d-inline-block" method="post">
+                        <a onclick="this.closest('form').submit();return false;" class="inline-navbar-text text-white float-start text-decoration-none" href="#">
+                            <i class="fa-solid fa-sign-out me-1"></i>
+                            Logout
+                        </a>
+                    </form>
+                }
+                else
+                {
+                    <a class="text-decoration-none inline-navbar-text text-white float-start text-decoration-none" asp-page="Register">
+                        <i class="fa-solid fa-user-plus me-1"></i>
+                        Register
+                    </a>
+                    <span>/</span>
+                    <a class="text-decoration-none inline-navbar-text text-white float-start text-decoration-none" asp-page="Login">
+                        <i class="fa-solid fa-sign-in me-1"></i>
+                        Login
+                    </a>
+                }
+            </div>
+        </div>
+        <button class="navbar-toggler sidenav-toggler float-end m-1 d-none" type="button">
             <span class="navbar-toggler-icon"></span>
         </button>
     </div>

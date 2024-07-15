@@ -1,3 +1,4 @@
+using AsyncKeyedLock;
 using iCTF_Shared_Resources;
 using iCTF_Shared_Resources.Models;
 using iCTF_Website.Services;
@@ -30,7 +31,8 @@ namespace iCTF_Website
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
-        { 
+        {
+            services.AddSingleton<AsyncKeyedLocker<string>>();
 
             services.AddDbContext<DatabaseContext>(options => {
                 options.UseMySql(Configuration.GetValue<string>("ConnectionString"),
